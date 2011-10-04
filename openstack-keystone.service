@@ -1,0 +1,11 @@
+[Unit]
+Description=OpenStack Identity Service (code-named Keystone)
+After=syslog.target network.target
+
+[Service]
+Type=simple
+User=keystone
+ExecStart=/usr/bin/keystone --config-file /etc/keystone/keystone.conf
+
+[Install]
+WantedBy=multi-user.target
