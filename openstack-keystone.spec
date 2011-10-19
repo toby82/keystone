@@ -6,7 +6,7 @@
 
 Name:           openstack-keystone
 Version:        1.0
-Release:        0.3.%{milestone}.%{git_revno}%{?dist}
+Release:        0.4.%{milestone}.%{git_revno}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
@@ -32,6 +32,7 @@ Requires:       python-routes
 Requires:       python-sqlalchemy
 Requires:       python-sqlite2
 Requires:       python-webob
+Requires:	python-passlib
 
 Requires(post):   systemd-units
 Requires(preun):  systemd-units
@@ -125,6 +126,9 @@ fi
 %dir %attr(-, keystone, keystone) %{_localstatedir}/log/keystone
 
 %changelog
+* Wed Oct 19 2011 Matt Domsch <Matt_Domsch@dell.com> - 1.0-0.4.d4.1213
+- add Requires: python-passlib
+
 * Mon Oct 3 2011 Matt Domsch <Matt_Domsch@dell.com> - 1.0-0.2.d4.1213
 - update to diablo release.
 - BR systemd-units for _unitdir
