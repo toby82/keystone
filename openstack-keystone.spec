@@ -1,17 +1,21 @@
 
+#
+# This snapshot corresponds to the 2011.3 tag in git
+#
 %global milestone d4
 %global git_revno 1213
 %global snapdate 20110930
 %global snaptag ~%{milestone}~%{snapdate}.%{git_revno}
+%global tarballversion 1.0
 
 Name:           openstack-keystone
-Version:        1.0
-Release:        0.4.%{milestone}.%{git_revno}%{?dist}
+Version:        2011.3
+Release:        1%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
 URL:            http://keystone.openstack.org/
-Source0:        http://keystone.openstack.org/tarballs/keystone-%{version}%{snaptag}.tar.gz
+Source0:        http://keystone.openstack.org/tarballs/keystone-%{tarballversion}%{snaptag}.tar.gz
 Source1:        openstack-keystone.logrotate
 Source2:        openstack-keystone.service
 
@@ -51,7 +55,7 @@ Swift and Nova which are:
 
 
 %prep
-%setup -q -n keystone-%{version}
+%setup -q -n keystone-%{tarballversion}
 
 sed -i 's|\(log_file = \)\(keystone.log\)|\1%{_localstatedir}/log/keystone/\2|' etc/keystone.conf
 sed -i 's|\(sql_connection = sqlite:///\)keystone.db|\1%{_sharedstatedir}/keystone/keystone.sqlite|' etc/keystone.conf
@@ -126,6 +130,9 @@ fi
 %dir %attr(-, keystone, keystone) %{_localstatedir}/log/keystone
 
 %changelog
+* Mon Oct 24 2011 Mark McLoughlin <markmc@redhat.com> - 2011.3-1
+- Update version to diablo final
+
 * Wed Oct 19 2011 Matt Domsch <Matt_Domsch@dell.com> - 1.0-0.4.d4.1213
 - add Requires: python-passlib
 
