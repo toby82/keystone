@@ -1,16 +1,16 @@
 
 #
-# This snapshot corresponds to the 2011.3 tag in git
+# This is stable/diablo 2011-11-09 snapshot
 #
-%global milestone d4
-%global git_revno 1213
-%global snapdate 20110930
+%global milestone e2
+%global git_revno 1250
+%global snapdate 20111109
 %global snaptag ~%{milestone}~%{snapdate}.%{git_revno}
-%global tarballversion 1.0
+%global tarballversion 0.9.1
 
 Name:           openstack-keystone
 Version:        2011.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
@@ -22,6 +22,7 @@ Source2:        openstack-keystone.service
 BuildArch:      noarch
 BuildRequires:  python2-devel
 BuildRequires:  python-sphinx >= 1.0
+BuildRequires:  python-iniparse
 BuildRequires:  systemd-units
 
 Requires:       python-eventlet
@@ -41,6 +42,7 @@ Requires:	python-passlib
 Requires(post):   systemd-units
 Requires(preun):  systemd-units
 Requires(postun): systemd-units
+Requires(postun): python-iniparse
 Requires(pre):    shadow-utils
 
 %description
@@ -57,8 +59,18 @@ Swift and Nova which are:
 %prep
 %setup -q -n keystone-%{tarballversion}
 
-sed -i 's|\(log_file = \)\(keystone.log\)|\1%{_localstatedir}/log/keystone/\2|' etc/keystone.conf
-sed -i 's|\(sql_connection = sqlite:///\)keystone.db|\1%{_sharedstatedir}/keystone/keystone.sqlite|' etc/keystone.conf
+# log_file is ignored, use log_dir instead
+# https://bugs.launchpad.net/keystone/+bug/844959/comments/3
+python -c 'import iniparse
+conf=iniparse.ConfigParser()
+conf.read("etc/keystone.conf")
+if conf.has_option("DEFAULT", "log_file"):
+    conf.remove_option("DEFAULT", "log_file")
+conf.set("DEFAULT", "log_dir", "%{_localstatedir}/log/keystone")
+conf.set("keystone.backends.sqlalchemy", "sql_connection", "sqlite:///%{_sharedstatedir}/keystone/keystone.sqlite")
+fp=open("etc/keystone.conf","w")
+conf.write(fp)
+fp.close()'
 
 find . \( -name .gitignore -o -name .placeholder \) -delete
 find keystone -name \*.py -exec sed -i '/\/usr\/bin\/env python/d' {} \;
@@ -113,6 +125,16 @@ fi
 /bin/systemctl daemon-reload >/dev/null 2>&1 || :
 if [ $1 -ge 1 ] ; then
     # Package upgrade, not uninstall
+    # fix conf for LP844959
+    python -c 'import iniparse
+conf_file="%{_sysconfdir}/keystone/keystone.conf"
+conf=iniparse.ConfigParser()
+conf.read(conf_file)
+if not conf.has_option("DEFAULT", "log_dir"):
+    conf.set("DEFAULT", "log_dir", "%{_localstatedir}/log/keystone")
+    fp=open(conf_file,"w")
+    conf.write(fp)
+    fp.close()'
     /bin/systemctl try-restart openstack-keystone.service >/dev/null 2>&1 || :
 fi
 
@@ -130,6 +152,9 @@ fi
 %dir %attr(-, keystone, keystone) %{_localstatedir}/log/keystone
 
 %changelog
+* Fri Nov 11 2011 Alan Pevec <apevec@redhat.com> 2011.3-2
+- Update to the latest stable/diablo snapshot
+
 * Mon Oct 24 2011 Mark McLoughlin <markmc@redhat.com> - 2011.3-1
 - Update version to diablo final
 
