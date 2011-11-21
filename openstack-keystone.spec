@@ -152,7 +152,7 @@ fi
 
 %changelog
 * Mon Nov 21 2011 Alan Pevec <apevec@redhat.com> 2011.3.1-1
-- Update to 2011.13.1 stable/diablo release
+- Update to 2011.3.1 stable/diablo release
 
 * Fri Nov 11 2011 Alan Pevec <apevec@redhat.com> 2011.3-2
 - Update to the latest stable/diablo snapshot
