@@ -3,19 +3,18 @@
 # This is stable/diablo 2011-11-09 snapshot
 #
 %global milestone e2
-%global git_revno 1250
-%global snapdate 20111109
+%global git_revno 1262
+%global snapdate 20111118
 %global snaptag ~%{milestone}~%{snapdate}.%{git_revno}
-%global tarballversion 0.9.1
 
 Name:           openstack-keystone
-Version:        2011.3
-Release:        2%{?dist}
+Version:        2011.3.1
+Release:        1%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
 URL:            http://keystone.openstack.org/
-Source0:        http://keystone.openstack.org/tarballs/keystone-%{tarballversion}%{snaptag}.tar.gz
+Source0:        http://keystone.openstack.org/tarballs/keystone-%{version}%{snaptag}.tar.gz
 Source1:        openstack-keystone.logrotate
 Source2:        openstack-keystone.service
 
@@ -57,7 +56,7 @@ Swift and Nova which are:
 
 
 %prep
-%setup -q -n keystone-%{tarballversion}
+%setup -q -n keystone-%{version}
 
 # log_file is ignored, use log_dir instead
 # https://bugs.launchpad.net/keystone/+bug/844959/comments/3
@@ -152,6 +151,9 @@ fi
 %dir %attr(-, keystone, keystone) %{_localstatedir}/log/keystone
 
 %changelog
+* Mon Nov 21 2011 Alan Pevec <apevec@redhat.com> 2011.3.1-1
+- Update to 2011.13.1 stable/diablo release
+
 * Fri Nov 11 2011 Alan Pevec <apevec@redhat.com> 2011.3-2
 - Update to the latest stable/diablo snapshot
 
