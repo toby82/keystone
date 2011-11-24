@@ -1,6 +1,6 @@
 
 #
-# This is stable/diablo 2011-11-09 snapshot
+# This is stable/diablo 2011.3.1 release
 #
 %global milestone e2
 %global git_revno 1262
@@ -9,7 +9,7 @@
 
 Name:           openstack-keystone
 Version:        2011.3.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
@@ -45,14 +45,18 @@ Requires(postun): python-iniparse
 Requires(pre):    shadow-utils
 
 %description
-Keystone is a proposed independent authentication service for
-OpenStack (http://www.openstack.org).
+Keystone is a Python implementation of the OpenStack
+(http://www.openstack.org) identity service API.
 
-This initial proof of concept aims to address the current use cases in
-Swift and Nova which are:
-
-* REST-based, token auth for Swift
-* many-to-many relationship between identity and tenant for Nova.
+Services included are:
+* Keystone    - identity store and authentication service
+* Auth_Token  - WSGI middleware that can be used to handle token auth protocol
+                (WSGI or remote proxy)
+* Auth_Basic  - Stub for WSGI middleware that will be used to handle basic auth
+* Auth_OpenID - Stub for WSGI middleware that will be used to handle openid
+                auth protocol
+* RemoteAuth  - WSGI middleware that can be used in services (like Swift, Nova,
+                and Glance) when Auth middleware is running remotely
 
 
 %prep
@@ -139,6 +143,7 @@ fi
 
 %files
 %doc README.md
+%doc LICENSE
 %doc doc/build/html
 %doc examples
 %{python_sitelib}/*
@@ -151,6 +156,9 @@ fi
 %dir %attr(-, keystone, keystone) %{_localstatedir}/log/keystone
 
 %changelog
+* Thu Nov 24 2011 Alan Pevec <apevec@redhat.com> 2011.3.1-2
+- include LICENSE, update package description from README.md
+
 * Mon Nov 21 2011 Alan Pevec <apevec@redhat.com> 2011.3.1-1
 - Update to 2011.3.1 stable/diablo release
 
