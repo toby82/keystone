@@ -9,7 +9,7 @@
 
 Name:           openstack-keystone
 Version:        2011.3.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
@@ -156,6 +156,9 @@ fi
 %dir %attr(-, keystone, keystone) %{_localstatedir}/log/keystone
 
 %changelog
+* Fri Jan 13 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2011.3.1-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_17_Mass_Rebuild
+
 * Thu Nov 24 2011 Alan Pevec <apevec@redhat.com> 2011.3.1-2
 - include LICENSE, update package description from README.md
 
