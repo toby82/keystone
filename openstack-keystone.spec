@@ -1,20 +1,20 @@
-
 #
-# This is stable/diablo 2011.3.1 release
+# This is 2012.1 essex-2 milestone
 #
-%global milestone e2
-%global git_revno 1262
-%global snapdate 20111118
-%global snaptag ~%{milestone}~%{snapdate}.%{git_revno}
+%global release_name essex
+%global release_letter e
+%global milestone 2
+#%global snaptag ~%{release_letter}%{milestone}~%{snapdate}.%{git_revno}
 
 Name:           openstack-keystone
-Version:        2011.3.1
-Release:        3%{?dist}
+Version:        2012.1
+Release:        0.%{release_letter}%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
 URL:            http://keystone.openstack.org/
-Source0:        http://keystone.openstack.org/tarballs/keystone-%{version}%{snaptag}.tar.gz
+#Source0:        http://keystone.openstack.org/tarballs/keystone-%{version}%{snaptag}.tar.gz
+Source0:        http://launchpad.net/keystone/%{release_name}/%{release_name}-%{milestone}/+download/keystone-%{version}~%{release_letter}%{milestone}.tar.gz
 Source1:        openstack-keystone.logrotate
 Source2:        openstack-keystone.service
 
@@ -156,6 +156,9 @@ fi
 %dir %attr(-, keystone, keystone) %{_localstatedir}/log/keystone
 
 %changelog
+* Wed Jan 18 2012 Alan Pevec <apevec@redhat.com> 2012.1-0.e2
+- essex-2 milestone
+
 * Fri Jan 13 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2011.3.1-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_17_Mass_Rebuild
 
