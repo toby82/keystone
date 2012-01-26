@@ -8,7 +8,7 @@
 
 Name:           openstack-keystone
 Version:        2012.1
-Release:        0.1.%{release_letter}%{milestone}%{?dist}
+Release:        0.2.%{release_letter}%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
@@ -24,19 +24,7 @@ BuildRequires:  python-sphinx >= 1.0
 BuildRequires:  python-iniparse
 BuildRequires:  systemd-units
 
-Requires:       python-eventlet
-Requires:       python-httplib2
-Requires:       python-ldap
-Requires:       python-lxml
-Requires:       python-memcached
-Requires:       python-paste
-Requires:       python-paste-deploy
-Requires:       python-paste-script
-Requires:       python-routes
-Requires:       python-sqlalchemy
-Requires:       python-sqlite2
-Requires:       python-webob
-Requires:	python-passlib
+Requires:       python-keystone = %{version}-%{release}
 
 Requires(post):   systemd-units
 Requires(preun):  systemd-units
@@ -58,6 +46,33 @@ Services included are:
 * RemoteAuth  - WSGI middleware that can be used in services (like Swift, Nova,
                 and Glance) when Auth middleware is running remotely
 
+This package contains the daemons.
+
+%package -n       python-keystone
+Summary:          Keystone Python libraries
+Group:            Applications/System
+# python-keystone added in 2012.1-0.2.e3
+Conflicts:      openstack-keystone < 2012.1-0.2.e3
+
+Requires:       python-eventlet
+Requires:       python-httplib2
+Requires:       python-ldap
+Requires:       python-lxml
+Requires:       python-memcached
+Requires:       python-paste
+Requires:       python-paste-deploy
+Requires:       python-paste-script
+Requires:       python-routes
+Requires:       python-sqlalchemy
+Requires:       python-sqlite2
+Requires:       python-webob
+Requires:       python-passlib
+
+%description -n   python-keystone
+Keystone is a Python implementation of the OpenStack
+(http://www.openstack.org) identity service API.
+
+This package contains the Keystone Python library.
 
 %prep
 %setup -q -n keystone-%{version}
@@ -146,7 +161,6 @@ fi
 %doc LICENSE
 %doc doc/build/html
 %doc examples
-%{python_sitelib}/*
 %{_bindir}/keystone*
 %{_unitdir}/openstack-keystone.service
 %dir %{_sysconfdir}/keystone
@@ -155,7 +169,16 @@ fi
 %dir %attr(-, keystone, keystone) %{_sharedstatedir}/keystone
 %dir %attr(-, keystone, keystone) %{_localstatedir}/log/keystone
 
+%files -n python-keystone
+%defattr(-,root,root,-)
+%doc LICENSE
+%{python_sitelib}/keystone
+%{python_sitelib}/keystone-%{version}-*.egg-info
+
 %changelog
+* Thu Jan 26 2012 Alan Pevec <apevec@redhat.com> 2012.1-0.2.e3
+- separate library to python-keystone
+
 * Thu Jan 26 2012 Alan Pevec <apevec@redhat.com> 2012.1-0.1.e3
 - essex-3 milestone
 
