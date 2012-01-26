@@ -1,14 +1,14 @@
 #
-# This is 2012.1 essex-2 milestone
+# This is 2012.1 essex-3 milestone
 #
 %global release_name essex
 %global release_letter e
-%global milestone 2
+%global milestone 3
 #%global snaptag ~%{release_letter}%{milestone}~%{snapdate}.%{git_revno}
 
 Name:           openstack-keystone
 Version:        2012.1
-Release:        0.%{release_letter}%{milestone}%{?dist}
+Release:        0.1.%{release_letter}%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
@@ -156,6 +156,9 @@ fi
 %dir %attr(-, keystone, keystone) %{_localstatedir}/log/keystone
 
 %changelog
+* Thu Jan 26 2012 Alan Pevec <apevec@redhat.com> 2012.1-0.1.e3
+- essex-3 milestone
+
 * Wed Jan 18 2012 Alan Pevec <apevec@redhat.com> 2012.1-0.e2
 - essex-2 milestone
 
