@@ -101,6 +101,10 @@ find examples -type f -exec chmod 0664 \{\} \;
 %install
 %{__python} setup.py install -O1 --skip-build --root %{buildroot}
 
+# workaround for https://bugs.launchpad.net/keystone/+bug/910484
+# to avoid conflict with keystoneclient
+mv %{buildroot}%{_bindir}/keystone %{buildroot}%{_bindir}/keystone-all
+
 install -p -D -m 644 etc/keystone.conf %{buildroot}%{_sysconfdir}/keystone/keystone.conf
 install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/openstack-keystone
 install -p -D -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/openstack-keystone.service
@@ -178,6 +182,7 @@ fi
 %changelog
 * Thu Jan 26 2012 Alan Pevec <apevec@redhat.com> 2012.1-0.2.e3
 - separate library to python-keystone
+- avoid conflict with python-keystoneclient
 
 * Thu Jan 26 2012 Alan Pevec <apevec@redhat.com> 2012.1-0.1.e3
 - essex-3 milestone
