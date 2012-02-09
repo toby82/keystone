@@ -8,7 +8,7 @@
 
 Name:           openstack-keystone
 Version:        2012.1
-Release:        0.2.%{release_letter}%{milestone}%{?dist}
+Release:        0.3.%{release_letter}%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
@@ -64,7 +64,6 @@ Requires:       python-paste-deploy
 Requires:       python-paste-script
 Requires:       python-routes
 Requires:       python-sqlalchemy
-Requires:       python-sqlite2
 Requires:       python-webob
 Requires:       python-passlib
 
@@ -99,7 +98,7 @@ find keystone -name \*.py -exec sed -i '/\/usr\/bin\/env python/d' {} \;
 find examples -type f -exec chmod 0664 \{\} \;
 
 %install
-%{__python} setup.py install -O1 --skip-build --root %{buildroot}
+%{__python} setup.py install --skip-build --root %{buildroot}
 
 # workaround for https://bugs.launchpad.net/keystone/+bug/910484
 # to avoid conflict with keystoneclient
@@ -180,6 +179,10 @@ fi
 %{python_sitelib}/keystone-%{version}-*.egg-info
 
 %changelog
+* Wed Feb  8 2012 Toshio Kuratomi <toshio@fedoraproject.org> - 2012.1-0.3.e3
+- Remove the dep on python-sqlite2 as that's being retired in F17 and keystone
+  will work with the sqlite3 module from the stdlib
+
 * Thu Jan 26 2012 Alan Pevec <apevec@redhat.com> 2012.1-0.2.e3
 - separate library to python-keystone
 - avoid conflict with python-keystoneclient
