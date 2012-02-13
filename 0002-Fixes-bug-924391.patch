@@ -1,0 +1,36 @@
+From 9452cf04bc8b0a4dc66dc640615d5ace1ca715f2 Mon Sep 17 00:00:00 2001
+From: Alvaro Lopez Garcia <aloga@ifca.unican.es>
+Date: Tue, 31 Jan 2012 18:14:17 +0100
+Subject: [PATCH 2/2] Fixes bug 924391
+
+Change-Id: Iccb232a56df6072580cbcb0bc07ef7c0f81ca8fe
+---
+ keystone/backends/__init__.py |    5 ++++-
+ 1 files changed, 4 insertions(+), 1 deletions(-)
+
+diff --git a/keystone/backends/__init__.py b/keystone/backends/__init__.py
+index 8454d7c..84d73d0 100755
+--- a/keystone/backends/__init__.py
++++ b/keystone/backends/__init__.py
+@@ -27,7 +27,7 @@ CONF = config.CONF
+ DEFAULT_BACKENDS = "keystone.backends.sqlalchemy"
+ 
+ #Configs applicable to all backends.
+-SHOULD_HASH_PASSWORD = CONF.hash_password
++SHOULD_HASH_PASSWORD = True
+ 
+ 
+ class GroupConf(CONF.__class__):
+@@ -46,6 +46,9 @@ class GroupConf(CONF.__class__):
+ 
+ def configure_backends():
+     """Load backends given in the 'backends' option."""
++    global SHOULD_HASH_PASSWORD  # pylint: disable=W0603
++    SHOULD_HASH_PASSWORD = CONF.hash_password
++
+     backend_names = CONF.backends or DEFAULT_BACKENDS
+     for module_name in backend_names.split(","):
+         backend_module = utils.import_module(module_name)
+-- 
+1.7.7.6
+

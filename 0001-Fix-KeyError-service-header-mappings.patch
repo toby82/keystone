@@ -1,0 +1,32 @@
+From bfe9abeaa8a7ec8403b8fae1a7a302aa0e060bf4 Mon Sep 17 00:00:00 2001
+From: Pete Zaitcev <zaitcev@kotori.zaitcev.us>
+Date: Thu, 2 Feb 2012 22:41:28 -0700
+Subject: [PATCH 1/2] Fix "KeyError: 'service-header-mappings'"
+
+Someone changed the dashes for underscores in keystone.conf
+and forgot to update one place. Fix is trivial, tested to work.
+
+bug 925872
+
+Change-Id: Ib448f55fb0a352b5782fe0241bb1977c1d1ab79b
+---
+ keystone/frontends/legacy_token_auth.py |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+diff --git a/keystone/frontends/legacy_token_auth.py b/keystone/frontends/legacy_token_auth.py
+index acfcb14..a63395d 100644
+--- a/keystone/frontends/legacy_token_auth.py
++++ b/keystone/frontends/legacy_token_auth.py
+@@ -92,7 +92,8 @@ class AuthProtocol(object):
+             if "serviceCatalog" in auth:
+                 services = auth["serviceCatalog"]
+                 service_mappings = ast.literal_eval(
+-                    self.conf["service-header-mappings"])
++                    self.conf.get("service_header_mappings",
++                                  self.conf["service-header-mappings"]))
+                 for service in services:
+                     service_name = service["name"]
+                     service_urls = ''
+-- 
+1.7.7.6
+

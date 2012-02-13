@@ -8,7 +8,7 @@
 
 Name:           openstack-keystone
 Version:        2012.1
-Release:        0.3.%{release_letter}%{milestone}%{?dist}
+Release:        0.4.%{release_letter}%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
@@ -17,6 +17,9 @@ URL:            http://keystone.openstack.org/
 Source0:        http://launchpad.net/keystone/%{release_name}/%{release_name}-%{milestone}/+download/keystone-%{version}~%{release_letter}%{milestone}.tar.gz
 Source1:        openstack-keystone.logrotate
 Source2:        openstack-keystone.service
+# important post-essex-3 fixes
+Patch0001:      0001-Fix-KeyError-service-header-mappings.patch
+Patch0002:      0002-Fixes-bug-924391.patch
 
 BuildArch:      noarch
 BuildRequires:  python2-devel
@@ -54,14 +57,18 @@ Group:            Applications/System
 # python-keystone added in 2012.1-0.2.e3
 Conflicts:      openstack-keystone < 2012.1-0.2.e3
 
+Requires:       python-crypto
+Requires:       python-dateutil
 Requires:       python-eventlet
 Requires:       python-httplib2
 Requires:       python-ldap
 Requires:       python-lxml
 Requires:       python-memcached
+Requires:       python-migrate
 Requires:       python-paste
 Requires:       python-paste-deploy
 Requires:       python-paste-script
+Requires:       python-prettytable
 Requires:       python-routes
 Requires:       python-sqlalchemy
 Requires:       python-webob
@@ -75,6 +82,9 @@ This package contains the Keystone Python library.
 
 %prep
 %setup -q -n keystone-%{version}
+
+%patch0001 -p1
+%patch0002 -p1
 
 # log_file is ignored, use log_dir instead
 # https://bugs.launchpad.net/keystone/+bug/844959/comments/3
@@ -179,6 +189,11 @@ fi
 %{python_sitelib}/keystone-%{version}-*.egg-info
 
 %changelog
+* Mon Feb 13 2012 Alan Pevec <apevec@redhat.com> 2012.1-0.4.e3
+- fix deps rhbz#787072
+- keystone is not hashing passwords lp#924391
+- Fix "KeyError: 'service-header-mappings'" lp#925872
+
 * Wed Feb  8 2012 Toshio Kuratomi <toshio@fedoraproject.org> - 2012.1-0.3.e3
 - Remove the dep on python-sqlite2 as that's being retired in F17 and keystone
   will work with the sqlite3 module from the stdlib
