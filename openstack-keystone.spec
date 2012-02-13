@@ -1,25 +1,24 @@
 #
-# This is 2012.1 essex-3 milestone
+# This is 2012.1 essex-4 milestone snapshot
 #
 %global release_name essex
 %global release_letter e
-%global milestone 3
-#%global snaptag ~%{release_letter}%{milestone}~%{snapdate}.%{git_revno}
+%global milestone 4
+%global snapdate 20120219
+%global git_revno 1982
+%global snaptag ~%{release_letter}%{milestone}~%{snapdate}.%{git_revno}
 
 Name:           openstack-keystone
 Version:        2012.1
-Release:        0.4.%{release_letter}%{milestone}%{?dist}
+Release:        0.5.%{release_letter}%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
 URL:            http://keystone.openstack.org/
-#Source0:        http://keystone.openstack.org/tarballs/keystone-%{version}%{snaptag}.tar.gz
-Source0:        http://launchpad.net/keystone/%{release_name}/%{release_name}-%{milestone}/+download/keystone-%{version}~%{release_letter}%{milestone}.tar.gz
+Source0:        http://keystone.openstack.org/tarballs/keystone-%{version}%{snaptag}.tar.gz
+#Source0:        http://launchpad.net/keystone/%{release_name}/%{release_name}-%{milestone}/+download/keystone-%{version}~%{release_letter}%{milestone}.tar.gz
 Source1:        openstack-keystone.logrotate
 Source2:        openstack-keystone.service
-# important post-essex-3 fixes
-Patch0001:      0001-Fix-KeyError-service-header-mappings.patch
-Patch0002:      0002-Fixes-bug-924391.patch
 
 BuildArch:      noarch
 BuildRequires:  python2-devel
@@ -83,18 +82,12 @@ This package contains the Keystone Python library.
 %prep
 %setup -q -n keystone-%{version}
 
-%patch0001 -p1
-%patch0002 -p1
-
-# log_file is ignored, use log_dir instead
-# https://bugs.launchpad.net/keystone/+bug/844959/comments/3
+# set logfile and database
 python -c 'import iniparse
 conf=iniparse.ConfigParser()
 conf.read("etc/keystone.conf")
-if conf.has_option("DEFAULT", "log_file"):
-    conf.remove_option("DEFAULT", "log_file")
-conf.set("DEFAULT", "log_dir", "%{_localstatedir}/log/keystone")
-conf.set("keystone.backends.sqlalchemy", "sql_connection", "sqlite:///%{_sharedstatedir}/keystone/keystone.sqlite")
+conf.set("DEFAULT", "log_file", "%{_localstatedir}/log/keystone/keystone.log")
+conf.set("sql", "connection", "sqlite:///%{_sharedstatedir}/keystone/keystone.sqlite")
 fp=open("etc/keystone.conf","w")
 conf.write(fp)
 fp.close()'
@@ -105,16 +98,14 @@ find keystone -name \*.py -exec sed -i '/\/usr\/bin\/env python/d' {} \;
 
 %build
 %{__python} setup.py build
-find examples -type f -exec chmod 0664 \{\} \;
+# XXX examples not in tarball
+#find examples -type f -exec chmod 0664 \{\} \;
 
 %install
 %{__python} setup.py install --skip-build --root %{buildroot}
 
-# workaround for https://bugs.launchpad.net/keystone/+bug/910484
-# to avoid conflict with keystoneclient
-mv %{buildroot}%{_bindir}/keystone %{buildroot}%{_bindir}/keystone-all
-
-install -p -D -m 644 etc/keystone.conf %{buildroot}%{_sysconfdir}/keystone/keystone.conf
+install -d -m 755 %{buildroot}%{_sysconfdir}/keystone
+install -p -D -m 640 etc/keystone.conf %{buildroot}%{_sysconfdir}/keystone/keystone.conf
 install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/openstack-keystone
 install -p -D -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/openstack-keystone.service
 install -d -m 755 %{buildroot}%{_sharedstatedir}/keystone
@@ -125,12 +116,13 @@ rm -rf %{buildroot}%{python_sitelib}/examples
 rm -rf %{buildroot}%{python_sitelib}/doc
 
 # docs generation requires everything to be installed first
-export PYTHONPATH="$( pwd ):$PYTHONPATH"
-pushd doc
-make
-popd
-# Fix hidden-file-or-dir warnings
-rm -fr doc/build/html/.doctrees doc/build/html/.buildinfo
+# XXX doc not in tarball
+#export PYTHONPATH="$( pwd ):$PYTHONPATH"
+#pushd doc
+#make
+#popd
+## Fix hidden-file-or-dir warnings
+#rm -fr doc/build/html/.doctrees doc/build/html/.buildinfo
 
 %pre
 getent group keystone >/dev/null || groupadd -r keystone
@@ -156,24 +148,15 @@ fi
 /bin/systemctl daemon-reload >/dev/null 2>&1 || :
 if [ $1 -ge 1 ] ; then
     # Package upgrade, not uninstall
-    # fix conf for LP844959
-    python -c 'import iniparse
-conf_file="%{_sysconfdir}/keystone/keystone.conf"
-conf=iniparse.ConfigParser()
-conf.read(conf_file)
-if not conf.has_option("DEFAULT", "log_dir"):
-    conf.set("DEFAULT", "log_dir", "%{_localstatedir}/log/keystone")
-    fp=open(conf_file,"w")
-    conf.write(fp)
-    fp.close()'
     /bin/systemctl try-restart openstack-keystone.service >/dev/null 2>&1 || :
 fi
 
 %files
-%doc README.md
 %doc LICENSE
-%doc doc/build/html
-%doc examples
+# XXX README doc and examples not in tarball
+#%doc README.rst
+#%doc doc/build/html
+#%doc examples
 %{_bindir}/keystone*
 %{_unitdir}/openstack-keystone.service
 %dir %{_sysconfdir}/keystone
@@ -189,6 +172,9 @@ fi
 %{python_sitelib}/keystone-%{version}-*.egg-info
 
 %changelog
+* Mon Feb 20 2012 Alan Pevec <apevec@redhat.com> 2012.1-0.5.e4
+- pre essex-4 snapshot, for keystone rebase
+
 * Mon Feb 13 2012 Alan Pevec <apevec@redhat.com> 2012.1-0.4.e3
 - fix deps rhbz#787072
 - keystone is not hashing passwords lp#924391
