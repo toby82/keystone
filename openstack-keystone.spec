@@ -10,7 +10,7 @@
 
 Name:           openstack-keystone
 Version:        2012.1
-Release:        0.5.%{release_letter}%{milestone}%{?dist}
+Release:        0.6.%{release_letter}%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
@@ -88,6 +88,7 @@ conf=iniparse.ConfigParser()
 conf.read("etc/keystone.conf")
 conf.set("DEFAULT", "log_file", "%{_localstatedir}/log/keystone/keystone.log")
 conf.set("sql", "connection", "sqlite:///%{_sharedstatedir}/keystone/keystone.sqlite")
+conf.set("catalog", "template_file", "%{_sysconfdir}/keystone/default_catalog.templates")
 fp=open("etc/keystone.conf","w")
 conf.write(fp)
 fp.close()'
@@ -106,6 +107,7 @@ find keystone -name \*.py -exec sed -i '/\/usr\/bin\/env python/d' {} \;
 
 install -d -m 755 %{buildroot}%{_sysconfdir}/keystone
 install -p -D -m 640 etc/keystone.conf %{buildroot}%{_sysconfdir}/keystone/keystone.conf
+install -p -D -m 640 etc/default_catalog.templates %{buildroot}%{_sysconfdir}/keystone/default_catalog.templates
 install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/openstack-keystone
 install -p -D -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/openstack-keystone.service
 install -d -m 755 %{buildroot}%{_sharedstatedir}/keystone
@@ -160,7 +162,8 @@ fi
 %{_bindir}/keystone*
 %{_unitdir}/openstack-keystone.service
 %dir %{_sysconfdir}/keystone
-%config(noreplace) %{_sysconfdir}/keystone/keystone.conf
+%config(noreplace) %attr(-, keystone, keystone) %{_sysconfdir}/keystone/keystone.conf
+%config(noreplace) %attr(-, keystone, keystone) %{_sysconfdir}/keystone/default_catalog.templates
 %config(noreplace) %{_sysconfdir}/logrotate.d/openstack-keystone
 %dir %attr(-, keystone, keystone) %{_sharedstatedir}/keystone
 %dir %attr(-, keystone, keystone) %{_localstatedir}/log/keystone
@@ -172,6 +175,9 @@ fi
 %{python_sitelib}/keystone-%{version}-*.egg-info
 
 %changelog
+* Mon Feb 20 2012 Alan Pevec <apevec@redhat.com> 2012.1-0.6.e4
+- add missing default_catalog.templates
+
 * Mon Feb 20 2012 Alan Pevec <apevec@redhat.com> 2012.1-0.5.e4
 - pre essex-4 snapshot, for keystone rebase
 
