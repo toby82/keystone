@@ -4,13 +4,13 @@
 %global release_name essex
 %global release_letter e
 %global milestone 4
-%global snapdate 20120219
-%global git_revno 1982
+%global snapdate 20120221
+%global git_revno 1990
 %global snaptag ~%{release_letter}%{milestone}~%{snapdate}.%{git_revno}
 
 Name:           openstack-keystone
 Version:        2012.1
-Release:        0.6.%{release_letter}%{milestone}%{?dist}
+Release:        0.7.%{release_letter}%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
@@ -89,6 +89,9 @@ conf.read("etc/keystone.conf")
 conf.set("DEFAULT", "log_file", "%{_localstatedir}/log/keystone/keystone.log")
 conf.set("sql", "connection", "sqlite:///%{_sharedstatedir}/keystone/keystone.sqlite")
 conf.set("catalog", "template_file", "%{_sysconfdir}/keystone/default_catalog.templates")
+conf.set("identity", "driver", "keystone.identity.backends.sql.Identity")
+conf.set("token", "driver", "keystone.token.backends.sql.Token")
+conf.set("ec2", "driver", "keystone.contrib.ec2.backends.sql.Ec2")
 fp=open("etc/keystone.conf","w")
 conf.write(fp)
 fp.close()'
@@ -155,9 +158,10 @@ fi
 
 %files
 %doc LICENSE
-# XXX README doc and examples not in tarball
-#%doc README.rst
-#%doc doc/build/html
+%doc README.rst
+# XXX docs build require python-sphinx >= 1.1.2
+#%doc docs/build/html
+# XXX examples not in tarball
 #%doc examples
 %{_bindir}/keystone*
 %{_unitdir}/openstack-keystone.service
@@ -175,6 +179,9 @@ fi
 %{python_sitelib}/keystone-%{version}-*.egg-info
 
 %changelog
+* Tue Feb 21 2012 Alan Pevec <apevec@redhat.com> 2012.1-0.7.e4
+- switch all backends to sql
+
 * Mon Feb 20 2012 Alan Pevec <apevec@redhat.com> 2012.1-0.6.e4
 - add missing default_catalog.templates
 
