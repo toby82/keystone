@@ -4,13 +4,13 @@
 %global release_name essex
 %global release_letter e
 %global milestone 4
-%global snapdate 20120221
-%global git_revno 1990
+%global snapdate 20120228
+%global git_revno 2052
 %global snaptag ~%{release_letter}%{milestone}~%{snapdate}.%{git_revno}
 
 Name:           openstack-keystone
 Version:        2012.1
-Release:        0.7.%{release_letter}%{milestone}%{?dist}
+Release:        0.8.%{release_letter}%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
@@ -19,6 +19,11 @@ Source0:        http://keystone.openstack.org/tarballs/keystone-%{version}%{snap
 #Source0:        http://launchpad.net/keystone/%{release_name}/%{release_name}-%{milestone}/+download/keystone-%{version}~%{release_letter}%{milestone}.tar.gz
 Source1:        openstack-keystone.logrotate
 Source2:        openstack-keystone.service
+Source3:        openstack-keystone-db-setup
+Source4:        openstack-config-set
+
+# upstream review: https://review.openstack.org/4658
+Patch1:         sample_data.sh-check-file-paths-for-packaged-install.patch
 
 BuildArch:      noarch
 BuildRequires:  python2-devel
@@ -31,24 +36,13 @@ Requires:       python-keystone = %{version}-%{release}
 Requires(post):   systemd-units
 Requires(preun):  systemd-units
 Requires(postun): systemd-units
-Requires(postun): python-iniparse
 Requires(pre):    shadow-utils
 
 %description
 Keystone is a Python implementation of the OpenStack
 (http://www.openstack.org) identity service API.
 
-Services included are:
-* Keystone    - identity store and authentication service
-* Auth_Token  - WSGI middleware that can be used to handle token auth protocol
-                (WSGI or remote proxy)
-* Auth_Basic  - Stub for WSGI middleware that will be used to handle basic auth
-* Auth_OpenID - Stub for WSGI middleware that will be used to handle openid
-                auth protocol
-* RemoteAuth  - WSGI middleware that can be used in services (like Swift, Nova,
-                and Glance) when Auth middleware is running remotely
-
-This package contains the daemons.
+This package contains the Keystone daemon.
 
 %package -n       python-keystone
 Summary:          Keystone Python libraries
@@ -81,20 +75,15 @@ This package contains the Keystone Python library.
 
 %prep
 %setup -q -n keystone-%{version}
+%patch1 -p1
 
-# set logfile and database
-python -c 'import iniparse
-conf=iniparse.ConfigParser()
-conf.read("etc/keystone.conf")
-conf.set("DEFAULT", "log_file", "%{_localstatedir}/log/keystone/keystone.log")
-conf.set("sql", "connection", "sqlite:///%{_sharedstatedir}/keystone/keystone.sqlite")
-conf.set("catalog", "template_file", "%{_sysconfdir}/keystone/default_catalog.templates")
-conf.set("identity", "driver", "keystone.identity.backends.sql.Identity")
-conf.set("token", "driver", "keystone.token.backends.sql.Token")
-conf.set("ec2", "driver", "keystone.contrib.ec2.backends.sql.Ec2")
-fp=open("etc/keystone.conf","w")
-conf.write(fp)
-fp.close()'
+# change default configuration
+%{SOURCE4} etc/keystone.conf DEFAULT log_file %{_localstatedir}/log/keystone/keystone.log
+%{SOURCE4} etc/keystone.conf sql connection mysql://keystone:keystone@localhost/keystone
+%{SOURCE4} etc/keystone.conf catalog template_file %{_sysconfdir}/keystone/default_catalog.templates
+%{SOURCE4} etc/keystone.conf identity driver keystone.identity.backends.sql.Identity
+%{SOURCE4} etc/keystone.conf token driver keystone.token.backends.sql.Token
+%{SOURCE4} etc/keystone.conf ec2 driver keystone.contrib.ec2.backends.sql.Ec2
 
 find . \( -name .gitignore -o -name .placeholder \) -delete
 find keystone -name \*.py -exec sed -i '/\/usr\/bin\/env python/d' {} \;
@@ -102,23 +91,28 @@ find keystone -name \*.py -exec sed -i '/\/usr\/bin\/env python/d' {} \;
 
 %build
 %{__python} setup.py build
-# XXX examples not in tarball
-#find examples -type f -exec chmod 0664 \{\} \;
 
 %install
 %{__python} setup.py install --skip-build --root %{buildroot}
+
+# Delete tests
+rm -fr %{buildroot}%{python_sitelib}/tests
+rm -fr %{buildroot}%{python_sitelib}/run_tests.*
 
 install -d -m 755 %{buildroot}%{_sysconfdir}/keystone
 install -p -D -m 640 etc/keystone.conf %{buildroot}%{_sysconfdir}/keystone/keystone.conf
 install -p -D -m 640 etc/default_catalog.templates %{buildroot}%{_sysconfdir}/keystone/default_catalog.templates
 install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/openstack-keystone
 install -p -D -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/openstack-keystone.service
+# Install database setup helper script.
+install -p -D -m 755 %{SOURCE3} %{buildroot}%{_bindir}/openstack-keystone-db-setup
+# Install sample data script.
+install -p -D -m 755 tools/sample_data.sh %{buildroot}%{_bindir}/openstack-keystone-sample-data
+# Install configuration helper script.
+install -p -D -m 755 %{SOURCE4} %{buildroot}%{_bindir}/openstack-config-set
+
 install -d -m 755 %{buildroot}%{_sharedstatedir}/keystone
 install -d -m 755 %{buildroot}%{_localstatedir}/log/keystone
-
-rm -rf %{buildroot}%{python_sitelib}/tools
-rm -rf %{buildroot}%{python_sitelib}/examples
-rm -rf %{buildroot}%{python_sitelib}/doc
 
 # docs generation requires everything to be installed first
 export PYTHONPATH="$( pwd ):$PYTHONPATH"
@@ -159,7 +153,11 @@ fi
 %doc LICENSE
 %doc README.rst
 %doc docs/build/html
-%{_bindir}/keystone*
+%{_bindir}/keystone-all
+%{_bindir}/keystone-manage
+%{_bindir}/openstack-config-set
+%{_bindir}/openstack-keystone-db-setup
+%{_bindir}/openstack-keystone-sample-data
 %{_unitdir}/openstack-keystone.service
 %dir %{_sysconfdir}/keystone
 %config(noreplace) %attr(-, keystone, keystone) %{_sysconfdir}/keystone/keystone.conf
@@ -175,6 +173,9 @@ fi
 %{python_sitelib}/keystone-%{version}-*.egg-info
 
 %changelog
+* Sat Feb 25 2012 Alan Pevec <apevec@redhat.com> 2012.1-0.8.e4
+- change default database to mysql
+
 * Tue Feb 21 2012 Alan Pevec <apevec@redhat.com> 2012.1-0.7.e4
 - switch all backends to sql
 
