@@ -22,7 +22,7 @@ Source2:        openstack-keystone.service
 
 BuildArch:      noarch
 BuildRequires:  python2-devel
-BuildRequires:  python-sphinx >= 1.0
+BuildRequires:  python-sphinx >= 1.1.2
 BuildRequires:  python-iniparse
 BuildRequires:  systemd-units
 
@@ -121,13 +121,12 @@ rm -rf %{buildroot}%{python_sitelib}/examples
 rm -rf %{buildroot}%{python_sitelib}/doc
 
 # docs generation requires everything to be installed first
-# XXX doc not in tarball
-#export PYTHONPATH="$( pwd ):$PYTHONPATH"
-#pushd doc
-#make
-#popd
-## Fix hidden-file-or-dir warnings
-#rm -fr doc/build/html/.doctrees doc/build/html/.buildinfo
+export PYTHONPATH="$( pwd ):$PYTHONPATH"
+pushd docs
+make html
+popd
+# Fix hidden-file-or-dir warnings
+rm -fr docs/build/html/.doctrees docs/build/html/.buildinfo
 
 %pre
 getent group keystone >/dev/null || groupadd -r keystone
@@ -159,10 +158,7 @@ fi
 %files
 %doc LICENSE
 %doc README.rst
-# XXX docs build require python-sphinx >= 1.1.2
-#%doc docs/build/html
-# XXX examples not in tarball
-#%doc examples
+%doc docs/build/html
 %{_bindir}/keystone*
 %{_unitdir}/openstack-keystone.service
 %dir %{_sysconfdir}/keystone
