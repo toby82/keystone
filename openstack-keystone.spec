@@ -4,19 +4,19 @@
 %global release_name essex
 %global release_letter e
 %global milestone 4
-%global snapdate 20120228
-%global git_revno 2052
+%global snapdate 20120229
+%global git_revno r2059
 %global snaptag ~%{release_letter}%{milestone}~%{snapdate}.%{git_revno}
 
 Name:           openstack-keystone
 Version:        2012.1
-Release:        0.8.%{release_letter}%{milestone}%{?dist}
+Release:        0.9.%{release_letter}%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
 URL:            http://keystone.openstack.org/
-Source0:        http://keystone.openstack.org/tarballs/keystone-%{version}%{snaptag}.tar.gz
-#Source0:        http://launchpad.net/keystone/%{release_name}/%{release_name}-%{milestone}/+download/keystone-%{version}~%{release_letter}%{milestone}.tar.gz
+Source0:        http://launchpad.net/keystone/%{release_name}/%{release_name}-%{milestone}/+download/keystone-%{version}~%{release_letter}%{milestone}.tar.gz
+#Source0:        http://keystone.openstack.org/tarballs/keystone-%{version}%{snaptag}.tar.gz
 Source1:        openstack-keystone.logrotate
 Source2:        openstack-keystone.service
 Source3:        openstack-keystone-db-setup
@@ -66,6 +66,7 @@ Requires:       python-routes
 Requires:       python-sqlalchemy
 Requires:       python-webob
 Requires:       python-passlib
+Requires:       MySQL-python
 
 %description -n   python-keystone
 Keystone is a Python implementation of the OpenStack
@@ -173,6 +174,9 @@ fi
 %{python_sitelib}/keystone-%{version}-*.egg-info
 
 %changelog
+* Thu Mar 01 2012 Alan Pevec <apevec@redhat.com> 2012.1-0.9.e4
+- essex-4 milestone
+
 * Sat Feb 25 2012 Alan Pevec <apevec@redhat.com> 2012.1-0.8.e4
 - change default database to mysql
 
