@@ -10,7 +10,7 @@
 
 Name:           openstack-keystone
 Version:        2012.1
-Release:        0.9.%{release_letter}%{milestone}%{?dist}
+Release:        0.10.%{release_letter}%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
@@ -21,9 +21,13 @@ Source1:        openstack-keystone.logrotate
 Source2:        openstack-keystone.service
 Source3:        openstack-keystone-db-setup
 Source4:        openstack-config-set
+Source5:        sample_data.sh
 
-# upstream review: https://review.openstack.org/4658
-Patch1:         sample_data.sh-check-file-paths-for-packaged-install.patch
+# https://review.openstack.org/4658
+# https://review.openstack.org/5049
+Patch1:         sample_data.sh-catalog-backend.patch
+# https://review.openstack.org/4997
+Patch2:         add-more-default-catalog-templates.patch
 
 BuildArch:      noarch
 BuildRequires:  python2-devel
@@ -32,6 +36,7 @@ BuildRequires:  python-iniparse
 BuildRequires:  systemd-units
 
 Requires:       python-keystone = %{version}-%{release}
+Requires:       python-keystoneclient >= 2012.1-0.4.e4
 
 Requires(post):   systemd-units
 Requires(preun):  systemd-units
@@ -77,11 +82,13 @@ This package contains the Keystone Python library.
 %prep
 %setup -q -n keystone-%{version}
 %patch1 -p1
+%patch2 -p1
 
 # change default configuration
 %{SOURCE4} etc/keystone.conf DEFAULT log_file %{_localstatedir}/log/keystone/keystone.log
 %{SOURCE4} etc/keystone.conf sql connection mysql://keystone:keystone@localhost/keystone
 %{SOURCE4} etc/keystone.conf catalog template_file %{_sysconfdir}/keystone/default_catalog.templates
+%{SOURCE4} etc/keystone.conf catalog driver keystone.catalog.backends.sql.Catalog
 %{SOURCE4} etc/keystone.conf identity driver keystone.identity.backends.sql.Identity
 %{SOURCE4} etc/keystone.conf token driver keystone.token.backends.sql.Token
 %{SOURCE4} etc/keystone.conf ec2 driver keystone.contrib.ec2.backends.sql.Ec2
@@ -108,7 +115,7 @@ install -p -D -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/openstack-keystone.servi
 # Install database setup helper script.
 install -p -D -m 755 %{SOURCE3} %{buildroot}%{_bindir}/openstack-keystone-db-setup
 # Install sample data script.
-install -p -D -m 755 tools/sample_data.sh %{buildroot}%{_bindir}/openstack-keystone-sample-data
+install -p -D -m 755 %{SOURCE5} %{buildroot}%{_bindir}/openstack-keystone-sample-data
 # Install configuration helper script.
 install -p -D -m 755 %{SOURCE4} %{buildroot}%{_bindir}/openstack-config-set
 
@@ -161,8 +168,8 @@ fi
 %{_bindir}/openstack-keystone-sample-data
 %{_unitdir}/openstack-keystone.service
 %dir %{_sysconfdir}/keystone
-%config(noreplace) %attr(-, keystone, keystone) %{_sysconfdir}/keystone/keystone.conf
-%config(noreplace) %attr(-, keystone, keystone) %{_sysconfdir}/keystone/default_catalog.templates
+%config(noreplace) %attr(640, root, keystone) %{_sysconfdir}/keystone/keystone.conf
+%config(noreplace) %attr(640, root, keystone) %{_sysconfdir}/keystone/default_catalog.templates
 %config(noreplace) %{_sysconfdir}/logrotate.d/openstack-keystone
 %dir %attr(-, keystone, keystone) %{_sharedstatedir}/keystone
 %dir %attr(-, keystone, keystone) %{_localstatedir}/log/keystone
@@ -174,6 +181,11 @@ fi
 %{python_sitelib}/keystone-%{version}-*.egg-info
 
 %changelog
+* Thu Mar 08 2012 Alan Pevec <apevec@redhat.com> 2012.1-0.10.e4
+- change default catalog backend to sql rhbz#800704
+- update sample-data script
+- add missing keystoneclient dependency
+
 * Thu Mar 01 2012 Alan Pevec <apevec@redhat.com> 2012.1-0.9.e4
 - essex-4 milestone
 

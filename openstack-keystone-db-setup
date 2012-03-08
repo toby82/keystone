@@ -229,7 +229,7 @@ fi
 
 # Ask openstack-$APP to sync the db.
 
-echo "Asking openstack-$APP to sync the databse."
+echo "Asking openstack-$APP to sync the database."
 if [ "${APP}" = "nova" ]; then
 	nova-manage db sync
 else
