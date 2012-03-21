@@ -1,5 +1,5 @@
 #
-# This is 2012.1 essex-4 milestone snapshot
+# This is 2012.1 essex rc1 snapshot
 #
 %global release_name essex
 %global release_letter rc
@@ -22,6 +22,8 @@ Source2:        openstack-keystone.service
 Source3:        openstack-keystone-db-setup
 Source4:        openstack-config-set
 Source5:        openstack-keystone-sample-data
+
+Patch1: Fix-critical-typo-in-endpoint_create-bug-961412.patch
 
 BuildArch:      noarch
 BuildRequires:  python2-devel
@@ -75,6 +77,7 @@ This package contains the Keystone Python library.
 
 %prep
 %setup -q -n keystone-%{version}
+%patch1 -p1
 
 # change default configuration
 %{SOURCE4} etc/keystone.conf DEFAULT log_file %{_localstatedir}/log/keystone/keystone.log

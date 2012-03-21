@@ -1,0 +1,87 @@
+From 9feb00085f75ea2697fd2225e6003c2384904d08 Mon Sep 17 00:00:00 2001
+From: Dolph Mathews <dolph.mathews@gmail.com>
+Date: Wed, 21 Mar 2012 13:11:31 -0500
+Subject: [PATCH] Fix critical typo in endpoint_create (bug 961412)
+
+It looks like catalog crud was previously untested.
+
+Change-Id: I8e3060b6d6c737d3d97a5bd9076e9a5fdf9945e2
+---
+ keystone/catalog/core.py         |    2 +-
+ tests/test_keystoneclient_sql.py |   43 ++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 44 insertions(+), 1 deletions(-)
+
+diff --git a/keystone/catalog/core.py b/keystone/catalog/core.py
+index 3aeac4e..ef35921 100644
+--- a/keystone/catalog/core.py
++++ b/keystone/catalog/core.py
+@@ -166,7 +166,7 @@ class EndpointController(wsgi.Application):
+         endpoint_ref['id'] = endpoint_id
+ 
+         service_id = endpoint_ref['service_id']
+-        if not self.catalog_api.service_exists(context, service_id):
++        if not self.catalog_api.get_service(context, service_id):
+             raise exception.ServiceNotFound(service_id=service_id)
+ 
+         new_endpoint_ref = self.catalog_api.create_endpoint(
+diff --git a/tests/test_keystoneclient_sql.py b/tests/test_keystoneclient_sql.py
+index b2ff624..641ee77 100644
+--- a/tests/test_keystoneclient_sql.py
++++ b/tests/test_keystoneclient_sql.py
+@@ -13,6 +13,9 @@
+ # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ # License for the specific language governing permissions and limitations
+ # under the License.
++
++import uuid
++
+ from keystone import config
+ from keystone import test
+ from keystone.common.sql import util as sql_util
+@@ -29,3 +32,43 @@ class KcMasterSqlTestCase(test_keystoneclient.KcMasterTestCase):
+                            test.testsdir('test_overrides.conf'),
+                            test.testsdir('backend_sql.conf')])
+         sql_util.setup_test_database()
++
++    def test_endpoint_crud(self):
++        from keystoneclient import exceptions as client_exceptions
++
++        client = self.get_client(admin=True)
++
++        service = client.services.create(name=uuid.uuid4().hex,
++                                         service_type=uuid.uuid4().hex,
++                                         description=uuid.uuid4().hex)
++
++        endpoint_region = uuid.uuid4().hex
++        invalid_service_id = uuid.uuid4().hex
++        endpoint_publicurl = uuid.uuid4().hex
++        endpoint_internalurl = uuid.uuid4().hex
++        endpoint_adminurl = uuid.uuid4().hex
++
++        # a non-existant service ID should trigger a 404
++        self.assertRaises(client_exceptions.NotFound,
++                          client.endpoints.create,
++                          region=endpoint_region,
++                          service_id=invalid_service_id,
++                          publicurl=endpoint_publicurl,
++                          adminurl=endpoint_adminurl,
++                          internalurl=endpoint_internalurl)
++
++        endpoint = client.endpoints.create(region=endpoint_region,
++                                           service_id=service.id,
++                                           publicurl=endpoint_publicurl,
++                                           adminurl=endpoint_adminurl,
++                                           internalurl=endpoint_internalurl)
++
++        self.assertEquals(endpoint.region, endpoint_region)
++        self.assertEquals(endpoint.service_id, service.id)
++        self.assertEquals(endpoint.publicurl, endpoint_publicurl)
++        self.assertEquals(endpoint.internalurl, endpoint_internalurl)
++        self.assertEquals(endpoint.adminurl, endpoint_adminurl)
++
++        client.endpoints.delete(id=endpoint.id)
++        self.assertRaises(client_exceptions.NotFound, client.endpoints.delete,
++                          id=endpoint.id)
+-- 
+1.7.7.6
+
