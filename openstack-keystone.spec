@@ -1,29 +1,28 @@
 #
-# This is 2012.1 essex rc1 snapshot
+# This is 2012.1 essex rc1
 #
 %global release_name essex
 %global release_letter rc
 %global milestone 1
-%global snapdate 20120320
-%global git_revno 2182
+%global snapdate 20120323
+%global git_revno r2186
+
 %global snaptag ~%{release_letter}%{milestone}~%{snapdate}.%{git_revno}
 
 Name:           openstack-keystone
 Version:        2012.1
-Release:        0.11.%{release_letter}%{milestone}%{?dist}
+Release:        0.12.%{release_letter}%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
 URL:            http://keystone.openstack.org/
-#Source0:        http://launchpad.net/keystone/%{release_name}/%{release_name}-%{milestone}/+download/keystone-%{version}~%{release_letter}%{milestone}.tar.gz
-Source0:        http://keystone.openstack.org/tarballs/keystone-%{version}%{snaptag}.tar.gz
+Source0:        http://launchpad.net/keystone/%{release_name}/%{release_name}-%{milestone}/+download/keystone-%{version}~%{release_letter}%{milestone}.tar.gz
+#Source0:        http://keystone.openstack.org/tarballs/keystone-%{version}%{snaptag}.tar.gz
 Source1:        openstack-keystone.logrotate
 Source2:        openstack-keystone.service
 Source3:        openstack-keystone-db-setup
 Source4:        openstack-config-set
 Source5:        openstack-keystone-sample-data
-
-Patch1: Fix-critical-typo-in-endpoint_create-bug-961412.patch
 
 BuildArch:      noarch
 BuildRequires:  python2-devel
@@ -77,7 +76,6 @@ This package contains the Keystone Python library.
 
 %prep
 %setup -q -n keystone-%{version}
-%patch1 -p1
 
 # change default configuration
 %{SOURCE4} etc/keystone.conf DEFAULT log_file %{_localstatedir}/log/keystone/keystone.log
@@ -186,6 +184,9 @@ fi
 %{python_sitelib}/keystone-%{version}-*.egg-info
 
 %changelog
+* Sat Mar 24 2012 Alan Pevec <apevec@redhat.com> 2012.1-0.12.rc1
+- upate to final essex rc1
+
 * Wed Mar 21 2012 Alan Pevec <apevec@redhat.com> 2012.1-0.11.rc1
 - essex rc1
 
