@@ -16,6 +16,7 @@ conf=iniparse.ConfigParser()
 conf.read(cfgfile)
 if not conf.has_section(section):
     conf.add_section(section)
+    value += '\n'
 conf.set(section, parameter, value)
 
 fp=open(cfgfile,"w")
