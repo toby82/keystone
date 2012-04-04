@@ -1,17 +1,17 @@
 #
-# This is 2012.1 essex rc1
+# This is 2012.1 essex rc2
 #
 %global release_name essex
 %global release_letter rc
-%global milestone 1
-%global snapdate 20120323
-%global git_revno r2186
+%global milestone 2
+%global snapdate 20120404
+%global git_revno r2201
 
 %global snaptag ~%{release_letter}%{milestone}~%{snapdate}.%{git_revno}
 
 Name:           openstack-keystone
 Version:        2012.1
-Release:        0.12.%{release_letter}%{milestone}%{?dist}
+Release:        0.13.%{release_letter}%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
@@ -184,8 +184,11 @@ fi
 %{python_sitelib}/keystone-%{version}-*.egg-info
 
 %changelog
+* Wed Apr 04 2012 Alan Pevec <apevec@redhat.com> 2012.1-0.13.rc2
+- essex rc2
+
 * Sat Mar 24 2012 Alan Pevec <apevec@redhat.com> 2012.1-0.12.rc1
-- upate to final essex rc1
+- update to final essex rc1
 
 * Wed Mar 21 2012 Alan Pevec <apevec@redhat.com> 2012.1-0.11.rc1
 - essex rc1
