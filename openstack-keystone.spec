@@ -11,7 +11,7 @@
 
 Name:           openstack-keystone
 Version:        2012.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 #Release:       0.1.%{release_letter}%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
@@ -22,13 +22,17 @@ Source0:        http://launchpad.net/keystone/%{release_name}/%{version}/+downlo
 #Source0:        http://keystone.openstack.org/tarballs/keystone-%{version}%{snaptag}.tar.gz
 Source1:        openstack-keystone.logrotate
 Source2:        openstack-keystone.service
-Source3:        openstack-keystone-db-setup
-Source4:        openstack-config-set
 Source5:        openstack-keystone-sample-data
+
+#
+# patches_base=2012.1
+#
+Patch0001: 0001-Make-import_nova_auth-only-create-roles-which-don-t-.patch
 
 BuildArch:      noarch
 BuildRequires:  python2-devel
 BuildRequires:  python-sphinx >= 1.0
+BuildRequires:  openstack-utils
 BuildRequires:  python-iniparse
 BuildRequires:  systemd-units
 
@@ -52,18 +56,13 @@ Group:            Applications/System
 # python-keystone added in 2012.1-0.2.e3
 Conflicts:      openstack-keystone < 2012.1-0.2.e3
 
-Requires:       python-crypto
-Requires:       python-dateutil
 Requires:       python-eventlet
-Requires:       python-httplib2
+Requires:       python-iso8601
 Requires:       python-ldap
 Requires:       python-lxml
 Requires:       python-memcached
 Requires:       python-migrate
-Requires:       python-paste
 Requires:       python-paste-deploy
-Requires:       python-paste-script
-Requires:       python-prettytable
 Requires:       python-routes
 Requires:       python-sqlalchemy
 Requires:       python-webob
@@ -79,14 +78,15 @@ This package contains the Keystone Python library.
 %prep
 %setup -q -n keystone-%{version}
 
+%patch0001 -p1
 # change default configuration
-%{SOURCE4} etc/keystone.conf DEFAULT log_file %{_localstatedir}/log/keystone/keystone.log
-%{SOURCE4} etc/keystone.conf sql connection mysql://keystone:keystone@localhost/keystone
-%{SOURCE4} etc/keystone.conf catalog template_file %{_sysconfdir}/keystone/default_catalog.templates
-%{SOURCE4} etc/keystone.conf catalog driver keystone.catalog.backends.sql.Catalog
-%{SOURCE4} etc/keystone.conf identity driver keystone.identity.backends.sql.Identity
-%{SOURCE4} etc/keystone.conf token driver keystone.token.backends.sql.Token
-%{SOURCE4} etc/keystone.conf ec2 driver keystone.contrib.ec2.backends.sql.Ec2
+openstack-config --set etc/keystone.conf DEFAULT log_file %{_localstatedir}/log/keystone/keystone.log
+openstack-config --set etc/keystone.conf sql connection mysql://keystone:keystone@localhost/keystone
+openstack-config --set etc/keystone.conf catalog template_file %{_sysconfdir}/keystone/default_catalog.templates
+openstack-config --set etc/keystone.conf catalog driver keystone.catalog.backends.sql.Catalog
+openstack-config --set etc/keystone.conf identity driver keystone.identity.backends.sql.Identity
+openstack-config --set etc/keystone.conf token driver keystone.token.backends.sql.Token
+openstack-config --set etc/keystone.conf ec2 driver keystone.contrib.ec2.backends.sql.Ec2
 
 find . \( -name .gitignore -o -name .placeholder \) -delete
 find keystone -name \*.py -exec sed -i '/\/usr\/bin\/env python/d' {} \;
@@ -108,14 +108,9 @@ install -p -D -m 640 etc/default_catalog.templates %{buildroot}%{_sysconfdir}/ke
 install -p -D -m 640 etc/policy.json %{buildroot}%{_sysconfdir}/keystone/policy.json
 install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/openstack-keystone
 install -p -D -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/openstack-keystone.service
-# Install database setup helper script.
-install -p -D -m 755 %{SOURCE3} %{buildroot}%{_bindir}/openstack-keystone-db-setup
 # Install sample data script.
 install -p -D -m 755 tools/sample_data.sh %{buildroot}%{_datadir}/%{name}/sample_data.sh
 install -p -D -m 755 %{SOURCE5} %{buildroot}%{_bindir}/openstack-keystone-sample-data
-
-# Install configuration helper script.
-install -p -D -m 755 %{SOURCE4} %{buildroot}%{_bindir}/openstack-config-set
 
 install -d -m 755 %{buildroot}%{_sharedstatedir}/keystone
 install -d -m 755 %{buildroot}%{_localstatedir}/log/keystone
@@ -165,8 +160,6 @@ fi
 %doc doc/build/html
 %{_bindir}/keystone-all
 %{_bindir}/keystone-manage
-%{_bindir}/openstack-config-set
-%{_bindir}/openstack-keystone-db-setup
 %{_bindir}/openstack-keystone-sample-data
 %{_datadir}/%{name}
 %{_datadir}/%{name}/sample_data.sh
@@ -186,6 +179,10 @@ fi
 %{python_sitelib}/keystone-%{version}-*.egg-info
 
 %changelog
+* Mon May 21 2012 Alan Pevec <apevec@redhat.com> 2012.1-2
+- Sync up with Essex stable branch
+- Remove dependencies no loner needed by Essex
+
 * Thu Apr 05 2012 Alan Pevec <apevec@redhat.com> 2012.1-1
 - Essex release
 
