@@ -11,7 +11,7 @@
 
 Name:           openstack-keystone
 Version:        2012.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 #Release:       0.1.%{release_letter}%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
@@ -56,8 +56,10 @@ Group:            Applications/System
 # python-keystone added in 2012.1-0.2.e3
 Conflicts:      openstack-keystone < 2012.1-0.2.e3
 
+# to pull middleware on yum update
+Requires:       python-keystone-auth-token = %{version}-%{release}
+
 Requires:       python-eventlet
-Requires:       python-iso8601
 Requires:       python-ldap
 Requires:       python-lxml
 Requires:       python-memcached
@@ -74,6 +76,22 @@ Keystone is a Python implementation of the OpenStack
 (http://www.openstack.org) identity service API.
 
 This package contains the Keystone Python library.
+
+%package -n     python-keystone-auth-token
+Summary:        Keystone Authentication Middleware.
+Group:          Applications/System
+# python-keystone-auth-token added in 2012.1-3
+Conflicts:      python-keystone < 2012.1-3
+
+Requires:       python-iso8601
+Requires:       python-memcached
+Requires:       python-webob
+
+%description -n   python-keystone-auth-token
+Keystone is a Python implementation of the OpenStack
+(http://www.openstack.org) identity service API.
+
+This package contains the Keystone Authentication Middleware.
 
 %prep
 %setup -q -n keystone-%{version}
@@ -177,9 +195,19 @@ fi
 %defattr(-,root,root,-)
 %doc LICENSE
 %{python_sitelib}/keystone
+%exclude %{python_sitelib}/keystone/middleware/auth_token.py*
 %{python_sitelib}/keystone-%{version}-*.egg-info
 
+%files -n python-keystone-auth-token
+%defattr(-,root,root,-)
+%doc LICENSE
+%dir %{python_sitelib}/keystone
+%{python_sitelib}/keystone/middleware/auth_token.py*
+
 %changelog
+* Thu May 24 2012 Alan Pevec <apevec@redhat.com> 2012.1-3
+- python-keystone-auth-token subpackage (rhbz#824034)
+
 * Mon May 21 2012 Alan Pevec <apevec@redhat.com> 2012.1-2
 - Sync up with Essex stable branch
 - Remove dependencies no loner needed by Essex
