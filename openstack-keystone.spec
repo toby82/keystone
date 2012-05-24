@@ -147,9 +147,10 @@ popd
 rm -fr doc/build/html/.doctrees doc/build/html/.buildinfo
 
 %pre
-getent group keystone >/dev/null || groupadd -r keystone
+# 163:163 for keystone (openstack-keystone) - rhbz#752842
+getent group keystone >/dev/null || groupadd -r --gid 163 keystone
 getent passwd keystone >/dev/null || \
-useradd -r -g keystone -d %{_sharedstatedir}/keystone -s /sbin/nologin \
+useradd --uid 163 -r -g keystone -d %{_sharedstatedir}/keystone -s /sbin/nologin \
 -c "OpenStack Keystone Daemons" keystone
 exit 0
 
@@ -207,6 +208,7 @@ fi
 %changelog
 * Thu May 24 2012 Alan Pevec <apevec@redhat.com> 2012.1-3
 - python-keystone-auth-token subpackage (rhbz#824034)
+- use reserved user id for keystone (rhbz#752842)
 
 * Mon May 21 2012 Alan Pevec <apevec@redhat.com> 2012.1-2
 - Sync up with Essex stable branch
