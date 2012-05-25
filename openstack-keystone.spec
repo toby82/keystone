@@ -1,33 +1,27 @@
 #
-# This is 2012.1 essex release
+# This is 2012.2 folsom-1 milestone
 #
-%global release_name essex
-%global release_letter rc
-%global milestone 2
-%global snapdate 20120404
-%global git_revno r2201
+%global release_name folsom
+%global release_letter f
+%global milestone 1
+%global snapdate 20120523
+%global git_revno r2300
 
 %global snaptag ~%{release_letter}%{milestone}~%{snapdate}.%{git_revno}
 
 Name:           openstack-keystone
-Version:        2012.1
-Release:        3%{?dist}
-#Release:       0.1.%{release_letter}%{milestone}%{?dist}
+Version:        2012.2
+Release:        0.1.%{release_letter}%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
 URL:            http://keystone.openstack.org/
-Source0:        http://launchpad.net/keystone/%{release_name}/%{version}/+download/keystone-%{version}.tar.gz
-#Source0:        http://launchpad.net/keystone/%{release_name}/%{release_name}-%{milestone}/+download/keystone-%{version}~%{release_letter}%{milestone}.tar.gz
+#Source0:        http://launchpad.net/keystone/%{release_name}/%{version}/+download/keystone-%{version}.tar.gz
+Source0:        http://launchpad.net/keystone/%{release_name}/%{release_name}-%{milestone}/+download/keystone-%{version}~%{release_letter}%{milestone}.tar.gz
 #Source0:        http://keystone.openstack.org/tarballs/keystone-%{version}%{snaptag}.tar.gz
 Source1:        openstack-keystone.logrotate
 Source2:        openstack-keystone.service
 Source5:        openstack-keystone-sample-data
-
-#
-# patches_base=2012.1
-#
-Patch0001: 0001-Make-import_nova_auth-only-create-roles-which-don-t-.patch
 
 BuildArch:      noarch
 BuildRequires:  python2-devel
@@ -96,14 +90,13 @@ This package contains the Keystone Authentication Middleware.
 %prep
 %setup -q -n keystone-%{version}
 
-%patch0001 -p1
-
 find . \( -name .gitignore -o -name .placeholder \) -delete
 find keystone -name \*.py -exec sed -i '/\/usr\/bin\/env python/d' {} \;
 
 
 %build
 # change default configuration
+cp etc/keystone.conf.sample etc/keystone.conf
 openstack-config --set etc/keystone.conf DEFAULT log_file %{_localstatedir}/log/keystone/keystone.log
 openstack-config --set etc/keystone.conf sql connection mysql://keystone:keystone@localhost/keystone
 openstack-config --set etc/keystone.conf catalog template_file %{_sysconfdir}/keystone/default_catalog.templates
@@ -123,6 +116,7 @@ rm -fr %{buildroot}%{python_sitelib}/run_tests.*
 
 install -d -m 755 %{buildroot}%{_sysconfdir}/keystone
 install -p -D -m 640 etc/keystone.conf %{buildroot}%{_sysconfdir}/keystone/keystone.conf
+install -p -D -m 640 etc/logging.conf.sample %{buildroot}%{_sysconfdir}/keystone/logging.conf
 install -p -D -m 640 etc/default_catalog.templates %{buildroot}%{_sysconfdir}/keystone/default_catalog.templates
 install -p -D -m 640 etc/policy.json %{buildroot}%{_sysconfdir}/keystone/policy.json
 install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/openstack-keystone
@@ -186,6 +180,7 @@ fi
 %{_unitdir}/openstack-keystone.service
 %dir %{_sysconfdir}/keystone
 %config(noreplace) %attr(-, root, keystone) %{_sysconfdir}/keystone/keystone.conf
+%config(noreplace) %attr(-, root, keystone) %{_sysconfdir}/keystone/logging.conf
 %config(noreplace) %attr(-, root, keystone) %{_sysconfdir}/keystone/default_catalog.templates
 %config(noreplace) %attr(-, keystone, keystone) %{_sysconfdir}/keystone/policy.json
 %config(noreplace) %{_sysconfdir}/logrotate.d/openstack-keystone
@@ -206,6 +201,9 @@ fi
 %{python_sitelib}/keystone/middleware/auth_token.py*
 
 %changelog
+* Fri May 25 2012 Alan Pevec <apevec@redhat.com> 2012.2-0.1.f1
+- folsom-1 milestone
+
 * Thu May 24 2012 Alan Pevec <apevec@redhat.com> 2012.1-3
 - python-keystone-auth-token subpackage (rhbz#824034)
 - use reserved user id for keystone (rhbz#752842)
