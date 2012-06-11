@@ -154,6 +154,20 @@ if [ $1 -eq 1 ] ; then
     /bin/systemctl daemon-reload >/dev/null 2>&1 || :
 fi
 
+%post -n python-keystone-auth-token
+# workaround for rhbz 824034#c14
+if [ ! -e %{python_sitelib}/keystone/__init__.py ]; then
+    > %{python_sitelib}/keystone/__init__.py
+fi
+if [ ! -e %{python_sitelib}/keystone/middleware/__init__.py ]; then
+    > %{python_sitelib}/keystone/middleware/__init__.py
+fi
+
+%triggerpostun -n python-keystone-auth-token -- python-keystone
+# edge case: removing python-keystone with overlapping files
+> %{python_sitelib}/keystone/__init__.py
+> %{python_sitelib}/keystone/middleware/__init__.py
+
 %preun
 if [ $1 -eq 0 ] ; then
     # Package removal, not upgrade
@@ -198,6 +212,9 @@ fi
 %defattr(-,root,root,-)
 %doc LICENSE
 %dir %{python_sitelib}/keystone
+%ghost %{python_sitelib}/keystone/__init__.py
+%dir %{python_sitelib}/keystone/middleware
+%ghost %{python_sitelib}/keystone/middleware/__init__.py
 %{python_sitelib}/keystone/middleware/auth_token.py*
 
 %changelog
