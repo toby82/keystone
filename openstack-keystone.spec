@@ -165,8 +165,11 @@ fi
 
 %triggerpostun -n python-keystone-auth-token -- python-keystone
 # edge case: removing python-keystone with overlapping files
-> %{python_sitelib}/keystone/__init__.py
-> %{python_sitelib}/keystone/middleware/__init__.py
+if [ $2 -eq 0 ] ; then
+    # Package removal, not upgrade
+    > %{python_sitelib}/keystone/__init__.py
+    > %{python_sitelib}/keystone/middleware/__init__.py
+fi
 
 %preun
 if [ $1 -eq 0 ] ; then
