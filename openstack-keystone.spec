@@ -8,6 +8,7 @@
 %global git_revno r2300
 
 %global snaptag ~%{release_letter}%{milestone}~%{snapdate}.%{git_revno}
+%global with_doc %{!?_without_doc:1}%{?_without_doc:0}
 
 Name:           openstack-keystone
 Version:        2012.2
@@ -24,6 +25,9 @@ Source2:        openstack-keystone.service
 Source5:        openstack-keystone-sample-data
 
 Patch0:         match-egg-and-spec-requires.patch
+
+Patch0001: 0001-fix-man-page-build.patch
+Patch0002: 0002-fix-sphinx-warnings.patch
 
 BuildArch:      noarch
 BuildRequires:  python2-devel
@@ -90,10 +94,27 @@ Keystone is a Python implementation of the OpenStack
 
 This package contains the Keystone Authentication Middleware.
 
+%if 0%{?with_doc}
+%package doc
+Summary:        Documentation for OpenStack Identity Service
+Group:          Documentation
+
+Requires:       %{name} = %{version}-%{release}
+
+%description doc
+Keystone is a Python implementation of the OpenStack
+(http://www.openstack.org) identity service API.
+
+This package contains documentation for Keystone.
+%endif
+
 %prep
 %setup -q -n keystone-%{version}
 
 %patch0 -p1
+
+%patch0001 -p1
+%patch0002 -p1
 
 find . \( -name .gitignore -o -name .placeholder \) -delete
 find keystone -name \*.py -exec sed -i '/\/usr\/bin\/env python/d' {} \;
@@ -136,11 +157,15 @@ install -d -m 755 %{buildroot}%{_localstatedir}/log/keystone
 # docs generation requires everything to be installed first
 export PYTHONPATH="$( pwd ):$PYTHONPATH"
 pushd doc
-if [ -x /usr/bin/sphix-apidoc ]; then
+if [ -x /usr/bin/sphinx-apidoc ]; then
     make html
+    make man
 else
     make html SPHINXAPIDOC=echo
+    make man SPHINXAPIDOC=echo
 fi
+mkdir -p %{buildroot}%{_mandir}/man1
+install -p -D -m 644 build/man/*.1 %{buildroot}%{_mandir}/man1/
 popd
 # Fix hidden-file-or-dir warnings
 rm -fr doc/build/html/.doctrees doc/build/html/.buildinfo
@@ -193,7 +218,7 @@ fi
 %files
 %doc LICENSE
 %doc README.rst
-%doc doc/build/html
+%{_mandir}/man1/keystone*.1.gz
 %{_bindir}/keystone-all
 %{_bindir}/keystone-manage
 %{_bindir}/openstack-keystone-sample-data
@@ -223,6 +248,11 @@ fi
 %dir %{python_sitelib}/keystone/middleware
 %ghost %{python_sitelib}/keystone/middleware/__init__.py
 %{python_sitelib}/keystone/middleware/auth_token.py*
+
+%if 0%{?with_doc}
+%files doc
+%doc LICENSE doc/build/html
+%endif
 
 %changelog
 * Fri May 25 2012 Alan Pevec <apevec@redhat.com> 2012.2-0.1.f1

@@ -1,0 +1,137 @@
+From 4d038ac64843e9022708b0fec9108ccd56835d15 Mon Sep 17 00:00:00 2001
+From: Alan Pevec <apevec@redhat.com>
+Date: Fri, 22 Jun 2012 19:39:45 +0200
+Subject: [PATCH] fix man page build
+
+there was an obsolete man_pages in conf.py
+sync keystone-all man page with keystone-all -h output
+
+Change-Id: Ie136d30d0ea647082459ae35720e48742aa2b722
+---
+ doc/source/conf.py                 |   12 ----------
+ doc/source/man/keystone-all.rst    |   40 ++++++++++++++---------------------
+ doc/source/man/keystone-manage.rst |    6 ++--
+ 3 files changed, 19 insertions(+), 39 deletions(-)
+
+diff --git a/doc/source/conf.py b/doc/source/conf.py
+index ab5d591..073e598 100644
+--- a/doc/source/conf.py
++++ b/doc/source/conf.py
+@@ -240,18 +240,6 @@ latex_documents = [
+ #latex_domain_indices = True
+ 
+ 
+-# -- Options for manual page output
+-
+-# One entry per manual page. List of tuples
+-# (source start file, name, description, authors, manual section).
+-man_pages = [
+-    ('index', 'keystone', u'Keystone Documentation',
+-     [u'OpenStack'], 1)]
+-
+-# If true, show URL addresses after external links.
+-#man_show_urls = False
+-
+-
+ # -- Options for Texinfo output
+ 
+ # Grouping the document tree into Texinfo files. List of tuples
+diff --git a/doc/source/man/keystone-all.rst b/doc/source/man/keystone-all.rst
+index fc2d68d..882e568 100644
+--- a/doc/source/man/keystone-all.rst
++++ b/doc/source/man/keystone-all.rst
+@@ -1,15 +1,15 @@
+-========
+-keystone
+-========
++============
++keystone-all
++============
+ 
+----------------------------
+-Keystone Management Utility
+----------------------------
++------------------------
++Keystone Startup Command
++------------------------
+ 
+-:Author: keystone@lists.launchpad.net
++:Author: openstack@lists.launchpad.net
+ :Date:   2010-11-16
+ :Copyright: OpenStack LLC
+-:Version: 0.1.2
++:Version: 2012.1
+ :Manual section: 1
+ :Manual group: cloud computing
+ 
+@@ -25,26 +25,18 @@ keystone-all starts both the service and administrative APIs in a single
+ process to provide catalog, authorization, and authentication services for
+ OpenStack.
+ 
+-USAGE
+-=====
+-
+-    ``keystone-all [options]``
+-
+-Common Options:
+-^^^^^^^^^^^^^^^
+-   -h, --help            show this help message and exit
+-
+-The following configuration options are common to all keystone
+-programs.::
++OPTIONS
++=======
+ 
+   -h, --help            show this help message and exit
+   --config-file=PATH    Path to a config file to use. Multiple config files
+                         can be specified, with values in later files taking
+-                        precedence. The default files used are: []
++                        precedence. The default files used are:
++                        ['/etc/keystone/keystone.conf']
+   -d, --debug           Print debugging output
+-  --nodebug             Print debugging output
++  --nodebug             The inverse of --debug
+   -v, --verbose         Print more verbose output
+-  --noverbose           Print more verbose output
++  --noverbose           The inverse of --verbose
+   --log-config=PATH     If this option is specified, the logging configuration
+                         file specified is used and overrides any other logging
+                         options specified. Please see the Python logging
+@@ -64,7 +56,7 @@ programs.::
+                         (Optional) The syslog facility to use when logging to
+                         syslog (defaults to LOG_USER)
+   --use-syslog          Use syslog for logging.
+-  --nouse-syslog        Use syslog for logging.
++  --nouse-syslog        The inverse of --use-syslog
+ 
+ FILES
+ =====
+@@ -80,4 +72,4 @@ SOURCE
+ ======
+ 
+ * Keystone source is managed in GitHub `Keystone <http://github.com/openstack/keystone>`__
+-* Keystone bugs are managed at Launchpad `Launchpad Keystone <https://bugs.launchpad.net/keystone>`__
++* Keystone bugs are managed at Launchpad `Keystone <https://bugs.launchpad.net/keystone>`__
+diff --git a/doc/source/man/keystone-manage.rst b/doc/source/man/keystone-manage.rst
+index 0c6a1e1..d547172 100644
+--- a/doc/source/man/keystone-manage.rst
++++ b/doc/source/man/keystone-manage.rst
+@@ -6,10 +6,10 @@ keystone-manage
+ Keystone Management Utility
+ ---------------------------
+ 
+-:Author: keystone@lists.launchpad.net
++:Author: openstack@lists.launchpad.net
+ :Date:   2010-11-16
+ :Copyright: OpenStack LLC
+-:Version: 0.1.2
++:Version: 2012.1
+ :Manual section: 1
+ :Manual group: cloud computing
+ 
+@@ -95,4 +95,4 @@ SOURCE
+ ======
+ 
+ * Keystone is sourced in GitHub `Keystone <http://github.com/openstack/keystone>`__
+-* Keystone bugs are managed at Launchpad `Launchpad Keystone <https://bugs.launchpad.net/keystone>`__
++* Keystone bugs are managed at Launchpad `Keystone <https://bugs.launchpad.net/keystone>`__
