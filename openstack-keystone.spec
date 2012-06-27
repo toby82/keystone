@@ -23,6 +23,8 @@ Source1:        openstack-keystone.logrotate
 Source2:        openstack-keystone.service
 Source5:        openstack-keystone-sample-data
 
+Patch0:         match-egg-and-spec-requires.patch
+
 BuildArch:      noarch
 BuildRequires:  python2-devel
 BuildRequires:  python-sphinx >= 1.0
@@ -64,6 +66,7 @@ Requires:       python-sqlalchemy
 Requires:       python-webob
 Requires:       python-passlib
 Requires:       MySQL-python
+Requires:       PyPAM
 
 %description -n   python-keystone
 Keystone is a Python implementation of the OpenStack
@@ -89,6 +92,8 @@ This package contains the Keystone Authentication Middleware.
 
 %prep
 %setup -q -n keystone-%{version}
+
+%patch0 -p1
 
 find . \( -name .gitignore -o -name .placeholder \) -delete
 find keystone -name \*.py -exec sed -i '/\/usr\/bin\/env python/d' {} \;
