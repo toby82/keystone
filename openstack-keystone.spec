@@ -1,33 +1,34 @@
 #
-# This is 2012.2 folsom-1 milestone
+# This is 2012.2 folsom-2 milestone
 #
 %global release_name folsom
 %global release_letter f
 %global milestone 1
-%global snapdate 20120523
-%global git_revno r2300
+%global snapdate 20120704
+%global git_revno r2390
 
 %global snaptag ~%{release_letter}%{milestone}~%{snapdate}.%{git_revno}
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
 
 Name:           openstack-keystone
 Version:        2012.2
-Release:        0.1.%{release_letter}%{milestone}%{?dist}
+Release:        0.2.%{release_letter}%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
 URL:            http://keystone.openstack.org/
 #Source0:        http://launchpad.net/keystone/%{release_name}/%{version}/+download/keystone-%{version}.tar.gz
 Source0:        http://launchpad.net/keystone/%{release_name}/%{release_name}-%{milestone}/+download/keystone-%{version}~%{release_letter}%{milestone}.tar.gz
-#Source0:        http://keystone.openstack.org/tarballs/keystone-%{version}%{snaptag}.tar.gz
+#Source0:        http://tarballs.openstack.org/keystone/keystone-%{version}%{snaptag}.tar.gz
 Source1:        openstack-keystone.logrotate
 Source2:        openstack-keystone.service
 Source5:        openstack-keystone-sample-data
 
 Patch0:         match-egg-and-spec-requires.patch
 
-Patch0001: 0001-fix-man-page-build.patch
-Patch0002: 0002-fix-sphinx-warnings.patch
+#
+# patches_base=folsom-2
+#
 
 BuildArch:      noarch
 BuildRequires:  python2-devel
@@ -112,9 +113,6 @@ This package contains documentation for Keystone.
 %setup -q -n keystone-%{version}
 
 %patch0 -p1
-
-%patch0001 -p1
-%patch0002 -p1
 
 find . \( -name .gitignore -o -name .placeholder \) -delete
 find keystone -name \*.py -exec sed -i '/\/usr\/bin\/env python/d' {} \;
@@ -255,6 +253,9 @@ fi
 %endif
 
 %changelog
+* Fri Jul 06 2012 Alan Pevec <apevec@redhat.com> 2012.2-0.2.f2
+- folsom-2 milestone
+
 * Fri May 25 2012 Alan Pevec <apevec@redhat.com> 2012.2-0.1.f1
 - folsom-1 milestone
 
