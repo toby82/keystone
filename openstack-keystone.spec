@@ -3,7 +3,7 @@
 #
 %global release_name folsom
 %global release_letter f
-%global milestone 1
+%global milestone 2
 %global snapdate 20120704
 %global git_revno r2390
 
