@@ -1,7 +1,7 @@
---- keystone-2012.2/tools/pip-requires.orig	2012-05-21 18:31:02.000000000 +0200
-+++ keystone-2012.2/tools/pip-requires	2012-06-27 11:45:20.909425726 +0200
+--- keystone-2012.2/tools/pip-requires.orig	2012-07-04 10:20:40.000000000 +0200
++++ keystone-2012.2/tools/pip-requires	2012-07-06 12:57:39.472645130 +0200
 @@ -1,6 +1,10 @@
- # keystonelight dependencies
+ # keystone dependencies
 -pam==0.1.4
 -WebOb==1.0.8
 +# adjust deps so that generated egg-info matches Requires: in spec
