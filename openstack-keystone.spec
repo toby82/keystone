@@ -12,7 +12,7 @@
 
 Name:           openstack-keystone
 Version:        2012.2
-Release:        0.2.%{release_letter}%{milestone}%{?dist}
+Release:        0.3.%{release_letter}%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
@@ -253,6 +253,9 @@ fi
 %endif
 
 %changelog
+* Fri Jul 20 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2012.2-0.3.f2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
+
 * Fri Jul 06 2012 Alan Pevec <apevec@redhat.com> 2012.2-0.2.f2
 - folsom-2 milestone
 
