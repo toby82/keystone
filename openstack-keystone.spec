@@ -100,8 +100,6 @@ This package contains the Keystone Authentication Middleware.
 Summary:        Documentation for OpenStack Identity Service
 Group:          Documentation
 
-Requires:       %{name} = %{version}-%{release}
-
 %description doc
 Keystone is a Python implementation of the OpenStack
 (http://www.openstack.org) identity service API.
