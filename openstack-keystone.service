@@ -3,7 +3,8 @@ Description=OpenStack Identity Service (code-named Keystone)
 After=syslog.target network.target
 
 [Service]
-Type=simple
+Type=notify
+Restart=on-abort
 User=keystone
 ExecStart=/usr/bin/keystone-all --config-file /etc/keystone/keystone.conf
 

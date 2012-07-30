@@ -24,11 +24,14 @@ Source1:        openstack-keystone.logrotate
 Source2:        openstack-keystone.service
 Source5:        openstack-keystone-sample-data
 
-Patch0:         match-egg-and-spec-requires.patch
 
 #
 # patches_base=folsom-2
 #
+Patch0001: 0001-notify-calling-process-we-are-ready-to-serve.patch
+
+# RPM specific
+Patch9999:         match-egg-and-spec-requires.patch
 
 BuildArch:      noarch
 BuildRequires:  python2-devel
@@ -110,7 +113,9 @@ This package contains documentation for Keystone.
 %prep
 %setup -q -n keystone-%{version}
 
-%patch0 -p1
+%patch0001 -p1
+
+%patch9999 -p1
 
 find . \( -name .gitignore -o -name .placeholder \) -delete
 find keystone -name \*.py -exec sed -i '/\/usr\/bin\/env python/d' {} \;
@@ -126,6 +131,7 @@ openstack-config --set etc/keystone.conf catalog driver keystone.catalog.backend
 openstack-config --set etc/keystone.conf identity driver keystone.identity.backends.sql.Identity
 openstack-config --set etc/keystone.conf token driver keystone.token.backends.sql.Token
 openstack-config --set etc/keystone.conf ec2 driver keystone.contrib.ec2.backends.sql.Ec2
+openstack-config --set etc/keystone.conf DEFAULT onready keystone.common.systemd
 
 %{__python} setup.py build
 
