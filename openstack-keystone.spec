@@ -1,18 +1,18 @@
 #
-# This is 2012.2 folsom-2 milestone
+# This is 2012.2 folsom-3 milestone
 #
 %global release_name folsom
 %global release_letter f
-%global milestone 2
-%global snapdate 20120704
-%global git_revno r2390
+%global milestone 3
+%global snapdate 20120817
+%global git_revno r2454
 
 %global snaptag ~%{release_letter}%{milestone}~%{snapdate}.%{git_revno}
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
 
 Name:           openstack-keystone
 Version:        2012.2
-Release:        0.3.%{release_letter}%{milestone}%{?dist}
+Release:        0.4.%{release_letter}%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
@@ -26,9 +26,8 @@ Source5:        openstack-keystone-sample-data
 
 
 #
-# patches_base=folsom-2
+# patches_base=folsom-3
 #
-Patch0001: 0001-notify-calling-process-we-are-ready-to-serve.patch
 
 # RPM specific
 Patch9999:         match-egg-and-spec-requires.patch
@@ -112,8 +111,6 @@ This package contains documentation for Keystone.
 
 %prep
 %setup -q -n keystone-%{version}
-
-%patch0001 -p1
 
 %patch9999 -p1
 
@@ -257,6 +254,9 @@ fi
 %endif
 
 %changelog
+* Mon Aug 20 2012 Alan Pevec <apevec@redhat.com> 2012.2-0.4.f3
+- folsom-3 milestone
+
 * Fri Jul 20 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2012.2-0.3.f2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
 
