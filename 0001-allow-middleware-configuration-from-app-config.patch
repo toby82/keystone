@@ -1,0 +1,269 @@
+From bcee0291b5c78de74062160b52f4e8f7df30d93c Mon Sep 17 00:00:00 2001
+From: Alan Pevec <apevec@redhat.com>
+Date: Tue, 31 Jul 2012 03:14:16 +0200
+Subject: [PATCH] allow middleware configuration from app config
+
+From markmc's proposal:
+http://lists.openstack.org/pipermail/openstack-dev/2012-July/000277.html
+
+For backward compatiblity, configuration from paste-deploy INI is used
+if it exists. If not, section [keystone_authtoken] in  global
+configuration is expected, with the same parameter names.
+
+Requires application using global cfg.CONF object (nova and glance since
+folsom-2) and before there's openstack.common library, attempts to use
+copy/pasted <application>.openstack.common.cfg
+
+DocImpact
+
+(cherry picked from commit 174964498ba098f206d27119ce58d9fa6f43d302)
+
+Conflicts:
+
+	keystone/middleware/auth_token.py
+
+Change-Id: If6aa22280f4ce2cc698d99a130b5792dab808363
+---
+ doc/source/configuringservices.rst    |   26 ++++++++-
+ doc/source/middlewarearchitecture.rst |   26 +++++++++
+ keystone/middleware/auth_token.py     |   96 ++++++++++++++++++++++++++-------
+ 3 files changed, 125 insertions(+), 23 deletions(-)
+
+diff --git a/doc/source/configuringservices.rst b/doc/source/configuringservices.rst
+index 1c42253..4dbba55 100644
+--- a/doc/source/configuringservices.rst
++++ b/doc/source/configuringservices.rst
+@@ -49,7 +49,7 @@ Admin Token
+ For a default installation of Keystone, before you can use the REST API, you
+ need to define an authorization token. This is configured in ``keystone.conf``
+ file under the section ``[DEFAULT]``. In the sample file provided with the
+-keystone project, the line defining this token is
++keystone project, the line defining this token is::
+ 
+     [DEFAULT]
+     admin_token = ADMIN
+@@ -70,7 +70,7 @@ be able to use to authenticate users against keystone. The ``auth_token``
+ middleware supports using either the shared secret described above as
+ `admin_token` or users for each service.
+ 
+-See doc:`configuration` for a walk through on how to create tenants, users,
++See :doc:`configuration` for a walk through on how to create tenants, users,
+ and roles.
+ 
+ Setting up services
+@@ -169,7 +169,8 @@ Configuring Nova to use Keystone
+ 
+ When configuring Nova, it is important to create a admin service token for
+ the service (from the Configuration step above) and include that as the key
+-'admin_token' in Nova's api-paste.ini.
++'admin_token' in Nova's api-paste.ini [filter:authtoken] section or in
++nova.conf [keystone_authtoken] section.
+ 
+ Configuring Swift to use Keystone
+ ---------------------------------
+@@ -344,3 +345,22 @@ Here is an example paste config filter that makes use of the 'admin_user' and
+ It should be noted that when using this option an admin tenant/role
+ relationship is required. The admin user is granted access to to the 'Admin'
+ role to the 'admin' tenant.
++
++The auth_token middleware can also be configured in nova.conf
++[keystone_authtoken] section to keep paste config clean of site-specific
++parameters::
++
++    [filter:authtoken]
++    paste.filter_factory = keystone.middleware.auth_token:filter_factory
++
++and in nova.conf::
++
++    [DEFAULT]
++    ...
++    auth_strategy=keystone
++
++    [keystone_authtoken]
++    auth_port = 35357
++    auth_host = 127.0.0.1
++    admin_user = admin
++    admin_password = keystone123
+diff --git a/doc/source/middlewarearchitecture.rst b/doc/source/middlewarearchitecture.rst
+index dc0b1d5..8c92add 100644
+--- a/doc/source/middlewarearchitecture.rst
++++ b/doc/source/middlewarearchitecture.rst
+@@ -137,6 +137,32 @@ a WSGI component. Example for the auth_token middleware::
+     certfile = <path to middleware public cert>
+     keyfile = <path to middleware private cert>
+ 
++For services which have separate paste-deploy ini file, auth_token middleware
++can be alternatively configured in [keystone_authtoken] section in the main
++config file. For example in Nova, all middleware parameters can be removed
++from api-paste.ini::
++
++    [filter:authtoken]
++    paste.filter_factory = keystone.middleware.auth_token:filter_factory
++
++and set in nova.conf::
++
++    [DEFAULT]
++    ...
++    auth_strategy=keystone
++
++    [keystone_authtoken]
++    auth_host = 127.0.0.1
++    auth_port = 35357
++    auth_protocol = http
++    auth_uri = http://127.0.0.1:5000/
++    admin_user = admin
++    admin_password = SuperSekretPassword
++    admin_tenant_name = service
++
++Note that middleware parameters in paste config take priority, they must be
++removed to use values in [keystone_authtoken] section.
++
+ Configuration Options
+ ---------------------
+ 
+diff --git a/keystone/middleware/auth_token.py b/keystone/middleware/auth_token.py
+index 75ab67c..f53ace4 100644
+--- a/keystone/middleware/auth_token.py
++++ b/keystone/middleware/auth_token.py
+@@ -106,8 +106,55 @@ import webob.exc
+ from keystone.openstack.common import jsonutils
+ from keystone.common import cms
+ 
++CONF = None
++try:
++    from openstack.common import cfg
++    CONF = cfg.CONF
++except ImportError:
++    # cfg is not a library yet, try application copies
++    for app in 'nova', 'glance', 'quantum', 'cinder':
++        try:
++            cfg = __import__('%s.openstack.common.cfg' % app,
++                             fromlist=['%s.openstack.common' % app])
++            # test which application middleware is running in
++            if 'config_file' in cfg.CONF:
++                CONF = cfg.CONF
++                break
++        except ImportError:
++            pass
++if not CONF:
++    from keystone.openstack.common import cfg
++    CONF = cfg.CONF
+ LOG = logging.getLogger(__name__)
+ 
++# alternative middleware configuration in the main application's
++# configuration file e.g. in nova.conf
++# [keystone_authtoken]
++# auth_host = 127.0.0.1
++# auth_port = 35357
++# auth_protocol = http
++# admin_tenant_name = admin
++# admin_user = admin
++# admin_password = badpassword
++opts = [
++    cfg.StrOpt('auth_admin_prefix', default=''),
++    cfg.StrOpt('auth_host', default='127.0.0.1'),
++    cfg.IntOpt('auth_port', default=35357),
++    cfg.StrOpt('auth_protocol', default='https'),
++    cfg.StrOpt('auth_uri', default=None),
++    cfg.BoolOpt('delay_auth_decision', default=False),
++    cfg.StrOpt('admin_token'),
++    cfg.StrOpt('admin_user'),
++    cfg.StrOpt('admin_password'),
++    cfg.StrOpt('admin_tenant_name', default='admin'),
++    cfg.StrOpt('certfile'),
++    cfg.StrOpt('keyfile'),
++    cfg.StrOpt('signing_dir'),
++    cfg.ListOpt('memcache_servers'),
++    cfg.IntOpt('token_cache_time', default=300),
++]
++CONF.register_opts(opts, group='keystone_authtoken')
++
+ 
+ class InvalidUserToken(Exception):
+     pass
+@@ -131,31 +178,33 @@ class AuthProtocol(object):
+ 
+         # delay_auth_decision means we still allow unauthenticated requests
+         # through and we let the downstream service make the final decision
+-        self.delay_auth_decision = (conf.get('delay_auth_decision', False)
+-                                    in ('true', 't', '1', 'on', 'yes', 'y'))
++        self.delay_auth_decision = (self._conf_get('delay_auth_decision') in
++                                    (True, 'true', 't', '1', 'on', 'yes', 'y'))
+ 
+         # where to find the auth service (we use this to validate tokens)
+-        self.auth_host = conf.get('auth_host')
+-        self.auth_port = int(conf.get('auth_port', 35357))
+-        self.auth_protocol = conf.get('auth_protocol', 'https')
++        self.auth_host = self._conf_get('auth_host')
++        self.auth_port = int(self._conf_get('auth_port'))
++        self.auth_protocol = self._conf_get('auth_protocol')
+         if self.auth_protocol == 'http':
+             self.http_client_class = httplib.HTTPConnection
+         else:
+             self.http_client_class = httplib.HTTPSConnection
+ 
+-        default_auth_uri = '%s://%s:%s' % (self.auth_protocol,
+-                                           self.auth_host,
+-                                           self.auth_port)
+-        self.auth_admin_prefix = conf.get('auth_admin_prefix', '')
+-        self.auth_uri = conf.get('auth_uri', default_auth_uri)
++        self.auth_admin_prefix = self._conf_get('auth_admin_prefix')
++        self.auth_uri = self._conf_get('auth_uri')
++        if self.auth_uri is None:
++            self.auth_uri = '%s://%s:%s' % (self.auth_protocol,
++                                            self.auth_host,
++                                            self.auth_port)
+ 
+         # SSL
+-        self.cert_file = conf.get('certfile')
+-        self.key_file = conf.get('keyfile')
++        self.cert_file = self._conf_get('certfile')
++        self.key_file = self._conf_get('keyfile')
+ 
+         #signing
+-        default_signing_dir = '%s/keystone-signing' % os.environ['HOME']
+-        self.signing_dirname = conf.get('signing_dir', default_signing_dir)
++        self.signing_dirname = self._conf_get('signing_dir')
++        if self.signing_dirname is None:
++            self.signing_dirname = '%s/keystone-signing' % os.environ['HOME']
+         LOG.info('Using %s as cache directory for signing certificate' %
+                  self.signing_dirname)
+         if (os.path.exists(self.signing_dirname) and
+@@ -175,17 +224,17 @@ class AuthProtocol(object):
+ 
+         # Credentials used to verify this component with the Auth service since
+         # validating tokens is a privileged call
+-        self.admin_token = conf.get('admin_token')
+-        self.admin_user = conf.get('admin_user')
+-        self.admin_password = conf.get('admin_password')
+-        self.admin_tenant_name = conf.get('admin_tenant_name', 'admin')
++        self.admin_token = self._conf_get('admin_token')
++        self.admin_user = self._conf_get('admin_user')
++        self.admin_password = self._conf_get('admin_password')
++        self.admin_tenant_name = self._conf_get('admin_tenant_name')
+ 
+         # Token caching via memcache
+         self._cache = None
+         self._iso8601 = None
+-        memcache_servers = conf.get('memcache_servers')
++        memcache_servers = self._conf_get('memcache_servers')
+         # By default the token will be cached for 5 minutes
+-        self.token_cache_time = conf.get('token_cache_time', 300)
++        self.token_cache_time = int(self._conf_get('token_cache_time'))
+         if memcache_servers:
+             try:
+                 import memcache
+@@ -196,6 +245,13 @@ class AuthProtocol(object):
+             except ImportError as e:
+                 LOG.warn('disabled caching due to missing libraries %s', e)
+ 
++    def _conf_get(self, name):
++        # try config from paste-deploy first
++        if name in self.conf:
++            return self.conf[name]
++        else:
++            return CONF.keystone_authtoken[name]
++
+     def __call__(self, env, start_response):
+         """Handle incoming request.
+ 

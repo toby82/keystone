@@ -12,7 +12,7 @@
 
 Name:           openstack-keystone
 Version:        2012.2
-Release:        0.4.%{release_letter}%{milestone}%{?dist}
+Release:        0.5.%{release_letter}%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
@@ -28,9 +28,8 @@ Source5:        openstack-keystone-sample-data
 #
 # patches_base=folsom-3
 #
-
-# RPM specific
-Patch9999:         match-egg-and-spec-requires.patch
+Patch0001: 0001-allow-middleware-configuration-from-app-config.patch
+Patch0002: 0002-match-egg-and-spec-requires.patch
 
 BuildArch:      noarch
 BuildRequires:  python2-devel
@@ -112,7 +111,8 @@ This package contains documentation for Keystone.
 %prep
 %setup -q -n keystone-%{version}
 
-%patch9999 -p1
+%patch0001 -p1
+%patch0002 -p1
 
 find . \( -name .gitignore -o -name .placeholder \) -delete
 find keystone -name \*.py -exec sed -i '/\/usr\/bin\/env python/d' {} \;
@@ -254,6 +254,9 @@ fi
 %endif
 
 %changelog
+* Wed Aug 29 2012 Alan Pevec <apevec@redhat.com> 2012.2-0.5.f3
+- allow middleware configuration from app config
+
 * Mon Aug 20 2012 Alan Pevec <apevec@redhat.com> 2012.2-0.4.f3
 - folsom-3 milestone
 
