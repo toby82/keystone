@@ -1,4 +1,4 @@
-From e55653f8ab242e1dd23729c137bcf3b1e30bfd2f Mon Sep 17 00:00:00 2001
+From 197f7ba0e5fe6136c391beddb30d69888931785b Mon Sep 17 00:00:00 2001
 From: Alan Pevec <apevec@redhat.com>
 Date: Sat, 30 Jun 2012 01:00:25 +0200
 Subject: [PATCH] match egg and spec requires

@@ -1,18 +1,18 @@
 #
-# This is 2012.2 folsom-3 milestone
+# This is 2012.2 folsom RC1
 #
 %global release_name folsom
-%global release_letter f
-%global milestone 3
-%global snapdate 20120817
-%global git_revno r2454
+%global release_letter rc
+%global milestone 1
+%global snapdate 20120914
+%global git_revno r2537
 
 %global snaptag ~%{release_letter}%{milestone}~%{snapdate}.%{git_revno}
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
 
 Name:           openstack-keystone
 Version:        2012.2
-Release:        0.6.%{release_letter}%{milestone}%{?dist}
+Release:        0.7.%{release_letter}%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
@@ -26,12 +26,10 @@ Source5:        openstack-keystone-sample-data
 
 
 #
-# patches_base=folsom-3
+# patches_base=folsom-rc1
 #
-Patch0001: 0001-allow-middleware-configuration-from-app-config.patch
-Patch0002: 0002-match-egg-and-spec-requires.patch
-Patch0003: 0003-Check-for-expected-cfg-impl-bug-1043479.patch
-Patch0004: 0004-Require-authz-to-update-user-s-tenant-bug-1040626.patch
+Patch0001: 0001-match-egg-and-spec-requires.patch
+Patch0002: 0002-add-Quantum-endpoint-in-sample-data.patch
 
 BuildArch:      noarch
 BuildRequires:  python2-devel
@@ -115,8 +113,6 @@ This package contains documentation for Keystone.
 
 %patch0001 -p1
 %patch0002 -p1
-%patch0003 -p1
-%patch0004 -p1
 
 find . \( -name .gitignore -o -name .placeholder \) -delete
 find keystone -name \*.py -exec sed -i '/\/usr\/bin\/env python/d' {} \;
@@ -258,6 +254,9 @@ fi
 %endif
 
 %changelog
+* Fri Sep 14 2012 Alan Pevec <apevec@redhat.com> 2012.2-0.7.rc1
+- folsom rc1 (CVE-2012-4413)
+
 * Thu Aug 30 2012 Alan Pevec <apevec@redhat.com> 2012.2-0.6.f3
 - Require authz to update user's tenant (CVE-2012-3542)
 
@@ -271,7 +270,7 @@ fi
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
 
 * Fri Jul 06 2012 Alan Pevec <apevec@redhat.com> 2012.2-0.2.f2
-- folsom-2 milestone
+- folsom-2 milestone (CVE-2012-3426)
 
 * Fri May 25 2012 Alan Pevec <apevec@redhat.com> 2012.2-0.1.f1
 - folsom-1 milestone
