@@ -30,6 +30,7 @@ Source5:        openstack-keystone-sample-data
 #
 Patch0001: 0001-match-egg-and-spec-requires.patch
 Patch0002: 0002-add-Quantum-endpoint-in-sample-data.patch
+Patch0003: 0003-add-Swift-endpoint-in-sample-data.patch
 
 BuildArch:      noarch
 BuildRequires:  python2-devel
@@ -113,6 +114,7 @@ This package contains documentation for Keystone.
 
 %patch0001 -p1
 %patch0002 -p1
+%patch0003 -p1
 
 find . \( -name .gitignore -o -name .placeholder \) -delete
 find keystone -name \*.py -exec sed -i '/\/usr\/bin\/env python/d' {} \;
