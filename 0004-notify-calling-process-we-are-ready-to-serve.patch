@@ -1,0 +1,29 @@
+From fd316b911f7b36595c823a10563090677083bc27 Mon Sep 17 00:00:00 2001
+From: Alan Pevec <apevec@redhat.com>
+Date: Wed, 19 Sep 2012 00:26:13 +0200
+Subject: [PATCH] notify calling process we are ready to serve
+
+Fixes bug 980037 again and again
+
+Recent SystemD moved notification socket into abstract namespace:
+http://cgit.freedesktop.org/systemd/systemd/commit/?id=29252e9e5bad3b0bcfc45d9bc761aee4b0ece1da
+
+Change-Id: Idfb1dfb272f06a8066843f0f5750ff6e70f6bc64
+---
+ keystone/common/systemd.py |    3 +++
+ 1 files changed, 3 insertions(+), 0 deletions(-)
+
+diff --git a/keystone/common/systemd.py b/keystone/common/systemd.py
+index f8d3f36..52d7aff 100644
+--- a/keystone/common/systemd.py
++++ b/keystone/common/systemd.py
+@@ -27,6 +27,9 @@ def _sd_notify(msg):
+     sysd = os.getenv('NOTIFY_SOCKET')
+     if sysd:
+         sock = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
++        if sysd.startswith('@'):
++            # abstract namespace socket
++            sysd = '\0%s' % sysd[1:]
+         sock.connect(sysd)
+         sock.sendall(msg)
+         sock.close()

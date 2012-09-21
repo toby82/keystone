@@ -4,7 +4,7 @@ After=syslog.target network.target
 
 [Service]
 Type=notify
-Restart=on-abort
+Restart=always
 User=keystone
 ExecStart=/usr/bin/keystone-all --config-file /etc/keystone/keystone.conf
 
