@@ -1,4 +1,4 @@
-From 877a4656a861b9f6b3d9c178ec1ffe81aed10ff1 Mon Sep 17 00:00:00 2001
+From 4e661baaa7f51f6951e18b70db5c7e4c7e382165 Mon Sep 17 00:00:00 2001
 From: Alan Pevec <apevec@redhat.com>
 Date: Mon, 17 Sep 2012 20:51:49 +0200
 Subject: [PATCH] add Swift endpoint in sample data

@@ -1,18 +1,18 @@
 #
-# This is 2012.2 folsom RC1
+# This is 2012.2 folsom RC2
 #
 %global release_name folsom
 %global release_letter rc
-%global milestone 1
-%global snapdate 20120914
-%global git_revno r2537
+%global milestone 2
+%global snapdate 20120926
+%global git_revno r2538
 
 %global snaptag ~%{release_letter}%{milestone}~%{snapdate}.%{git_revno}
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
 
 Name:           openstack-keystone
 Version:        2012.2
-Release:        0.8.%{release_letter}%{milestone}%{?dist}
+Release:        0.9.%{release_letter}%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
@@ -26,7 +26,7 @@ Source5:        openstack-keystone-sample-data
 
 
 #
-# patches_base=folsom-rc1
+# patches_base=folsom-rc2
 #
 Patch0001: 0001-match-egg-and-spec-requires.patch
 Patch0002: 0002-add-Quantum-endpoint-in-sample-data.patch
@@ -258,6 +258,9 @@ fi
 %endif
 
 %changelog
+* Wed Sep 26 2012 Alan Pevec <apevec@redhat.com> 2012.2-0.9.rc2
+- folsom rc2
+
 * Fri Sep 21 2012 Alan Pevec <apevec@redhat.com> 2012.2-0.8.rc1
 - fix systemd notification (rhbz#858188)
 

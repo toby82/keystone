@@ -1,4 +1,4 @@
-From fd316b911f7b36595c823a10563090677083bc27 Mon Sep 17 00:00:00 2001
+From cbd4698c6e8ec16c630fac381c760581a738b675 Mon Sep 17 00:00:00 2001
 From: Alan Pevec <apevec@redhat.com>
 Date: Wed, 19 Sep 2012 00:26:13 +0200
 Subject: [PATCH] notify calling process we are ready to serve

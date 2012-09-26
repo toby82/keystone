@@ -1,4 +1,4 @@
-From 5ba3b6e0df35018619f900599ecab9b980913f86 Mon Sep 17 00:00:00 2001
+From cb3e4b68f8c869d601199578db4429a31c71b375 Mon Sep 17 00:00:00 2001
 From: Alan Pevec <apevec@redhat.com>
 Date: Thu, 13 Sep 2012 14:28:12 +0200
 Subject: [PATCH] add Quantum endpoint in sample data
