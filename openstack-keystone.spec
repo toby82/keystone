@@ -1,5 +1,5 @@
 #
-# This is 2012.2 folsom RC2
+# This is 2012.2 folsom release
 #
 %global release_name folsom
 %global release_letter rc
@@ -12,13 +12,14 @@
 
 Name:           openstack-keystone
 Version:        2012.2
-Release:        0.9.%{release_letter}%{milestone}%{?dist}
+Release:        1%{?dist}
+#Release:        0.1.%{release_letter}%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
 URL:            http://keystone.openstack.org/
-#Source0:        http://launchpad.net/keystone/%{release_name}/%{version}/+download/keystone-%{version}.tar.gz
-Source0:        http://launchpad.net/keystone/%{release_name}/%{release_name}-%{milestone}/+download/keystone-%{version}~%{release_letter}%{milestone}.tar.gz
+Source0:        http://launchpad.net/keystone/%{release_name}/%{version}/+download/keystone-%{version}.tar.gz
+#Source0:        http://launchpad.net/keystone/%{release_name}/%{release_name}-%{milestone}/+download/keystone-%{version}~%{release_letter}%{milestone}.tar.gz
 #Source0:        http://tarballs.openstack.org/keystone/keystone-%{version}%{snaptag}.tar.gz
 Source1:        openstack-keystone.logrotate
 Source2:        openstack-keystone.service
@@ -26,7 +27,7 @@ Source5:        openstack-keystone-sample-data
 
 
 #
-# patches_base=folsom-rc2
+# patches_base=2012.2
 #
 Patch0001: 0001-match-egg-and-spec-requires.patch
 Patch0002: 0002-add-Quantum-endpoint-in-sample-data.patch
@@ -258,6 +259,9 @@ fi
 %endif
 
 %changelog
+* Thu Sep 27 2012 Alan Pevec <apevec@redhat.com> 2012.2-1
+- Update to folsom final
+
 * Wed Sep 26 2012 Alan Pevec <apevec@redhat.com> 2012.2-0.9.rc2
 - folsom rc2
 
