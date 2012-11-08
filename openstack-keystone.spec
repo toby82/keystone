@@ -12,7 +12,7 @@
 
 Name:           openstack-keystone
 Version:        2012.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 #Release:        0.1.%{release_letter}%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
@@ -33,6 +33,7 @@ Patch0001: 0001-match-egg-and-spec-requires.patch
 Patch0002: 0002-add-Quantum-endpoint-in-sample-data.patch
 Patch0003: 0003-add-Swift-endpoint-in-sample-data.patch
 Patch0004: 0004-notify-calling-process-we-are-ready-to-serve.patch
+Patch0005: 0005-Fix-default-port-for-identity.internalURL.patch
 
 BuildArch:      noarch
 BuildRequires:  python2-devel
@@ -118,6 +119,7 @@ This package contains documentation for Keystone.
 %patch0002 -p1
 %patch0003 -p1
 %patch0004 -p1
+%patch0005 -p1
 
 find . \( -name .gitignore -o -name .placeholder \) -delete
 find keystone -name \*.py -exec sed -i '/\/usr\/bin\/env python/d' {} \;
@@ -259,6 +261,9 @@ fi
 %endif
 
 %changelog
+* Thu Nov 08 2012 Alan Pevec <apevec@redhat.com> 2012.2-2
+- Fix default port for identity.internalURL in sample script
+
 * Thu Sep 27 2012 Alan Pevec <apevec@redhat.com> 2012.2-1
 - Update to folsom final
 
