@@ -12,7 +12,7 @@
 
 Name:           openstack-keystone
 Version:        2012.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 #Release:        0.1.%{release_letter}%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
@@ -62,8 +62,11 @@ Group:            Applications/System
 # python-keystone added in 2012.1-0.2.e3
 Conflicts:      openstack-keystone < 2012.1-0.2.e3
 
-# to pull middleware on yum update
-Requires:       python-keystone-auth-token = %{version}-%{release}
+Provides:       python-keystone-auth-token
+Obsoletes:      python-keystone-auth-token
+# auth-token subpackage was removed to avoid issues like rhbz#868357
+# in Folsom auth-token does not work standalone anyway rhbz#844508
+# it will be back in Grizzly pythone-keystoneclient lp#1039567
 
 Requires:       python-eventlet
 Requires:       python-ldap
@@ -83,22 +86,6 @@ Keystone is a Python implementation of the OpenStack
 (http://www.openstack.org) identity service API.
 
 This package contains the Keystone Python library.
-
-%package -n     python-keystone-auth-token
-Summary:        Keystone Authentication Middleware.
-Group:          Applications/System
-# python-keystone-auth-token added in 2012.1-3
-Conflicts:      python-keystone < 2012.1-3
-
-Requires:       python-iso8601
-Requires:       python-memcached
-Requires:       python-webob
-
-%description -n   python-keystone-auth-token
-Keystone is a Python implementation of the OpenStack
-(http://www.openstack.org) identity service API.
-
-This package contains the Keystone Authentication Middleware.
 
 %if 0%{?with_doc}
 %package doc
@@ -190,23 +177,6 @@ if [ $1 -eq 1 ] ; then
     /bin/systemctl daemon-reload >/dev/null 2>&1 || :
 fi
 
-%post -n python-keystone-auth-token
-# workaround for rhbz 824034#c14
-if [ ! -e %{python_sitelib}/keystone/__init__.py ]; then
-    > %{python_sitelib}/keystone/__init__.py
-fi
-if [ ! -e %{python_sitelib}/keystone/middleware/__init__.py ]; then
-    > %{python_sitelib}/keystone/middleware/__init__.py
-fi
-
-%triggerpostun -n python-keystone-auth-token -- python-keystone
-# edge case: removing python-keystone with overlapping files
-if [ $2 -eq 0 ] ; then
-    # Package removal, not upgrade
-    > %{python_sitelib}/keystone/__init__.py
-    > %{python_sitelib}/keystone/middleware/__init__.py
-fi
-
 %preun
 if [ $1 -eq 0 ] ; then
     # Package removal, not upgrade
@@ -243,17 +213,7 @@ fi
 %defattr(-,root,root,-)
 %doc LICENSE
 %{python_sitelib}/keystone
-%exclude %{python_sitelib}/keystone/middleware/auth_token.py*
 %{python_sitelib}/keystone-%{version}-*.egg-info
-
-%files -n python-keystone-auth-token
-%defattr(-,root,root,-)
-%doc LICENSE
-%dir %{python_sitelib}/keystone
-%ghost %{python_sitelib}/keystone/__init__.py
-%dir %{python_sitelib}/keystone/middleware
-%ghost %{python_sitelib}/keystone/middleware/__init__.py
-%{python_sitelib}/keystone/middleware/auth_token.py*
 
 %if 0%{?with_doc}
 %files doc
@@ -261,6 +221,9 @@ fi
 %endif
 
 %changelog
+* Fri Nov 09 2012 Alan Pevec <apevec@redhat.com> 2012.2-3
+- remove auth-token subpackage (rhbz#868357)
+
 * Thu Nov 08 2012 Alan Pevec <apevec@redhat.com> 2012.2-2
 - Fix default port for identity.internalURL in sample script
 
