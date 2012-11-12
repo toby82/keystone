@@ -12,7 +12,7 @@
 
 Name:           openstack-keystone
 Version:        2012.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 #Release:        0.1.%{release_letter}%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
@@ -80,6 +80,7 @@ Requires:       python-webob
 Requires:       python-passlib
 Requires:       MySQL-python
 Requires:       PyPAM
+Requires:       python-iso8601
 
 %description -n   python-keystone
 Keystone is a Python implementation of the OpenStack
@@ -221,6 +222,9 @@ fi
 %endif
 
 %changelog
+* Mon Nov 12 2012 Alan Pevec <apevec@redhat.com> 2012.2-4
+- readd iso8601 dependency (from openstack-common timeutils)
+
 * Fri Nov 09 2012 Alan Pevec <apevec@redhat.com> 2012.2-3
 - remove auth-token subpackage (rhbz#868357)
 
