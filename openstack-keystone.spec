@@ -12,7 +12,7 @@
 
 Name:           openstack-keystone
 Version:        2012.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 #Release:        0.1.%{release_letter}%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
@@ -201,7 +201,7 @@ fi
 %{_bindir}/openstack-keystone-sample-data
 %{_datadir}/%{name}
 %{_unitdir}/openstack-keystone.service
-%dir %{_sysconfdir}/keystone
+%dir %attr(0750, root, keystone) %{_sysconfdir}/keystone
 %config(noreplace) %attr(-, root, keystone) %{_sysconfdir}/keystone/keystone.conf
 %config(noreplace) %attr(-, root, keystone) %{_sysconfdir}/keystone/logging.conf
 %config(noreplace) %attr(-, root, keystone) %{_sysconfdir}/keystone/default_catalog.templates
@@ -222,6 +222,9 @@ fi
 %endif
 
 %changelog
+* Fri Nov 16 2012 Alan Pevec <apevec@redhat.com> 2012.2-5
+- fix /etc/keystone directory permission CVE-2012-5483 (rhbz#873447)
+
 * Mon Nov 12 2012 Alan Pevec <apevec@redhat.com> 2012.2-4
 - readd iso8601 dependency (from openstack-common timeutils)
 
