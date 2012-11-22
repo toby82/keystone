@@ -1,39 +1,34 @@
 #
-# This is 2012.2 folsom release
+# This is 2013.1 grizzly-1 milestone
 #
-%global release_name folsom
-%global release_letter rc
-%global milestone 2
-%global snapdate 20120926
-%global git_revno r2538
+%global release_name grizzly
+%global release_letter g
+%global milestone 1
+%global snapdate 20121122
+%global git_revno r2704
 
 %global snaptag ~%{release_letter}%{milestone}~%{snapdate}.%{git_revno}
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
 
 Name:           openstack-keystone
-Version:        2012.2
-Release:        5%{?dist}
-#Release:        0.1.%{release_letter}%{milestone}%{?dist}
+Version:        2013.1
+Release:        0.1.%{release_letter}%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
 URL:            http://keystone.openstack.org/
-Source0:        http://launchpad.net/keystone/%{release_name}/%{version}/+download/keystone-%{version}.tar.gz
+#Source0:        http://launchpad.net/keystone/%{release_name}/%{version}/+download/keystone-%{version}.tar.gz
 #Source0:        http://launchpad.net/keystone/%{release_name}/%{release_name}-%{milestone}/+download/keystone-%{version}~%{release_letter}%{milestone}.tar.gz
-#Source0:        http://tarballs.openstack.org/keystone/keystone-%{version}%{snaptag}.tar.gz
+Source0:        http://tarballs.openstack.org/keystone/keystone-%{version}%{snaptag}.tar.gz
 Source1:        openstack-keystone.logrotate
 Source2:        openstack-keystone.service
 Source5:        openstack-keystone-sample-data
 
 
 #
-# patches_base=2012.2
+# patches_base=grizzly-1
 #
 Patch0001: 0001-match-egg-and-spec-requires.patch
-Patch0002: 0002-add-Quantum-endpoint-in-sample-data.patch
-Patch0003: 0003-add-Swift-endpoint-in-sample-data.patch
-Patch0004: 0004-notify-calling-process-we-are-ready-to-serve.patch
-Patch0005: 0005-Fix-default-port-for-identity.internalURL.patch
 
 BuildArch:      noarch
 BuildRequires:  python2-devel
@@ -104,10 +99,6 @@ This package contains documentation for Keystone.
 %setup -q -n keystone-%{version}
 
 %patch0001 -p1
-%patch0002 -p1
-%patch0003 -p1
-%patch0004 -p1
-%patch0005 -p1
 
 find . \( -name .gitignore -o -name .placeholder \) -delete
 find keystone -name \*.py -exec sed -i '/\/usr\/bin\/env python/d' {} \;
@@ -222,6 +213,9 @@ fi
 %endif
 
 %changelog
+* Thu Nov 22 2012 Alan Pevec <apevec@redhat.com> 2013.1-0.1.g1
+- grizzly-1 milestone
+
 * Fri Nov 16 2012 Alan Pevec <apevec@redhat.com> 2012.2-5
 - fix /etc/keystone directory permission CVE-2012-5483 (rhbz#873447)
 
