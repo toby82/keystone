@@ -1,32 +1,28 @@
 #
-# This is 2013.1 grizzly-1 milestone
+# This is 2013.1 grizzly-2 milestone
 #
 %global release_name grizzly
 %global release_letter g
-%global milestone 1
-%global snapdate 20121122
-%global git_revno r2704
+%global milestone 2
 
-%global snaptag ~%{release_letter}%{milestone}~%{snapdate}.%{git_revno}
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
 
 Name:           openstack-keystone
 Version:        2013.1
-Release:        0.1.%{release_letter}%{milestone}%{?dist}
+Release:        0.2.%{release_letter}%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
 URL:            http://keystone.openstack.org/
 #Source0:        http://launchpad.net/keystone/%{release_name}/%{version}/+download/keystone-%{version}.tar.gz
-#Source0:        http://launchpad.net/keystone/%{release_name}/%{release_name}-%{milestone}/+download/keystone-%{version}~%{release_letter}%{milestone}.tar.gz
-Source0:        http://tarballs.openstack.org/keystone/keystone-%{version}%{snaptag}.tar.gz
+Source0:        http://launchpad.net/keystone/%{release_name}/%{release_name}-%{milestone}/+download/keystone-%{version}~%{release_letter}%{milestone}.tar.gz
 Source1:        openstack-keystone.logrotate
 Source2:        openstack-keystone.service
 Source5:        openstack-keystone-sample-data
 
 
 #
-# patches_base=grizzly-1
+# patches_base=grizzly-2
 #
 Patch0001: 0001-match-egg-and-spec-requires.patch
 
@@ -213,6 +209,9 @@ fi
 %endif
 
 %changelog
+* Fri Jan 11 2013 Alan Pevec <apevec@redhat.com> 2013.1-0.2.g2
+- grizzly-2 milestone
+
 * Thu Nov 22 2012 Alan Pevec <apevec@redhat.com> 2013.1-0.1.g1
 - grizzly-1 milestone
 
