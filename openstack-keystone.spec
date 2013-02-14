@@ -9,7 +9,7 @@
 
 Name:           openstack-keystone
 Version:        2013.1
-Release:        0.2.%{release_letter}%{milestone}%{?dist}
+Release:        0.3.%{release_letter}%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
@@ -209,6 +209,9 @@ fi
 %endif
 
 %changelog
+* Thu Feb 14 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2013.1-0.3.g2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_19_Mass_Rebuild
+
 * Fri Jan 11 2013 Alan Pevec <apevec@redhat.com> 2013.1-0.2.g2
 - grizzly-2 milestone
 
