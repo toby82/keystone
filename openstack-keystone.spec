@@ -1,30 +1,29 @@
 #
-# This is 2013.1 grizzly-2 milestone
+# This is 2013.1 grizzly-3 milestone
 #
 %global release_name grizzly
 %global release_letter g
-%global milestone 2
+%global milestone 3
 
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
 
 Name:           openstack-keystone
 Version:        2013.1
-Release:        0.3.%{release_letter}%{milestone}%{?dist}
+Release:        0.4.%{release_letter}%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
 URL:            http://keystone.openstack.org/
 #Source0:        http://launchpad.net/keystone/%{release_name}/%{version}/+download/keystone-%{version}.tar.gz
-Source0:        http://launchpad.net/keystone/%{release_name}/%{release_name}-%{milestone}/+download/keystone-%{version}~%{release_letter}%{milestone}.tar.gz
+Source0:        http://launchpad.net/keystone/%{release_name}/%{release_name}-%{milestone}/+download/keystone-%{version}.%{release_letter}%{milestone}.tar.gz
 Source1:        openstack-keystone.logrotate
 Source2:        openstack-keystone.service
 Source5:        openstack-keystone-sample-data
 
 
 #
-# patches_base=grizzly-2
+# patches_base=grizzly-3
 #
-Patch0001: 0001-match-egg-and-spec-requires.patch
 
 BuildArch:      noarch
 BuildRequires:  python2-devel
@@ -92,12 +91,17 @@ This package contains documentation for Keystone.
 %endif
 
 %prep
-%setup -q -n keystone-%{version}
+%setup -q -n keystone-%{version}.%{release_letter}%{milestone}
 
-%patch0001 -p1
+sed -i 's/2013.1.g3/2013.1/' PKG-INFO
 
 find . \( -name .gitignore -o -name .placeholder \) -delete
 find keystone -name \*.py -exec sed -i '/\/usr\/bin\/env python/d' {} \;
+# Remove bundled egg-info
+rm -rf keystone.egg-info
+# let RPM handle deps
+sed -i '/setup_requires/d; /install_requires/d; /dependency_links/d' setup.py
+
 
 
 %build
@@ -209,6 +213,9 @@ fi
 %endif
 
 %changelog
+* Sat Feb 23 2013 Alan Pevec <apevec@redhat.com> 2013.1-0.4.g3
+- grizzly-3 milestone
+
 * Thu Feb 14 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2013.1-0.3.g2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_19_Mass_Rebuild
 
