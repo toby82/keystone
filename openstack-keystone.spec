@@ -53,8 +53,7 @@ Requires:       python-eventlet
 Requires:       python-ldap
 Requires:       python-lxml
 Requires:       python-memcached
-# needs python-migrate-sqlalchemy-0.8.patch
-Requires:       python-migrate >= 0.7.2-7
+Requires:       python-migrate
 Requires:       python-paste-deploy
 Requires:       python-routes
 Requires:       python-sqlalchemy
