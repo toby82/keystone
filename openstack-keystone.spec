@@ -9,7 +9,7 @@
 
 Name:           openstack-keystone
 Version:        2013.1
-Release:        0.5.%{release_letter}%{milestone}%{?dist}
+Release:        0.6.%{release_letter}%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
@@ -53,10 +53,11 @@ Requires:       python-eventlet
 Requires:       python-ldap
 Requires:       python-lxml
 Requires:       python-memcached
-Requires:       python-migrate
+# needs python-migrate-sqlalchemy-0.8.patch
+Requires:       python-migrate >= 0.7.2-7
 Requires:       python-paste-deploy
 Requires:       python-routes
-Requires:       python-sqlalchemy < 0.8.0
+Requires:       python-sqlalchemy
 Requires:       python-webob
 Requires:       python-passlib
 Requires:       MySQL-python
@@ -205,6 +206,9 @@ fi
 %endif
 
 %changelog
+* Mon Mar 11 2013 Alan Pevec <apevec@redhat.com> 2013.1-0.6.g3
+- remove python-sqlalchemy restriction
+
 * Sun Feb 24 2013 Alan Pevec <apevec@redhat.com> 2013.1-0.5.g3
 - update dependencies
 
