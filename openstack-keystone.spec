@@ -22,7 +22,7 @@ Source5:        openstack-keystone-sample-data
 
 
 #
-# patches_base=grizzly-3
+# patches_base=2013.1.g3
 #
 
 BuildArch:      noarch
