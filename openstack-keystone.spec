@@ -9,7 +9,7 @@
 
 Name:           openstack-keystone
 Version:        2013.1
-Release:        0.7.%{release_letter}%{milestone}%{?dist}
+Release:        0.8.%{release_letter}%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
@@ -24,6 +24,7 @@ Source5:        openstack-keystone-sample-data
 #
 # patches_base=2013.1.g3
 #
+Patch0001: 0001-ports-should-be-ints-in-config-bug-1137696.patch
 
 BuildArch:      noarch
 BuildRequires:  python2-devel
@@ -86,6 +87,7 @@ This package contains documentation for Keystone.
 %prep
 %setup -q -n keystone-%{version}.%{release_letter}%{milestone}
 
+%patch0001 -p1
 sed -i 's/2013.1.g3/2013.1/' PKG-INFO
 
 find . \( -name .gitignore -o -name .placeholder \) -delete
@@ -206,6 +208,9 @@ fi
 %endif
 
 %changelog
+* Wed Mar 20 2013 Pádraig Brady <pbrady@redhat.com> 2013.1-0.8.g3
+- fix a grizzly issue with int/str config mismatch
+
 * Mon Mar 11 2013 Alan Pevec <apevec@redhat.com> 2013.1-0.7.g3
 - openssl is required for PKI tokens rhbz#918757
 
