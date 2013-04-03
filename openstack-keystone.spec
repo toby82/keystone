@@ -1,15 +1,15 @@
 #
-# This is 2013.1 grizzly rc2
+# This is 2013.1 grizzly rc3
 #
 %global release_name grizzly
 %global release_letter rc
-%global milestone 2
+%global milestone 3
 
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
 
 Name:           openstack-keystone
 Version:        2013.1
-Release:        0.9.%{release_letter}%{milestone}%{?dist}
+Release:        0.10.%{release_letter}%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
@@ -22,7 +22,7 @@ Source5:        openstack-keystone-sample-data
 
 
 #
-# patches_base=2013.1.rc2
+# patches_base=2013.1.rc3
 #
 
 BuildArch:      noarch
@@ -86,7 +86,7 @@ This package contains documentation for Keystone.
 %prep
 %setup -q -n keystone-%{version}.%{release_letter}%{milestone}
 
-sed -i 's/2013.1.rc2/2013.1/' PKG-INFO
+sed -i 's/2013.1.rc3/2013.1/' PKG-INFO
 
 find . \( -name .gitignore -o -name .placeholder \) -delete
 find keystone -name \*.py -exec sed -i '/\/usr\/bin\/env python/d' {} \;
@@ -206,6 +206,9 @@ fi
 %endif
 
 %changelog
+* Wed Apr 03 2013 Alan Pevec <apevec@redhat.com> 2013.1-0.10.rc3
+- grizzly rc3
+
 * Fri Mar 29 2013 Alan Pevec <apevec@redhat.com> 2013.1-0.9.rc2
 - grizzly rc2
 
