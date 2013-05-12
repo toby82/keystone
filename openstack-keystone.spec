@@ -1,12 +1,12 @@
 #
-# This is 2013.1 grizzly release
+# This is 2013.1.1 stable/grizzly release
 #
 %global release_name grizzly
 
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
 
 Name:           openstack-keystone
-Version:        2013.1
+Version:        2013.1.1
 Release:        1%{?dist}
 Summary:        OpenStack Identity Service
 
@@ -19,7 +19,7 @@ Source5:        openstack-keystone-sample-data
 
 
 #
-# patches_base=2013.1
+# patches_base=2013.1.1
 #
 
 BuildArch:      noarch
@@ -201,6 +201,9 @@ fi
 %endif
 
 %changelog
+* Fri May 10 2013 Alan Pevec <apevec@redhat.com> 2013.1.1-1
+- updated to stable grizzly 2013.1.1 release CVE-2013-2006 CVE-2013-2059
+
 * Thu Apr 04 2013 Alan Pevec <apevec@redhat.com> 2013.1-1
 - Update to grizzly final
 
