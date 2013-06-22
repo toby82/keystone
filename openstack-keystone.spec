@@ -2,14 +2,13 @@
 # This is 2013.2 havana-1 milestone
 #
 %global release_name havana
-%global release_letter h
 %global milestone 1
 
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
 
 Name:           openstack-keystone
 Version:        2013.2
-Release:        0.1.%{release_letter}%{milestone}%{?dist}
+Release:        0.2.b%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
@@ -24,6 +23,7 @@ Source5:        openstack-keystone-sample-data
 #
 # patches_base=2013.2.b1
 #
+Patch0001: 0001-Force-simple-Bind-for-authentication.patch
 
 BuildArch:      noarch
 BuildRequires:  python2-devel
@@ -90,6 +90,7 @@ This package contains documentation for Keystone.
 %prep
 %setup -q -n keystone-%{version}.b%{milestone}
 
+%patch0001 -p1
 sed -i 's/%{version}.b%{milestone}/%{version}/' PKG-INFO
 
 find . \( -name .gitignore -o -name .placeholder \) -delete
@@ -212,6 +213,9 @@ fi
 %endif
 
 %changelog
+* Sat Jun 22 2013 apevec@redhat.com 2013.2-0.2.b1
+- Force simple Bind for authentication CVE-2013-2157
+
 * Fri Jun 07 2013 Alan Pevec <apevec@redhat.com> 2013.2-0.1.h1
 - havana-1 milestone
 
