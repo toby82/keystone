@@ -8,7 +8,7 @@
 
 Name:           openstack-keystone
 Version:        2013.2
-Release:        0.2.b%{milestone}%{?dist}
+Release:        0.3.b%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
@@ -199,7 +199,7 @@ fi
 %config(noreplace) %attr(-, keystone, keystone) %{_sysconfdir}/keystone/policy.json
 %config(noreplace) %{_sysconfdir}/logrotate.d/openstack-keystone
 %dir %attr(-, keystone, keystone) %{_sharedstatedir}/keystone
-%dir %attr(-, keystone, keystone) %{_localstatedir}/log/keystone
+%dir %attr(0750, keystone, keystone) %{_localstatedir}/log/keystone
 
 %files -n python-keystone
 %defattr(-,root,root,-)
@@ -213,6 +213,9 @@ fi
 %endif
 
 %changelog
+* Mon Jun 24 2013 apevec@redhat.com 2013.2-0.3.b1
+- restrict /var/log/keystone/ rhbz#956814
+
 * Sat Jun 22 2013 apevec@redhat.com 2013.2-0.2.b1
 - Force simple Bind for authentication CVE-2013-2157
 
