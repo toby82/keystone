@@ -211,7 +211,7 @@ fi
 %endif
 
 %changelog
-* Thu Jul 18 2013 pbrady@redhat.com 2013.2-0.4.b1
+* Thu Jul 18 2013 pbrady@redhat.com 2013.2-0.4.b2
 - havana-2 milestone
 
 * Mon Jun 24 2013 apevec@redhat.com 2013.2-0.3.b1
