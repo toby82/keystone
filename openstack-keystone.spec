@@ -1,14 +1,14 @@
 #
-# This is 2013.2 havana-2 milestone
+# This is 2013.2 havana-3 milestone
 #
 %global release_name havana
-%global milestone 2
+%global milestone 3
 
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
 
 Name:           openstack-keystone
 Version:        2013.2
-Release:        0.5.b%{milestone}%{?dist}
+Release:        0.6.b%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
@@ -21,8 +21,10 @@ Source5:        openstack-keystone-sample-data
 
 
 #
-# patches_base=2013.2.b2
+# patches_base=2013.2.b3
 #
+Patch0001: 0001-remove-runtime-dep-on-python-pbr.patch
+Patch0002: 0002-Revert-Use-oslo.sphinx-and-remove-local-copy-of-doc-.patch
 
 BuildArch:      noarch
 BuildRequires:  python2-devel
@@ -65,8 +67,6 @@ Requires:       PyPAM
 Requires:       python-iso8601
 Requires:       python-oslo-config
 Requires:       openssl
-Requires:       python-pbr
-Requires:       python-d2to1
 
 %description -n   python-keystone
 Keystone is a Python implementation of the OpenStack
@@ -89,6 +89,8 @@ This package contains documentation for Keystone.
 %prep
 %setup -q -n keystone-%{version}.b%{milestone}
 
+%patch0001 -p1
+%patch0002 -p1
 sed -i 's/%{version}.b%{milestone}/%{version}/' PKG-INFO
 
 find . \( -name .gitignore -o -name .placeholder \) -delete
@@ -98,6 +100,7 @@ rm -rf keystone.egg-info
 # let RPM handle deps
 sed -i '/setup_requires/d; /install_requires/d; /dependency_links/d' setup.py
 
+sed -i s/REDHATKEYSTONEVERSION/%{version}/ bin/keystone-all keystone/cli.py
 
 
 %build
@@ -211,6 +214,10 @@ fi
 %endif
 
 %changelog
+* Mon Sep 09 2013 Alan Pevec <apevec@redhat.com> - 2013.2-0.6.b3
+- havana-3 milestone
+- drop pbr run-time dependency
+
 * Sat Aug 03 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2013.2-0.5.b2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_20_Mass_Rebuild
 
