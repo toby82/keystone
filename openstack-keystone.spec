@@ -18,6 +18,7 @@ Source0:        http://launchpad.net/keystone/%{release_name}/%{release_name}-%{
 Source1:        openstack-keystone.logrotate
 Source2:        openstack-keystone.service
 Source5:        openstack-keystone-sample-data
+Source20:       keystone-dist.conf
 
 
 #
@@ -29,7 +30,6 @@ Patch0002: 0002-Revert-Use-oslo.sphinx-and-remove-local-copy-of-doc-.patch
 BuildArch:      noarch
 BuildRequires:  python2-devel
 BuildRequires:  python-sphinx >= 1.0
-BuildRequires:  openstack-utils
 BuildRequires:  systemd-units
 BuildRequires:  python-pbr
 BuildRequires:  python-d2to1
@@ -104,16 +104,8 @@ sed -i s/REDHATKEYSTONEVERSION/%{version}/ bin/keystone-all keystone/cli.py
 
 
 %build
-# change default configuration
 cp etc/keystone.conf.sample etc/keystone.conf
-openstack-config --set etc/keystone.conf DEFAULT log_file %{_localstatedir}/log/keystone/keystone.log
-openstack-config --set etc/keystone.conf sql connection mysql://keystone:keystone@localhost/keystone
-openstack-config --set etc/keystone.conf catalog template_file %{_sysconfdir}/keystone/default_catalog.templates
-openstack-config --set etc/keystone.conf catalog driver keystone.catalog.backends.sql.Catalog
-openstack-config --set etc/keystone.conf identity driver keystone.identity.backends.sql.Identity
-openstack-config --set etc/keystone.conf token driver keystone.token.backends.sql.Token
-openstack-config --set etc/keystone.conf ec2 driver keystone.contrib.ec2.backends.sql.Ec2
-openstack-config --set etc/keystone.conf DEFAULT onready keystone.common.systemd
+# distribution defaults are located in keystone-dist.conf
 
 %{__python} setup.py build
 
@@ -126,14 +118,15 @@ rm -fr %{buildroot}%{python_sitelib}/run_tests.*
 
 install -d -m 755 %{buildroot}%{_sysconfdir}/keystone
 install -p -D -m 640 etc/keystone.conf %{buildroot}%{_sysconfdir}/keystone/keystone.conf
-install -p -D -m 640 etc/keystone-paste.ini %{buildroot}%{_sysconfdir}/keystone/keystone-paste.ini
+install -p -D -m 640 etc/keystone-paste.ini %{buildroot}%{_datadir}/keystone/keystone-dist-paste.ini
+install -p -D -m 640 %{SOURCE20} %{buildroot}%{_datadir}/keystone/keystone-dist.conf
 install -p -D -m 640 etc/logging.conf.sample %{buildroot}%{_sysconfdir}/keystone/logging.conf
 install -p -D -m 640 etc/default_catalog.templates %{buildroot}%{_sysconfdir}/keystone/default_catalog.templates
 install -p -D -m 640 etc/policy.json %{buildroot}%{_sysconfdir}/keystone/policy.json
 install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/openstack-keystone
 install -p -D -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/openstack-keystone.service
 # Install sample data script.
-install -p -D -m 755 tools/sample_data.sh %{buildroot}%{_datadir}/%{name}/sample_data.sh
+install -p -D -m 755 tools/sample_data.sh %{buildroot}%{_datadir}/keystone/sample_data.sh
 install -p -D -m 755 %{SOURCE5} %{buildroot}%{_bindir}/openstack-keystone-sample-data
 
 install -d -m 755 %{buildroot}%{_sharedstatedir}/keystone
@@ -190,11 +183,13 @@ fi
 %{_bindir}/keystone-all
 %{_bindir}/keystone-manage
 %{_bindir}/openstack-keystone-sample-data
-%{_datadir}/%{name}
+%dir %{_datadir}/keystone
+%attr(0640, root, keystone) %{_datadir}/keystone/keystone-dist.conf
+%attr(0640, root, keystone) %{_datadir}/keystone/keystone-dist-paste.ini
+%attr(0755, root, root) %{_datadir}/keystone/sample_data.sh
 %{_unitdir}/openstack-keystone.service
 %dir %attr(0750, root, keystone) %{_sysconfdir}/keystone
 %config(noreplace) %attr(-, root, keystone) %{_sysconfdir}/keystone/keystone.conf
-%config(noreplace) %attr(-, root, keystone) %{_sysconfdir}/keystone/keystone-paste.ini
 %config(noreplace) %attr(-, root, keystone) %{_sysconfdir}/keystone/logging.conf
 %config(noreplace) %attr(-, root, keystone) %{_sysconfdir}/keystone/default_catalog.templates
 %config(noreplace) %attr(-, keystone, keystone) %{_sysconfdir}/keystone/policy.json
@@ -217,6 +212,7 @@ fi
 * Mon Sep 09 2013 Alan Pevec <apevec@redhat.com> - 2013.2-0.6.b3
 - havana-3 milestone
 - drop pbr run-time dependency
+- set distribution defaults in keystone-dist.conf
 
 * Sat Aug 03 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2013.2-0.5.b2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_20_Mass_Rebuild
