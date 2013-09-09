@@ -8,7 +8,7 @@
 
 Name:           openstack-keystone
 Version:        2013.2
-Release:        0.7.b%{milestone}%{?dist}
+Release:        0.8.b%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
@@ -36,7 +36,7 @@ BuildRequires:  python-pbr
 BuildRequires:  python-d2to1
 
 Requires:       python-keystone = %{version}-%{release}
-Requires:       python-keystoneclient >= 1:0.2.0
+Requires:       python-keystoneclient >= 1:0.3.0
 
 Requires(post):   systemd-units
 Requires(preun):  systemd-units
@@ -66,8 +66,12 @@ Requires:       python-passlib
 Requires:       MySQL-python
 Requires:       PyPAM
 Requires:       python-iso8601
-Requires:       python-oslo-config
+Requires:       python-oslo-config >= 1:1.2.0
 Requires:       openssl
+Requires:       python-netaddr
+Requires:       python-babel >= 0.9.6
+Requires:       python-oauth2
+Requires:       python-dogpile-cache >= 0.5.0
 
 %description -n   python-keystone
 Keystone is a Python implementation of the OpenStack
@@ -211,7 +215,7 @@ fi
 %endif
 
 %changelog
-* Mon Sep 09 2013 Alan Pevec <apevec@redhat.com> - 2013.2-0.7.b3
+* Mon Sep 09 2013 Alan Pevec <apevec@redhat.com> - 2013.2-0.8.b3
 - havana-3 milestone
 - drop pbr run-time dependency
 - set distribution defaults in keystone-dist.conf
