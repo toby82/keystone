@@ -1,9 +1,8 @@
-From a822aae55ce0bbd488c25dc230ccb5109cf50c9c Mon Sep 17 00:00:00 2001
+From d55ad70e6319c50c0ddcbaadfe87fb8d00749f5d Mon Sep 17 00:00:00 2001
 From: Alan Pevec <apevec@redhat.com>
 Date: Mon, 9 Sep 2013 15:22:20 +0200
 Subject: [PATCH] sync parameter values with keystone-dist.conf
 
-Change-Id: I0989b1579850e8a7cd2de4887cef1c753112dab8
 ---
  etc/keystone.conf.sample | 10 +++++-----
  1 file changed, 5 insertions(+), 5 deletions(-)

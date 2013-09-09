@@ -1,14 +1,9 @@
-From 8aba354ffe16ff32e7a6b2364676b1b529831320 Mon Sep 17 00:00:00 2001
+From b47233d237dd695362975ddf3587bc327355f53d Mon Sep 17 00:00:00 2001
 From: Alan Pevec <apevec@redhat.com>
 Date: Mon, 9 Sep 2013 00:51:04 +0200
 Subject: [PATCH] Revert "Use oslo.sphinx and remove local copy of doc theme"
 
 This reverts commit ad58c0f899751ca08174965ab007c5fc6b2e1e5c.
-
-Conflicts:
-	test-requirements.txt
-
-Change-Id: I69a88d58d5b8a8bebc3db957196702a2dd1c56f3
 ---
  doc/source/_templates/.placeholder |  0
  doc/source/_theme/layout.html      | 83 ++++++++++++++++++++++++++++++++++++++
