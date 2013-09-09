@@ -69,6 +69,7 @@ Requires:       python-iso8601
 Requires:       python-oslo-config >= 1:1.2.0
 Requires:       openssl
 Requires:       python-netaddr
+Requires:       python-six
 Requires:       python-babel >= 0.9.6
 Requires:       python-oauth2
 Requires:       python-dogpile-cache >= 0.5.0
