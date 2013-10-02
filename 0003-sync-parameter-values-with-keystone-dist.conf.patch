@@ -1,4 +1,4 @@
-From d55ad70e6319c50c0ddcbaadfe87fb8d00749f5d Mon Sep 17 00:00:00 2001
+From a24767d38c6780f78e250004db8223195c819c5e Mon Sep 17 00:00:00 2001
 From: Alan Pevec <apevec@redhat.com>
 Date: Mon, 9 Sep 2013 15:22:20 +0200
 Subject: [PATCH] sync parameter values with keystone-dist.conf
@@ -8,7 +8,7 @@ Subject: [PATCH] sync parameter values with keystone-dist.conf
  1 file changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/etc/keystone.conf.sample b/etc/keystone.conf.sample
-index 3f6ee9f..6cd2d08 100644
+index d7e1c44..3ead2e0 100644
 --- a/etc/keystone.conf.sample
 +++ b/etc/keystone.conf.sample
 @@ -52,7 +52,7 @@
@@ -20,7 +20,7 @@ index 3f6ee9f..6cd2d08 100644
  
  # The directory to keep log files in (will be prepended to --logfile)
  # log_dir = /var/log/keystone
-@@ -84,7 +84,7 @@
+@@ -140,7 +140,7 @@
  
  [sql]
  # The SQLAlchemy connection string used to connect to the database
@@ -29,7 +29,7 @@ index 3f6ee9f..6cd2d08 100644
  
  # the timeout before idle sql connections are reaped
  # idle_timeout = 200
-@@ -132,7 +132,7 @@
+@@ -188,7 +188,7 @@
  # static, file-based backend (does *NOT* support any management commands)
  # driver = keystone.catalog.backends.templated.TemplatedCatalog
  
@@ -38,7 +38,7 @@ index 3f6ee9f..6cd2d08 100644
  
  [endpoint_filter]
  # extension for creating associations between project and endpoints in order to
-@@ -215,7 +215,7 @@
+@@ -271,7 +271,7 @@
  # driver = keystone.policy.backends.sql.Policy
  
  [ec2]
@@ -47,7 +47,7 @@ index 3f6ee9f..6cd2d08 100644
  
  [assignment]
  # driver =
-@@ -371,4 +371,4 @@ oauth1 = keystone.auth.plugins.oauth1.OAuth
+@@ -425,4 +425,4 @@ oauth1 = keystone.auth.plugins.oauth1.OAuth
  
  [paste_deploy]
  # Name of the paste configuration file that defines the available pipelines

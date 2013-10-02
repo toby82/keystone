@@ -1,4 +1,4 @@
-From 3b50184045190a3b0605eece06b37ff99972a083 Mon Sep 17 00:00:00 2001
+From 78a1117b3535bb5ad5d8d1bfce96f6adfc1d1794 Mon Sep 17 00:00:00 2001
 From: Alan Pevec <apevec@redhat.com>
 Date: Mon, 9 Sep 2013 00:38:42 +0200
 Subject: [PATCH] remove runtime dep on python-pbr
@@ -30,7 +30,7 @@ index f5ba56d..02294d2 100755
  
      config.setup_logging(CONF, product_name='keystone')
 diff --git a/keystone/cli.py b/keystone/cli.py
-index 8704b5d..7ee967d 100644
+index af2c2dc..4fd99cf 100644
 --- a/keystone/cli.py
 +++ b/keystone/cli.py
 @@ -21,7 +21,6 @@ import os

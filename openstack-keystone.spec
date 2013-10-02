@@ -1,20 +1,20 @@
 #
-# This is 2013.2 havana-3 milestone
+# This is 2013.2  milestone
 #
 %global release_name havana
-%global milestone 3
+%global milestone rc1
 
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
 
 Name:           openstack-keystone
 Version:        2013.2
-Release:        0.9.b%{milestone}%{?dist}
+Release:        0.10.%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
 URL:            http://keystone.openstack.org/
 #Source0:        http://launchpad.net/keystone/%{release_name}/%{version}/+download/keystone-%{version}.tar.gz
-Source0:        http://launchpad.net/keystone/%{release_name}/%{release_name}-%{milestone}/+download/keystone-%{version}.b%{milestone}.tar.gz
+Source0:        http://launchpad.net/keystone/%{release_name}/%{release_name}-%{milestone}/+download/keystone-%{version}.%{milestone}.tar.gz
 Source1:        openstack-keystone.logrotate
 Source2:        openstack-keystone.service
 Source5:        openstack-keystone-sample-data
@@ -22,7 +22,7 @@ Source20:       keystone-dist.conf
 
 
 #
-# patches_base=2013.2.b3
+# patches_base=2013.2.rc1
 #
 Patch0001: 0001-remove-runtime-dep-on-python-pbr.patch
 Patch0002: 0002-Revert-Use-oslo.sphinx-and-remove-local-copy-of-doc-.patch
@@ -93,12 +93,12 @@ This package contains documentation for Keystone.
 %endif
 
 %prep
-%setup -q -n keystone-%{version}.b%{milestone}
+%setup -q -n keystone-%{version}.%{milestone}
 
 %patch0001 -p1
 %patch0002 -p1
 %patch0003 -p1
-sed -i 's/%{version}.b%{milestone}/%{version}/' PKG-INFO
+sed -i 's/%{version}.%{milestone}/%{version}/' PKG-INFO
 
 find . \( -name .gitignore -o -name .placeholder \) -delete
 find keystone -name \*.py -exec sed -i '/\/usr\/bin\/env python/d' {} \;
@@ -216,6 +216,9 @@ fi
 %endif
 
 %changelog
+* Wed Oct 02 2013 Alan Pevec <apevec@redhat.com> - 2013.2-0.10.rc1
+- Havana release candidate
+
 * Mon Sep 09 2013 Alan Pevec <apevec@redhat.com> - 2013.2-0.9.b3
 - havana-3 milestone
 - drop pbr run-time dependency
