@@ -8,7 +8,7 @@
 
 Name:           openstack-keystone
 Version:        2013.2
-Release:        0.10.%{milestone}%{?dist}
+Release:        0.11.%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
@@ -135,6 +135,9 @@ install -p -D -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/openstack-keystone.servi
 # Install sample data script.
 install -p -D -m 755 tools/sample_data.sh %{buildroot}%{_datadir}/keystone/sample_data.sh
 install -p -D -m 755 %{SOURCE5} %{buildroot}%{_bindir}/openstack-keystone-sample-data
+# Install sample HTTPD integration files
+install -p -D -m 644 httpd/*py  %{buildroot}%{_datadir}/keystone/
+install -p -D -m 644 httpd/*conf  %{buildroot}%{_datadir}/keystone/
 
 install -d -m 755 %{buildroot}%{_sharedstatedir}/keystone
 install -d -m 755 %{buildroot}%{_localstatedir}/log/keystone
@@ -216,6 +219,9 @@ fi
 %endif
 
 %changelog
+* Wed Oct 02 2013 Adam Young <ayoung@redhat> - 2013.2-0.11.rc1
+- HTTPD integration files
+
 * Wed Oct 02 2013 Alan Pevec <apevec@redhat.com> - 2013.2-0.10.rc1
 - Havana release candidate
 
