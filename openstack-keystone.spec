@@ -1,5 +1,5 @@
 #
-# This is 2013.2  milestone
+# This is 2013.2 RC1
 #
 %global release_name havana
 %global milestone rc1
