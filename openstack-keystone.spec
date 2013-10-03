@@ -125,8 +125,8 @@ rm -fr %{buildroot}%{python_sitelib}/run_tests.*
 
 install -d -m 755 %{buildroot}%{_sysconfdir}/keystone
 install -p -D -m 640 etc/keystone.conf %{buildroot}%{_sysconfdir}/keystone/keystone.conf
-install -p -D -m 640 etc/keystone-paste.ini %{buildroot}%{_datadir}/keystone/keystone-dist-paste.ini
-install -p -D -m 640 %{SOURCE20} %{buildroot}%{_datadir}/keystone/keystone-dist.conf
+install -p -D -m 644 etc/keystone-paste.ini %{buildroot}%{_datadir}/keystone/keystone-dist-paste.ini
+install -p -D -m 644 %{SOURCE20} %{buildroot}%{_datadir}/keystone/keystone-dist.conf
 install -p -D -m 640 etc/logging.conf.sample %{buildroot}%{_sysconfdir}/keystone/logging.conf
 install -p -D -m 640 etc/default_catalog.templates %{buildroot}%{_sysconfdir}/keystone/default_catalog.templates
 install -p -D -m 640 etc/policy.json %{buildroot}%{_sysconfdir}/keystone/policy.json
@@ -194,15 +194,15 @@ fi
 %{_bindir}/keystone-manage
 %{_bindir}/openstack-keystone-sample-data
 %dir %{_datadir}/keystone
-%attr(0640, root, keystone) %{_datadir}/keystone/keystone-dist.conf
-%attr(0640, root, keystone) %{_datadir}/keystone/keystone-dist-paste.ini
+%attr(0644, root, keystone) %{_datadir}/keystone/keystone-dist.conf
+%attr(0644, root, keystone) %{_datadir}/keystone/keystone-dist-paste.ini
 %attr(0755, root, root) %{_datadir}/keystone/sample_data.sh
 %{_unitdir}/openstack-keystone.service
 %dir %attr(0750, root, keystone) %{_sysconfdir}/keystone
-%config(noreplace) %attr(-, root, keystone) %{_sysconfdir}/keystone/keystone.conf
-%config(noreplace) %attr(-, root, keystone) %{_sysconfdir}/keystone/logging.conf
-%config(noreplace) %attr(-, root, keystone) %{_sysconfdir}/keystone/default_catalog.templates
-%config(noreplace) %attr(-, keystone, keystone) %{_sysconfdir}/keystone/policy.json
+%config(noreplace) %attr(0640, root, keystone) %{_sysconfdir}/keystone/keystone.conf
+%config(noreplace) %attr(0640, root, keystone) %{_sysconfdir}/keystone/logging.conf
+%config(noreplace) %attr(0640, root, keystone) %{_sysconfdir}/keystone/default_catalog.templates
+%config(noreplace) %attr(0640, keystone, keystone) %{_sysconfdir}/keystone/policy.json
 %config(noreplace) %{_sysconfdir}/logrotate.d/openstack-keystone
 %dir %attr(-, keystone, keystone) %{_sharedstatedir}/keystone
 %dir %attr(0750, keystone, keystone) %{_localstatedir}/log/keystone
