@@ -138,7 +138,7 @@ install -p -D -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/openstack-keystone.servi
 install -p -D -m 755 tools/sample_data.sh %{buildroot}%{_datadir}/keystone/sample_data.sh
 install -p -D -m 755 %{SOURCE5} %{buildroot}%{_bindir}/openstack-keystone-sample-data
 # Install sample HTTPD integration files
-install -p -D -m 644 httpd/keystone.py  %{buildroot}%{_datadir}/keystone/
+install -p -D -m 644 httpd/keystone.wsgi  %{buildroot}%{_datadir}/keystone/
 install -p -D -m 644 httpd/wsgi-keystone.conf  %{buildroot}%{_datadir}/keystone/
 
 install -d -m 755 %{buildroot}%{_sharedstatedir}/keystone
@@ -199,10 +199,7 @@ fi
 %attr(0644, root, keystone) %{_datadir}/keystone/keystone-dist.conf
 %attr(0644, root, keystone) %{_datadir}/keystone/keystone-dist-paste.ini
 %attr(0755, root, root) %{_datadir}/keystone/sample_data.sh
-%attr(0644, root, keystone) %{_datadir}/keystone/keystone.py
-# this is only a sample wsgi script, not final location so strip precompiled
-%exclude %{_datadir}/keystone/keystone.pyc
-%exclude %{_datadir}/keystone/keystone.pyo
+%attr(0644, root, keystone) %{_datadir}/keystone/keystone.wsgi
 %attr(0644, root, keystone) %{_datadir}/keystone/wsgi-keystone.conf
 %{_unitdir}/openstack-keystone.service
 %dir %attr(0750, root, keystone) %{_sysconfdir}/keystone
@@ -226,6 +223,9 @@ fi
 %endif
 
 %changelog
+* Fri Oct 04 2013 Alan Pevec <apevec@redhat.com> - 2013.2-0.12.rc1
+- rename HTTPD integration to keystone.wsgi
+
 * Wed Oct 02 2013 Adam Young <ayoung@redhat> - 2013.2-0.11.rc1
 - HTTPD integration files
 
