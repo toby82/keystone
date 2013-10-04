@@ -27,6 +27,7 @@ Source20:       keystone-dist.conf
 Patch0001: 0001-remove-runtime-dep-on-python-pbr.patch
 Patch0002: 0002-Revert-Use-oslo.sphinx-and-remove-local-copy-of-doc-.patch
 Patch0003: 0003-sync-parameter-values-with-keystone-dist.conf.patch
+Patch0004: 0004-rename-httpd-keystone.py-to-httpd-keystone.wsgi.patch
 
 BuildArch:      noarch
 BuildRequires:  python2-devel
@@ -98,6 +99,7 @@ This package contains documentation for Keystone.
 %patch0001 -p1
 %patch0002 -p1
 %patch0003 -p1
+%patch0004 -p1
 sed -i 's/%{version}.%{milestone}/%{version}/' PKG-INFO
 
 find . \( -name .gitignore -o -name .placeholder \) -delete
