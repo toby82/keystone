@@ -8,7 +8,7 @@
 
 Name:           openstack-keystone
 Version:        2013.2
-Release:        0.13.%{milestone}%{?dist}
+Release:        0.14.%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
@@ -223,7 +223,7 @@ fi
 %endif
 
 %changelog
-* Mon Oct 07 2013 Alan Pevec <apevec@redhat.com> - 2013.2-0.13.rc1
+* Mon Oct 07 2013 Alan Pevec <apevec@redhat.com> - 2013.2-0.14.rc1
 - rename HTTPD integration to keystone.wsgi
 
 * Wed Oct 02 2013 Adam Young <ayoung@redhat> - 2013.2-0.11.rc1
