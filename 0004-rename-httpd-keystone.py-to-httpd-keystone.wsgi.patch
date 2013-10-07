@@ -1,15 +1,15 @@
-From 31611e436643cfdb8fd5cc2a3d2c32fcfb110c85 Mon Sep 17 00:00:00 2001
+From 902d3d6d4a846b0ff98e951c0a4abf434518f332 Mon Sep 17 00:00:00 2001
 From: Alan Pevec <apevec@redhat.com>
 Date: Fri, 4 Oct 2013 17:04:00 +0200
 Subject: [PATCH] rename httpd/keystone.py to httpd/keystone.wsgi
 
 This matches openstack-dashboard[1]
-.py is mislead since this isn't usable outside mod_wsgi
+.py is misleading since this isn't usable outside mod_wsgi
 
 [1] https://github.com/openstack/horizon/tree/master/openstack_dashboard/wsgi
 
 Change-Id: I1ba7f0e0f72d5c9fa1d06cec2b50551eb7f2e296
-(cherry picked from commit 6ae00e0805b5cba9c92bf39472ce6615be127e8b)
+(cherry picked from commit bfcb2943c1f6f3b65ca86909f97e4528dcccc67f)
 ---
  doc/source/apache-httpd.rst |  4 ++--
  httpd/keystone.py           | 52 ---------------------------------------------
@@ -20,7 +20,7 @@ Change-Id: I1ba7f0e0f72d5c9fa1d06cec2b50551eb7f2e296
  create mode 100644 httpd/keystone.wsgi
 
 diff --git a/doc/source/apache-httpd.rst b/doc/source/apache-httpd.rst
-index f4b6cb5..7821f66 100644
+index f4b6cb5..dc282a5 100644
 --- a/doc/source/apache-httpd.rst
 +++ b/doc/source/apache-httpd.rst
 @@ -67,9 +67,9 @@ Copy the file httpd/wsgi-keystone.conf to the appropriate location for your apac
@@ -28,7 +28,7 @@ index f4b6cb5..7821f66 100644
      /etc/httpd/conf.d/wsgi-keystone.conf
  
 -Create the directory ``/var/www/cgi-bin/keystone/``. You can either hardlink or softlink the files ``main`` and ``admin`` to the file ``keystone.py`` in this directory.  For a distribution appropriate place, it should probably be copied to::
-+Create the directory ``/var/www/cgi-bin/keystone/``. You can either hardlink or softlink the files ``main`` and ``admin`` to the file ``keystone.wsgi`` in this directory.  For a distribution appropriate place, it should probably be copied to::
++Create the directory ``/var/www/cgi-bin/keystone/`` and copy the file ``httpd/keystone.wsgi`` into this directory.  For a distribution appropriate place, it should probably be copied to::
  
 -    /usr/share/openstack/keystone/httpd/keystone.py
 +    /usr/share/keystone/keystone.wsgi
