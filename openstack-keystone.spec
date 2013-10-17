@@ -1,20 +1,18 @@
 #
-# This is 2013.2 RC1
+# This is 2013.2 Havana release
 #
 %global release_name havana
-%global milestone rc1
 
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
 
 Name:           openstack-keystone
 Version:        2013.2
-Release:        0.14.%{milestone}%{?dist}
+Release:        1%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
 URL:            http://keystone.openstack.org/
-#Source0:        http://launchpad.net/keystone/%{release_name}/%{version}/+download/keystone-%{version}.tar.gz
-Source0:        http://launchpad.net/keystone/%{release_name}/%{release_name}-%{milestone}/+download/keystone-%{version}.%{milestone}.tar.gz
+Source0:        http://launchpad.net/keystone/%{release_name}/%{version}/+download/keystone-%{version}.tar.gz
 Source1:        openstack-keystone.logrotate
 Source2:        openstack-keystone.service
 Source5:        openstack-keystone-sample-data
@@ -22,16 +20,15 @@ Source20:       keystone-dist.conf
 
 
 #
-# patches_base=2013.2.rc1
+# patches_base=2013.2
 #
 Patch0001: 0001-remove-runtime-dep-on-python-pbr.patch
-Patch0002: 0002-Revert-Use-oslo.sphinx-and-remove-local-copy-of-doc-.patch
-Patch0003: 0003-sync-parameter-values-with-keystone-dist.conf.patch
-Patch0004: 0004-rename-httpd-keystone.py-to-httpd-keystone.wsgi.patch
+Patch0002: 0002-sync-parameter-values-with-keystone-dist.conf.patch
 
 BuildArch:      noarch
 BuildRequires:  python2-devel
 BuildRequires:  python-sphinx >= 1.0
+BuildRequires:  python-oslo-sphinx
 BuildRequires:  systemd-units
 BuildRequires:  python-pbr
 BuildRequires:  python-d2to1
@@ -94,21 +91,17 @@ This package contains documentation for Keystone.
 %endif
 
 %prep
-%setup -q -n keystone-%{version}.%{milestone}
+%setup -q -n keystone-%{version}
 
 %patch0001 -p1
 %patch0002 -p1
-%patch0003 -p1
-%patch0004 -p1
-sed -i 's/%{version}.%{milestone}/%{version}/' PKG-INFO
 
 find . \( -name .gitignore -o -name .placeholder \) -delete
 find keystone -name \*.py -exec sed -i '/\/usr\/bin\/env python/d' {} \;
 # Remove bundled egg-info
 rm -rf keystone.egg-info
-# let RPM handle deps
-sed -i '/setup_requires/d; /install_requires/d; /dependency_links/d' setup.py
 
+# Remove dependency on pbr and set version as per rpm
 sed -i s/REDHATKEYSTONEVERSION/%{version}/ bin/keystone-all keystone/cli.py
 
 
@@ -138,7 +131,7 @@ install -p -D -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/openstack-keystone.servi
 install -p -D -m 755 tools/sample_data.sh %{buildroot}%{_datadir}/keystone/sample_data.sh
 install -p -D -m 755 %{SOURCE5} %{buildroot}%{_bindir}/openstack-keystone-sample-data
 # Install sample HTTPD integration files
-install -p -D -m 644 httpd/keystone.wsgi  %{buildroot}%{_datadir}/keystone/
+install -p -D -m 644 httpd/keystone.py  %{buildroot}%{_datadir}/keystone/keystone.wsgi
 install -p -D -m 644 httpd/wsgi-keystone.conf  %{buildroot}%{_datadir}/keystone/
 
 install -d -m 755 %{buildroot}%{_sharedstatedir}/keystone
@@ -223,6 +216,9 @@ fi
 %endif
 
 %changelog
+* Thu Oct 17 2013 Alan Pevec <apevec@redhat.com> - 2013.2-1
+- Update to havana final
+
 * Mon Oct 07 2013 Alan Pevec <apevec@redhat.com> - 2013.2-0.14.rc1
 - rename HTTPD integration to keystone.wsgi
 
