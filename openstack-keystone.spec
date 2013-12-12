@@ -8,7 +8,7 @@
 
 Name:           openstack-keystone
 Version:        2014.1
-Release:        0.1.%{milestone}%{?dist}
+Release:        0.1.b%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
@@ -220,6 +220,9 @@ fi
 %endif
 
 %changelog
+* Thu Dec 12 2013 Alan Pevec <apevec@redhat.com> 2014.1-0.1.b1
+- icehouse-1 milestone
+
 * Wed Oct 30 2013 Alan Pevec <apevec@redhat.com> 2013.2-2
 - unintentional role granting with Keystone LDAP backend CVE-2013-4477
 
