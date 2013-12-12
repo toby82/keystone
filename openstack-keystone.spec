@@ -1,18 +1,20 @@
 #
-# This is 2013.2 Havana release
+# This is 2014.1 Icehouse-1 milestone
 #
-%global release_name havana
+%global release_name icehouse
+%global milestone 1
 
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
 
 Name:           openstack-keystone
-Version:        2013.2
-Release:        2%{?dist}
+Version:        2014.1
+Release:        0.1.%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
 URL:            http://keystone.openstack.org/
-Source0:        http://launchpad.net/keystone/%{release_name}/%{version}/+download/keystone-%{version}.tar.gz
+#Source0:        http://launchpad.net/keystone/%{release_name}/%{version}/+download/keystone-%{version}.tar.gz
+Source0:        http://launchpad.net/keystone/%{release_name}/%{release_name}-%{milestone}/+download/keystone-%{version}.b%{milestone}.tar.gz
 Source1:        openstack-keystone.logrotate
 Source2:        openstack-keystone.service
 Source5:        openstack-keystone-sample-data
@@ -20,11 +22,10 @@ Source20:       keystone-dist.conf
 
 
 #
-# patches_base=2013.2
+# patches_base=2014.1.b1
 #
 Patch0001: 0001-remove-runtime-dep-on-python-pbr.patch
 Patch0002: 0002-sync-parameter-values-with-keystone-dist.conf.patch
-Patch0003: 0003-Fix-remove-role-assignment-adds-role-using-LDAP-assi.patch
 
 BuildArch:      noarch
 BuildRequires:  python2-devel
@@ -35,7 +36,7 @@ BuildRequires:  python-pbr
 BuildRequires:  python-d2to1
 
 Requires:       python-keystone = %{version}-%{release}
-Requires:       python-keystoneclient >= 1:0.3.0
+Requires:       python-keystoneclient >= 1:0.4.1
 
 Requires(post):   systemd-units
 Requires(preun):  systemd-units
@@ -69,7 +70,7 @@ Requires:       python-oslo-config >= 1:1.2.0
 Requires:       openssl
 Requires:       python-netaddr
 Requires:       python-six
-Requires:       python-babel >= 0.9.6
+Requires:       python-babel
 Requires:       python-oauth2
 Requires:       python-dogpile-cache >= 0.5.0
 
@@ -92,11 +93,12 @@ This package contains documentation for Keystone.
 %endif
 
 %prep
-%setup -q -n keystone-%{version}
+%setup -q -n keystone-%{version}.b%{milestone}
 
 %patch0001 -p1
 %patch0002 -p1
-%patch0003 -p1
+
+sed -i 's/%{version}.b%{milestone}/%{version}/' PKG-INFO
 
 find . \( -name .gitignore -o -name .placeholder \) -delete
 find keystone -name \*.py -exec sed -i '/\/usr\/bin\/env python/d' {} \;

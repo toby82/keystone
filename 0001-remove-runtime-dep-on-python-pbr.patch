@@ -1,4 +1,4 @@
-From 7639400e08f067c4d923b20ff4915b41ff2ea0cb Mon Sep 17 00:00:00 2001
+From ab2d3f4aac3d4342e0218f751dbf7f3796488ed6 Mon Sep 17 00:00:00 2001
 From: Alan Pevec <apevec@redhat.com>
 Date: Mon, 9 Sep 2013 00:38:42 +0200
 Subject: [PATCH] remove runtime dep on python-pbr
@@ -6,14 +6,14 @@ Subject: [PATCH] remove runtime dep on python-pbr
 ---
  bin/keystone-all |  3 +--
  keystone/cli.py  |  3 +--
- requirements.txt | 20 +-------------------
- 3 files changed, 3 insertions(+), 23 deletions(-)
+ requirements.txt | 21 +--------------------
+ 3 files changed, 3 insertions(+), 24 deletions(-)
 
 diff --git a/bin/keystone-all b/bin/keystone-all
-index beec3df..1e6aecb 100755
+index 18e2a1c..2adf940 100755
 --- a/bin/keystone-all
 +++ b/bin/keystone-all
-@@ -32,7 +32,6 @@ if os.path.exists(os.path.join(possible_topdir,
+@@ -33,7 +33,6 @@ if os.path.exists(os.path.join(possible_topdir,
  
  
  from paste import deploy
@@ -21,7 +21,7 @@ index beec3df..1e6aecb 100755
  
  from keystone.openstack.common import gettextutils
  
-@@ -95,7 +94,7 @@ if __name__ == '__main__':
+@@ -101,7 +100,7 @@ if __name__ == '__main__':
          config_files = [dev_conf]
  
      CONF(project='keystone',
@@ -31,7 +31,7 @@ index beec3df..1e6aecb 100755
  
      config.setup_logging(CONF, product_name='keystone')
 diff --git a/keystone/cli.py b/keystone/cli.py
-index af2c2dc..4fd99cf 100644
+index eaf6e10..e42684e 100644
 --- a/keystone/cli.py
 +++ b/keystone/cli.py
 @@ -21,7 +21,6 @@ import os
@@ -52,28 +52,29 @@ index af2c2dc..4fd99cf 100644
           default_config_files=config_files)
      config.setup_logging(CONF)
 diff --git a/requirements.txt b/requirements.txt
-index 9679678..e975d85 100644
+index d7cbb73..e975d85 100644
 --- a/requirements.txt
 +++ b/requirements.txt
-@@ -1,20 +1,2 @@
+@@ -1,21 +1,2 @@
  # keystone dependencies
 -pbr>=0.5.21,<1.0
 -pam>=0.1.4
 -WebOb>=1.2.3,<1.3
 -eventlet>=0.13.0
 -greenlet>=0.3.2
--netaddr
+-netaddr>=0.7.6
 -PasteDeploy>=1.5.0
 -Paste
 -Routes>=1.12.3
+-six>=1.4.1
 -SQLAlchemy>=0.7.8,<=0.7.99
 -sqlalchemy-migrate>=0.7.2
 -passlib
 -lxml>=2.3
--iso8601>=0.1.4
--python-keystoneclient>=0.3.2
+-iso8601>=0.1.8
+-python-keystoneclient>=0.4.1
 -oslo.config>=1.2.0
--Babel>=0.9.6
+-Babel>=1.3
 -oauth2
 -dogpile.cache>=0.5.0
 +# let RPM handle deps
