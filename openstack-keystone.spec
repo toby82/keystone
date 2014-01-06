@@ -8,7 +8,7 @@
 
 Name:           openstack-keystone
 Version:        2014.1
-Release:        0.1.b%{milestone}%{?dist}
+Release:        0.2.b%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
@@ -69,7 +69,7 @@ Requires:       python-iso8601
 Requires:       python-oslo-config >= 1:1.2.0
 Requires:       openssl
 Requires:       python-netaddr
-Requires:       python-six
+Requires:       python-six >= 1.4.1
 Requires:       python-babel
 Requires:       python-oauth2
 Requires:       python-dogpile-cache >= 0.5.0
@@ -220,6 +220,9 @@ fi
 %endif
 
 %changelog
+* Mon Jan 06 2014 Pádraig Brady <pbrady@redhat.com> - 2014.1-0.2.b1
+- Set python-six min version to ensure updated
+
 * Thu Dec 12 2013 Alan Pevec <apevec@redhat.com> 2014.1-0.1.b1
 - icehouse-1 milestone
 
