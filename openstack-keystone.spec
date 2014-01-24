@@ -119,8 +119,11 @@ cp etc/keystone.conf.sample etc/keystone.conf
 %{__python} setup.py install --skip-build --root %{buildroot}
 
 # Delete tests
-rm -fr %{buildroot}%{python_sitelib}/tests
-rm -fr %{buildroot}%{python_sitelib}/run_tests.*
+rm -fr %{buildroot}%{python_sitelib}/keystone/tests
+# Delete KDS
+# nothing is using it yet and we need to figure out right (sub)package for it
+rm -f %{buildroot}%{_bindir}/kds-api
+rm -fr %{buildroot}%{python_sitelib}/keystone/contrib/kds
 
 install -d -m 755 %{buildroot}%{_sysconfdir}/keystone
 install -p -D -m 640 etc/keystone.conf %{buildroot}%{_sysconfdir}/keystone/keystone.conf
