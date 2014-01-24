@@ -1,4 +1,4 @@
-From ab2d3f4aac3d4342e0218f751dbf7f3796488ed6 Mon Sep 17 00:00:00 2001
+From 53260428c1b1de6d349f094f6fde7352e03b8944 Mon Sep 17 00:00:00 2001
 From: Alan Pevec <apevec@redhat.com>
 Date: Mon, 9 Sep 2013 00:38:42 +0200
 Subject: [PATCH] remove runtime dep on python-pbr
@@ -6,11 +6,11 @@ Subject: [PATCH] remove runtime dep on python-pbr
 ---
  bin/keystone-all |  3 +--
  keystone/cli.py  |  3 +--
- requirements.txt | 21 +--------------------
- 3 files changed, 3 insertions(+), 24 deletions(-)
+ requirements.txt | 27 +--------------------------
+ 3 files changed, 3 insertions(+), 30 deletions(-)
 
 diff --git a/bin/keystone-all b/bin/keystone-all
-index 18e2a1c..2adf940 100755
+index 66d1ccc..c1cef5c 100755
 --- a/bin/keystone-all
 +++ b/bin/keystone-all
 @@ -33,7 +33,6 @@ if os.path.exists(os.path.join(possible_topdir,
@@ -21,17 +21,17 @@ index 18e2a1c..2adf940 100755
  
  from keystone.openstack.common import gettextutils
  
-@@ -101,7 +100,7 @@ if __name__ == '__main__':
-         config_files = [dev_conf]
+@@ -106,7 +105,7 @@ if __name__ == '__main__':
+     sql.initialize()
  
      CONF(project='keystone',
 -         version=pbr.version.VersionInfo('keystone').version_string(),
 +         version='REDHATKEYSTONEVERSION',
           default_config_files=config_files)
  
-     config.setup_logging(CONF, product_name='keystone')
+     config.setup_logging()
 diff --git a/keystone/cli.py b/keystone/cli.py
-index eaf6e10..e42684e 100644
+index 514e0d7..290ca0a 100644
 --- a/keystone/cli.py
 +++ b/keystone/cli.py
 @@ -21,7 +21,6 @@ import os
@@ -41,21 +41,21 @@ index eaf6e10..e42684e 100644
 -import pbr.version
  
  from keystone.common import openssl
- from keystone.common.sql import migration
-@@ -212,7 +211,7 @@ def main(argv=None, config_files=None):
-     CONF.register_cli_opt(command_opt)
+ from keystone.common import sql
+@@ -216,7 +215,7 @@ def main(argv=None, config_files=None):
+ 
      CONF(args=argv[1:],
           project='keystone',
 -         version=pbr.version.VersionInfo('keystone').version_string(),
 +         version='REDHATKEYSTONEVERSION',
           usage='%(prog)s [' + '|'.join([cmd.name for cmd in CMDS]) + ']',
           default_config_files=config_files)
-     config.setup_logging(CONF)
+     config.setup_logging()
 diff --git a/requirements.txt b/requirements.txt
-index d7cbb73..e975d85 100644
+index 472a949..e975d85 100644
 --- a/requirements.txt
 +++ b/requirements.txt
-@@ -1,21 +1,2 @@
+@@ -1,27 +1,2 @@
  # keystone dependencies
 -pbr>=0.5.21,<1.0
 -pam>=0.1.4
@@ -68,13 +68,19 @@ index d7cbb73..e975d85 100644
 -Routes>=1.12.3
 -six>=1.4.1
 -SQLAlchemy>=0.7.8,<=0.7.99
--sqlalchemy-migrate>=0.7.2
+-sqlalchemy-migrate>=0.8.2
 -passlib
 -lxml>=2.3
 -iso8601>=0.1.8
 -python-keystoneclient>=0.4.1
 -oslo.config>=1.2.0
 -Babel>=1.3
--oauth2
+-oauthlib
 -dogpile.cache>=0.5.0
+-
+-# KDS exclusive dependencies
+-
+-pecan>=0.2.0
+-pycrypto>=2.6
+-WSME>=0.5b6
 +# let RPM handle deps
