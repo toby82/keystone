@@ -1,55 +1,67 @@
-From c00bd925ca2811f6b9c945f29be5cf5265208b72 Mon Sep 17 00:00:00 2001
+From 07bd99ba9ae89b31bba161bd1e711855d1864b5b Mon Sep 17 00:00:00 2001
 From: Alan Pevec <apevec@redhat.com>
 Date: Mon, 9 Sep 2013 15:22:20 +0200
 Subject: [PATCH] sync parameter values with keystone-dist.conf
 
 ---
- etc/keystone.conf.sample | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ etc/keystone.conf.sample | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
 diff --git a/etc/keystone.conf.sample b/etc/keystone.conf.sample
-index ce77397..d07eee5 100644
+index c45c84b..735505c 100644
 --- a/etc/keystone.conf.sample
 +++ b/etc/keystone.conf.sample
-@@ -62,7 +62,7 @@
- # verbose = False
+@@ -280,7 +280,7 @@
  
- # Name of log file to output to. If not set, logging will go to stdout.
--# log_file = keystone.log
-+# log_file = /var/log/keystone/keystone.log
+ # The messaging driver to use, defaults to rabbit. Other
+ # drivers include qpid and zmq. (string value)
+-#rpc_backend=rabbit
++#rpc_backend=qpid
  
- # The directory to keep log files in (will be prepended to --logfile)
- # log_dir = /var/log/keystone
-@@ -163,7 +163,7 @@
+ # The default exchange under which topics are scoped. May be
+ # overridden by an exchange name specified in the
+@@ -412,7 +412,7 @@
+ # (Optional) Name of log file to output to. If no default is
+ # set, logging will go to stdout. (string value)
+ # Deprecated group/name - [DEFAULT]/logfile
+-#log_file=<None>
++#log_file=/var/log/keystone/keystone.log
  
- [database]
- # The SQLAlchemy connection string used to connect to the database
--# connection = sqlite:///keystone.db
-+# connection = mysql://keystone:keystone@localhost/keystone
+ # (Optional) The base directory used for relative --log-file
+ # paths (string value)
+@@ -551,7 +551,7 @@
  
- # The SQLAlchemy connection string used to connect to the slave database
- # Note that Keystone does not use this option.
-@@ -239,7 +239,7 @@
- # static, file-based backend (does *NOT* support any management commands)
- # driver = keystone.catalog.backends.templated.TemplatedCatalog
+ # Catalog template file name for use with the template catalog
+ # backend. (string value)
+-#template_file=default_catalog.templates
++#template_file=/etc/keystone/default_catalog.templates
  
--# template_file = default_catalog.templates
-+# template_file = /etc/keystone/default_catalog.templates
+ # Keystone catalog backend driver (string value)
+ #driver=keystone.catalog.backends.sql.Catalog
+@@ -591,7 +591,7 @@
+ # Deprecated group/name - [DEFAULT]/sql_connection
+ # Deprecated group/name - [DATABASE]/sql_connection
+ # Deprecated group/name - [sql]/connection
+-#connection=sqlite:////keystone/openstack/common/db/$sqlite_db
++#connection=mysql://keystone:keystone@localhost/keystone
+ 
+ # The SQLAlchemy connection string used to connect to the
+ # slave database (string value)
+@@ -657,7 +657,7 @@
+ #
+ 
+ # Keystone EC2Credential backend driver (string value)
+-#driver=keystone.contrib.ec2.backends.kvs.Ec2
++#driver=keystone.contrib.ec2.backends.sql.Ec2
+ 
  
  [endpoint_filter]
- # extension for creating associations between project and endpoints in order to
-@@ -322,7 +322,7 @@
- # driver = keystone.policy.backends.sql.Policy
+@@ -1066,7 +1066,7 @@
  
- [ec2]
--# driver = keystone.contrib.ec2.backends.kvs.Ec2
-+# driver = keystone.contrib.ec2.backends.sql.Ec2
+ # Name of the paste configuration file that defines the
+ # available pipelines (string value)
+-#config_file=keystone-paste.ini
++#config_file=/usr/share/keystone/keystone-dist-paste.ini
  
- [assignment]
- # driver =
-@@ -488,4 +488,4 @@ oauth1 = keystone.auth.plugins.oauth1.OAuth
  
- [paste_deploy]
- # Name of the paste configuration file that defines the available pipelines
--config_file = keystone-paste.ini
-+# config_file = /usr/share/keystone/keystone-dist-paste.ini
+ [policy]

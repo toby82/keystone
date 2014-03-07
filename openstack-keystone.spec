@@ -1,14 +1,14 @@
 #
-# This is 2014.1 Icehouse-2 milestone
+# This is 2014.1 Icehouse-3 milestone
 #
 %global release_name icehouse
-%global milestone 2
+%global milestone 3
 
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
 
 Name:           openstack-keystone
 Version:        2014.1
-Release:        0.3.b%{milestone}%{?dist}
+Release:        0.4.b%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
@@ -22,7 +22,7 @@ Source20:       keystone-dist.conf
 
 
 #
-# patches_base=2014.1.b2
+# patches_base=2014.1.b3
 #
 Patch0001: 0001-remove-runtime-dep-on-python-pbr.patch
 Patch0002: 0002-sync-parameter-values-with-keystone-dist.conf.patch
@@ -36,7 +36,7 @@ BuildRequires:  python-pbr
 BuildRequires:  python-d2to1
 
 Requires:       python-keystone = %{version}-%{release}
-Requires:       python-keystoneclient >= 1:0.4.1
+Requires:       python-keystoneclient >= 1:0.6.0
 
 Requires(post):   systemd-units
 Requires(preun):  systemd-units
@@ -73,6 +73,9 @@ Requires:       python-six >= 1.4.1
 Requires:       python-babel
 Requires:       python-oauth2
 Requires:       python-dogpile-cache >= 0.5.0
+Requires:       python-jsonschema
+Requires:       python-oslo-messaging
+Requires:       python-pycadf
 
 %description -n   python-keystone
 Keystone is a Python implementation of the OpenStack
@@ -120,10 +123,6 @@ cp etc/keystone.conf.sample etc/keystone.conf
 
 # Delete tests
 rm -fr %{buildroot}%{python_sitelib}/keystone/tests
-# Delete KDS
-# nothing is using it yet and we need to figure out right (sub)package for it
-rm -f %{buildroot}%{_bindir}/kds-api
-rm -fr %{buildroot}%{python_sitelib}/keystone/contrib/kds
 
 install -d -m 755 %{buildroot}%{_sysconfdir}/keystone
 install -p -D -m 640 etc/keystone.conf %{buildroot}%{_sysconfdir}/keystone/keystone.conf
@@ -223,6 +222,9 @@ fi
 %endif
 
 %changelog
+* Fri Mar 07 2014 Alan Pevec <apevec@redhat.com> 2014.1-0.4.b3
+- icehouse-3 milestone
+
 * Fri Jan 24 2014 Alan Pevec <apevec@redhat.com> 2014.1-0.3.b2
 - icehouse-2 milestone
 
