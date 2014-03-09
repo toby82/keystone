@@ -1,0 +1,253 @@
+From 7c08de22cc1cdadca039e22d7fbc570e67aad2af Mon Sep 17 00:00:00 2001
+From: Alan Pevec <apevec@redhat.com>
+Date: Sun, 9 Mar 2014 23:27:46 +0100
+Subject: [PATCH] refactor service readiness notification
+
+drop old keystone.common.systemd
+drop onready configuration parameter
+import and apply new oslo systemd module
+---
+ bin/keystone-all                     |  11 +---
+ etc/keystone.conf.sample             |   7 ---
+ keystone/common/config.py            |   7 ---
+ keystone/common/systemd.py           |  41 --------------
+ keystone/openstack/common/systemd.py | 104 +++++++++++++++++++++++++++++++++++
+ openstack-common.conf                |   1 +
+ 6 files changed, 107 insertions(+), 64 deletions(-)
+ delete mode 100644 keystone/common/systemd.py
+ create mode 100644 keystone/openstack/common/systemd.py
+
+diff --git a/bin/keystone-all b/bin/keystone-all
+index ff6f3f4..018ec6a 100755
+--- a/bin/keystone-all
++++ b/bin/keystone-all
+@@ -34,6 +34,7 @@ if os.path.exists(os.path.join(possible_topdir,
+ from paste import deploy
+ 
+ from keystone.openstack.common import gettextutils
++from keystone.openstack.common import systemd
+ 
+ # NOTE(blk-u):
+ # gettextutils.install() must run to set _ before importing any modules that
+@@ -81,15 +82,7 @@ def serve(*servers):
+             raise
+ 
+     # notify calling process we are ready to serve
+-    if CONF.onready:
+-        try:
+-            notifier = importutils.import_module(CONF.onready)
+-            notifier.notify()
+-        except ImportError:
+-            try:
+-                utils.check_output(CONF.onready.split())
+-            except Exception:
+-                logging.exception('Failed to execute onready command')
++    systemd.notify_once()
+ 
+     for name, server in servers:
+         server.wait()
+diff --git a/etc/keystone.conf.sample b/etc/keystone.conf.sample
+index 735505c..c1e27c5 100644
+--- a/etc/keystone.conf.sample
++++ b/etc/keystone.conf.sample
+@@ -44,13 +44,6 @@
+ # for connections) (string value)
+ #admin_endpoint=http://localhost:%(admin_port)s/
+ 
+-# onready allows you to send a notification when the process
+-# is ready to serve For example, to have it notify using
+-# systemd, one could set shell command: "onready = systemd-
+-# notify --ready" or a module with notify() method: "onready =
+-# keystone.common.systemd" (string value)
+-#onready=<None>
+-
+ # enforced by optional sizelimit middleware
+ # (keystone.middleware:RequestBodySizeLimiter) (integer value)
+ #max_request_body_size=114688
+diff --git a/keystone/common/config.py b/keystone/common/config.py
+index 71d93e8..6d99beb 100644
+--- a/keystone/common/config.py
++++ b/keystone/common/config.py
+@@ -59,13 +59,6 @@ FILE_OPTIONS = {
+                    help='The base admin endpoint URL for keystone that are '
+                         'advertised to clients (NOTE: this does NOT affect '
+                         'how keystone listens for connections)'),
+-        cfg.StrOpt('onready',
+-                   help='onready allows you to send a notification when the '
+-                        'process is ready to serve For example, to have it '
+-                        'notify using systemd, one could set shell command: '
+-                        '"onready = systemd-notify --ready" or a module '
+-                        'with notify() method: '
+-                        '"onready = keystone.common.systemd"'),
+         # default max request size is 112k
+         cfg.IntOpt('max_request_body_size', default=114688,
+                    help='enforced by optional sizelimit middleware '
+diff --git a/keystone/common/systemd.py b/keystone/common/systemd.py
+deleted file mode 100644
+index 807b241..0000000
+--- a/keystone/common/systemd.py
++++ /dev/null
+@@ -1,41 +0,0 @@
+-# Copyright 2012 Red Hat, Inc.
+-#
+-#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+-#    not use this file except in compliance with the License. You may obtain
+-#    a copy of the License at
+-#
+-#         http://www.apache.org/licenses/LICENSE-2.0
+-#
+-#    Unless required by applicable law or agreed to in writing, software
+-#    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+-#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+-#    License for the specific language governing permissions and limitations
+-#    under the License.
+-
+-"""
+-Helper module for systemd start-up completion notification.
+-Used for "onready" configuration parameter in keystone.conf
+-"""
+-
+-import os
+-import socket
+-
+-
+-def _sd_notify(msg):
+-    sysd = os.getenv('NOTIFY_SOCKET')
+-    if sysd:
+-        sock = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
+-        if sysd.startswith('@'):
+-            # abstract namespace socket
+-            sysd = '\0%s' % sysd[1:]
+-        sock.connect(sysd)
+-        sock.sendall(msg)
+-        sock.close()
+-
+-
+-def notify():
+-    _sd_notify('READY=1')
+-
+-
+-if __name__ == '__main__':
+-    notify()
+diff --git a/keystone/openstack/common/systemd.py b/keystone/openstack/common/systemd.py
+new file mode 100644
+index 0000000..d08548b
+--- /dev/null
++++ b/keystone/openstack/common/systemd.py
+@@ -0,0 +1,104 @@
++# Copyright 2012-2014 Red Hat, Inc.
++#
++#    Licensed under the Apache License, Version 2.0 (the "License"); you may
++#    not use this file except in compliance with the License. You may obtain
++#    a copy of the License at
++#
++#         http://www.apache.org/licenses/LICENSE-2.0
++#
++#    Unless required by applicable law or agreed to in writing, software
++#    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
++#    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
++#    License for the specific language governing permissions and limitations
++#    under the License.
++
++"""
++Helper module for systemd service readiness notification.
++"""
++
++import os
++import socket
++import sys
++
++from keystone.openstack.common import log as logging
++
++
++LOG = logging.getLogger(__name__)
++
++
++def _abstractify(socket_name):
++    if socket_name.startswith('@'):
++        # abstract namespace socket
++        socket_name = '\0%s' % socket_name[1:]
++    return socket_name
++
++
++def _sd_notify(unset_env, msg):
++    notify_socket = os.getenv('NOTIFY_SOCKET')
++    if notify_socket:
++        sock = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
++        try:
++            sock.connect(_abstractify(notify_socket))
++            sock.sendall(msg)
++            if unset_env:
++                del os.environ['NOTIFY_SOCKET']
++        except EnvironmentError:
++            LOG.debug("Systemd notification failed", exc_info=True)
++        finally:
++            sock.close()
++
++
++def notify():
++    """Send notification to Systemd that service is ready.
++    For details see
++      http://www.freedesktop.org/software/systemd/man/sd_notify.html
++    """
++    _sd_notify(False, 'READY=1')
++
++
++def notify_once():
++    """Send notification once to Systemd that service is ready.
++    Systemd sets NOTIFY_SOCKET environment variable with the name of the
++    socket listening for notifications from services.
++    This method removes the NOTIFY_SOCKET environment variable to ensure
++    notification is sent only once.
++    """
++    _sd_notify(True, 'READY=1')
++
++
++def onready(notify_socket, timeout):
++    """Wait for systemd style notification on the socket.
++
++    :param notify_socket: local socket address
++    :type notify_socket:  string
++    :param timeout:       socket timeout
++    :type timeout:        float
++    :returns:             0 service ready
++                          1 service not ready
++                          2 timeout occured
++    """
++    sock = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
++    sock.settimeout(timeout)
++    sock.bind(_abstractify(notify_socket))
++    try:
++        msg = sock.recv(512)
++    except socket.timeout:
++        return 2
++    finally:
++        sock.close()
++    if 'READY=1' in msg:
++        return 0
++    else:
++        return 1
++
++
++if __name__ == '__main__':
++    # simple CLI for testing
++    if len(sys.argv) == 1:
++        notify()
++    elif len(sys.argv) >= 2:
++        timeout = float(sys.argv[1])
++        notify_socket = os.getenv('NOTIFY_SOCKET')
++        if notify_socket:
++            retval = onready(notify_socket, timeout)
++            sys.exit(retval)
+diff --git a/openstack-common.conf b/openstack-common.conf
+index 0823b23..f9785ab 100644
+--- a/openstack-common.conf
++++ b/openstack-common.conf
+@@ -13,6 +13,7 @@ module=log
+ module=log_handler
+ module=policy
+ module=strutils
++module=systemd
+ module=timeutils
+ 
+ # The base module to hold the copy of openstack.common

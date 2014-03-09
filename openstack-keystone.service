@@ -6,7 +6,7 @@ After=syslog.target network.target
 Type=notify
 Restart=always
 User=keystone
-ExecStart=/usr/bin/keystone-all --config-file /usr/share/keystone/keystone-dist.conf --config-file /etc/keystone/keystone.conf
+ExecStart=/usr/bin/keystone-all
 
 [Install]
 WantedBy=multi-user.target

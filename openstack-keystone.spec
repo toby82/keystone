@@ -8,7 +8,7 @@
 
 Name:           openstack-keystone
 Version:        2014.1
-Release:        0.4.b%{milestone}%{?dist}
+Release:        0.5.b%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
@@ -26,6 +26,7 @@ Source20:       keystone-dist.conf
 #
 Patch0001: 0001-remove-runtime-dep-on-python-pbr.patch
 Patch0002: 0002-sync-parameter-values-with-keystone-dist.conf.patch
+Patch0003: 0003-refactor-service-readiness-notification.patch
 
 BuildArch:      noarch
 BuildRequires:  python2-devel
@@ -100,6 +101,7 @@ This package contains documentation for Keystone.
 
 %patch0001 -p1
 %patch0002 -p1
+%patch0003 -p1
 
 sed -i 's/%{version}.b%{milestone}/%{version}/' PKG-INFO
 
@@ -224,6 +226,9 @@ fi
 %endif
 
 %changelog
+* Sun Mar 09 2014 Alan Pevec <apevec@redhat.com> 2014.1-0.5.b3
+- use oslo systemd module for service notification
+
 * Fri Mar 07 2014 Alan Pevec <apevec@redhat.com> 2014.1-0.4.b3
 - icehouse-3 milestone
 
