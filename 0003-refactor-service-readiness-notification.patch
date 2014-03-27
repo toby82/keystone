@@ -1,4 +1,4 @@
-From 7c08de22cc1cdadca039e22d7fbc570e67aad2af Mon Sep 17 00:00:00 2001
+From f164ef42e58f159f88bfeb9bcc3727a167543637 Mon Sep 17 00:00:00 2001
 From: Alan Pevec <apevec@redhat.com>
 Date: Sun, 9 Mar 2014 23:27:46 +0100
 Subject: [PATCH] refactor service readiness notification
@@ -7,29 +7,30 @@ drop old keystone.common.systemd
 drop onready configuration parameter
 import and apply new oslo systemd module
 ---
- bin/keystone-all                     |  11 +---
+ bin/keystone-all                     |  12 +---
  etc/keystone.conf.sample             |   7 ---
  keystone/common/config.py            |   7 ---
  keystone/common/systemd.py           |  41 --------------
  keystone/openstack/common/systemd.py | 104 +++++++++++++++++++++++++++++++++++
  openstack-common.conf                |   1 +
- 6 files changed, 107 insertions(+), 64 deletions(-)
+ 6 files changed, 108 insertions(+), 64 deletions(-)
  delete mode 100644 keystone/common/systemd.py
  create mode 100644 keystone/openstack/common/systemd.py
 
 diff --git a/bin/keystone-all b/bin/keystone-all
-index ff6f3f4..018ec6a 100755
+index 315f3c1..c3a195d 100755
 --- a/bin/keystone-all
 +++ b/bin/keystone-all
-@@ -34,6 +34,7 @@ if os.path.exists(os.path.join(possible_topdir,
+@@ -34,6 +34,8 @@ if os.path.exists(os.path.join(possible_topdir,
  from paste import deploy
  
  from keystone.openstack.common import gettextutils
 +from keystone.openstack.common import systemd
- 
- # NOTE(blk-u):
- # gettextutils.install() must run to set _ before importing any modules that
-@@ -81,15 +82,7 @@ def serve(*servers):
++
+ # NOTE(dstanek): gettextutils.enable_lazy() must be called before
+ # gettextutils._() is called to ensure it has the desired lazy lookup
+ # behavior. This includes cases, like keystone.exceptions, where
+@@ -82,15 +84,7 @@ def serve(*servers):
              raise
  
      # notify calling process we are ready to serve
@@ -47,38 +48,38 @@ index ff6f3f4..018ec6a 100755
      for name, server in servers:
          server.wait()
 diff --git a/etc/keystone.conf.sample b/etc/keystone.conf.sample
-index 735505c..c1e27c5 100644
+index 6d52633..d7f4359 100644
 --- a/etc/keystone.conf.sample
 +++ b/etc/keystone.conf.sample
-@@ -44,13 +44,6 @@
- # for connections) (string value)
+@@ -56,13 +56,6 @@
+ # a different server.
  #admin_endpoint=http://localhost:%(admin_port)s/
  
 -# onready allows you to send a notification when the process
 -# is ready to serve For example, to have it notify using
 -# systemd, one could set shell command: "onready = systemd-
 -# notify --ready" or a module with notify() method: "onready =
--# keystone.common.systemd" (string value)
+-# keystone.common.systemd". (string value)
 -#onready=<None>
 -
  # enforced by optional sizelimit middleware
- # (keystone.middleware:RequestBodySizeLimiter) (integer value)
- #max_request_body_size=114688
+ # (keystone.middleware:RequestBodySizeLimiter). (integer
+ # value)
 diff --git a/keystone/common/config.py b/keystone/common/config.py
-index 71d93e8..6d99beb 100644
+index 85c49f8..a89f7e2 100644
 --- a/keystone/common/config.py
 +++ b/keystone/common/config.py
-@@ -59,13 +59,6 @@ FILE_OPTIONS = {
-                    help='The base admin endpoint URL for keystone that are '
-                         'advertised to clients (NOTE: this does NOT affect '
-                         'how keystone listens for connections)'),
+@@ -69,13 +69,6 @@ FILE_OPTIONS = {
+                         'to set this value if the base URL contains a path '
+                         '(eg /prefix/v2.0) or the endpoint should be found on '
+                         'a different server.'),
 -        cfg.StrOpt('onready',
 -                   help='onready allows you to send a notification when the '
 -                        'process is ready to serve For example, to have it '
 -                        'notify using systemd, one could set shell command: '
 -                        '"onready = systemd-notify --ready" or a module '
 -                        'with notify() method: '
--                        '"onready = keystone.common.systemd"'),
+-                        '"onready = keystone.common.systemd".'),
          # default max request size is 112k
          cfg.IntOpt('max_request_body_size', default=114688,
                     help='enforced by optional sizelimit middleware '
