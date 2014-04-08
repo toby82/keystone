@@ -1,4 +1,4 @@
-From 546634e4cbc5887f141737670cc59f822d63588f Mon Sep 17 00:00:00 2001
+From dd6ab06fc8a4934d9b3009e10e313db8f7102443 Mon Sep 17 00:00:00 2001
 From: Alan Pevec <apevec@redhat.com>
 Date: Mon, 9 Sep 2013 15:22:20 +0200
 Subject: [PATCH] sync parameter values with keystone-dist.conf

@@ -1,14 +1,14 @@
 #
-# This is 2014.1 RC1
+# This is 2014.1 RC2
 #
 %global release_name icehouse
-%global milestone rc1
+%global milestone rc2
 
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
 
 Name:           openstack-keystone
 Version:        2014.1
-Release:        0.7.%{milestone}%{?dist}
+Release:        0.8.%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
@@ -22,7 +22,7 @@ Source20:       keystone-dist.conf
 
 
 #
-# patches_base=2014.1.rc1
+# patches_base=2014.1.rc2
 #
 Patch0001: 0001-remove-runtime-dep-on-python-pbr.patch
 Patch0002: 0002-sync-parameter-values-with-keystone-dist.conf.patch

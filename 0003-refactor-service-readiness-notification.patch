@@ -1,4 +1,4 @@
-From f164ef42e58f159f88bfeb9bcc3727a167543637 Mon Sep 17 00:00:00 2001
+From 10bd60ae3c5fd2a2fd1565da43c4e971a622072a Mon Sep 17 00:00:00 2001
 From: Alan Pevec <apevec@redhat.com>
 Date: Sun, 9 Mar 2014 23:27:46 +0100
 Subject: [PATCH] refactor service readiness notification
