@@ -1,35 +1,35 @@
-From dd6ab06fc8a4934d9b3009e10e313db8f7102443 Mon Sep 17 00:00:00 2001
+From 80f9f5488b4e97c970a984dacf23850a94a90d18 Mon Sep 17 00:00:00 2001
 From: Alan Pevec <apevec@redhat.com>
 Date: Mon, 9 Sep 2013 15:22:20 +0200
 Subject: [PATCH] sync parameter values with keystone-dist.conf
 
+and adjust descriptions to take dist.conf defaults into account (rhbz#923912)
+
+Change-Id: If36c384f86843a6506a494d79beca65639fb3480
 ---
- etc/keystone.conf.sample | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ etc/keystone.conf.sample | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
 
 diff --git a/etc/keystone.conf.sample b/etc/keystone.conf.sample
-index c5f57bf..6d52633 100644
+index c5f57bf..d48d806 100644
 --- a/etc/keystone.conf.sample
 +++ b/etc/keystone.conf.sample
-@@ -305,7 +305,7 @@
+@@ -439,10 +439,11 @@
+ # %(default)s (string value)
+ #log_date_format=%Y-%m-%d %H:%M:%S
  
- # The messaging driver to use, defaults to rabbit. Other
- # drivers include qpid and zmq. (string value)
--#rpc_backend=rabbit
-+#rpc_backend=qpid
- 
- # The default exchange under which topics are scoped. May be
- # overridden by an exchange name specified in the
-@@ -442,7 +442,7 @@
- # (Optional) Name of log file to output to. If no default is
- # set, logging will go to stdout. (string value)
+-# (Optional) Name of log file to output to. If no default is
+-# set, logging will go to stdout. (string value)
++# (Optional) Name of log file to output to. (string value)
++# If not set here, logging will go to /var/log/keystone/keystone.log,
++# default from keystone-dist.conf.
  # Deprecated group/name - [DEFAULT]/logfile
 -#log_file=<None>
 +#log_file=/var/log/keystone/keystone.log
  
  # (Optional) The base directory used for relative --log-file
  # paths (string value)
-@@ -581,7 +581,7 @@
+@@ -581,7 +582,7 @@
  
  # Catalog template file name for use with the template catalog
  # backend. (string value)
@@ -38,7 +38,7 @@ index c5f57bf..6d52633 100644
  
  # Keystone catalog backend driver. (string value)
  #driver=keystone.catalog.backends.sql.Catalog
-@@ -622,7 +622,7 @@
+@@ -622,7 +623,7 @@
  # Deprecated group/name - [DEFAULT]/sql_connection
  # Deprecated group/name - [DATABASE]/sql_connection
  # Deprecated group/name - [sql]/connection
@@ -47,7 +47,7 @@ index c5f57bf..6d52633 100644
  
  # The SQL mode to be used for MySQL sessions. This option,
  # including the default, overrides any server-set SQL mode. To
-@@ -710,7 +710,7 @@
+@@ -710,7 +711,7 @@
  #
  
  # Keystone EC2Credential backend driver. (string value)
@@ -56,7 +56,7 @@ index c5f57bf..6d52633 100644
  
  
  [endpoint_filter]
-@@ -1147,7 +1147,7 @@
+@@ -1147,7 +1148,7 @@
  
  # Name of the paste configuration file that defines the
  # available pipelines. (string value)

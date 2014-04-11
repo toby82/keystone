@@ -8,7 +8,7 @@
 
 Name:           openstack-keystone
 Version:        2014.1
-Release:        0.8.%{milestone}%{?dist}
+Release:        0.9.%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
@@ -226,6 +226,9 @@ fi
 %endif
 
 %changelog
+* Fri Apr 11 2014 Alan Pevec <apevec@redhat.com> 2014.1-0.9.rc2
+- icehouse rc2
+
 * Sun Mar 09 2014 Alan Pevec <apevec@redhat.com> 2014.1-0.5.b3
 - use oslo systemd module for service notification
 
