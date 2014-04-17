@@ -1,20 +1,18 @@
 #
-# This is 2014.1 RC2
+# This is 2014.1 Icehouse release
 #
 %global release_name icehouse
-%global milestone rc2
 
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
 
 Name:           openstack-keystone
 Version:        2014.1
-Release:        0.9.%{milestone}%{?dist}
+Release:        1%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
 URL:            http://keystone.openstack.org/
-#Source0:        http://launchpad.net/keystone/%{release_name}/%{version}/+download/keystone-%{version}.tar.gz
-Source0:        http://launchpad.net/keystone/%{release_name}/%{release_name}-%{milestone}/+download/keystone-%{version}.%{milestone}.tar.gz
+Source0:        http://launchpad.net/keystone/%{release_name}/%{version}/+download/keystone-%{version}.tar.gz
 Source1:        openstack-keystone.logrotate
 Source2:        openstack-keystone.service
 Source5:        openstack-keystone-sample-data
@@ -22,7 +20,7 @@ Source20:       keystone-dist.conf
 
 
 #
-# patches_base=2014.1.rc2
+# patches_base=2014.1
 #
 Patch0001: 0001-remove-runtime-dep-on-python-pbr.patch
 Patch0002: 0002-sync-parameter-values-with-keystone-dist.conf.patch
@@ -97,13 +95,11 @@ This package contains documentation for Keystone.
 %endif
 
 %prep
-%setup -q -n keystone-%{version}.%{milestone}
+%setup -q -n keystone-%{version}
 
 %patch0001 -p1
 %patch0002 -p1
 %patch0003 -p1
-
-sed -i 's/%{version}.%{milestone}/%{version}/' PKG-INFO
 
 find . \( -name .gitignore -o -name .placeholder \) -delete
 find keystone -name \*.py -exec sed -i '/\/usr\/bin\/env python/d' {} \;
@@ -226,6 +222,9 @@ fi
 %endif
 
 %changelog
+* Thu Apr 17 2014 Alan Pevec <apevec@redhat.com> 2014.1-1
+- Icehouse release
+
 * Fri Apr 11 2014 Alan Pevec <apevec@redhat.com> 2014.1-0.9.rc2
 - icehouse rc2
 
