@@ -7,7 +7,7 @@
 
 Name:           openstack-keystone
 Version:        2014.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
@@ -222,7 +222,7 @@ fi
 %endif
 
 %changelog
-* Thu Apr 17 2014 Alan Pevec <apevec@redhat.com> 2014.1-1
+* Thu Apr 17 2014 Alan Pevec <apevec@redhat.com> 2014.1-2
 - Icehouse release
 
 * Fri Apr 11 2014 Alan Pevec <apevec@redhat.com> 2014.1-0.9.rc2
