@@ -1,4 +1,4 @@
-From 7bd28ac031ceab2e57c878782a29e0180ea1d9cf Mon Sep 17 00:00:00 2001
+From ae1b18786f88558c2df1c996b577d3b0ae422fee Mon Sep 17 00:00:00 2001
 From: Alan Pevec <apevec@redhat.com>
 Date: Sun, 9 Mar 2014 23:27:46 +0100
 Subject: [PATCH] refactor service readiness notification
@@ -48,7 +48,7 @@ index 315f3c1..c3a195d 100755
      for name, server in servers:
          server.wait()
 diff --git a/etc/keystone.conf.sample b/etc/keystone.conf.sample
-index d48d806..bd44239 100644
+index 3aa1314..4ef5d91 100644
 --- a/etc/keystone.conf.sample
 +++ b/etc/keystone.conf.sample
 @@ -56,13 +56,6 @@

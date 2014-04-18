@@ -1,4 +1,4 @@
-From 80f9f5488b4e97c970a984dacf23850a94a90d18 Mon Sep 17 00:00:00 2001
+From 5b075da509d4f5c4ed5b2bb99215eab7a7b1e368 Mon Sep 17 00:00:00 2001
 From: Alan Pevec <apevec@redhat.com>
 Date: Mon, 9 Sep 2013 15:22:20 +0200
 Subject: [PATCH] sync parameter values with keystone-dist.conf
@@ -7,13 +7,22 @@ and adjust descriptions to take dist.conf defaults into account (rhbz#923912)
 
 Change-Id: If36c384f86843a6506a494d79beca65639fb3480
 ---
- etc/keystone.conf.sample | 15 ++++++++-------
- 1 file changed, 8 insertions(+), 7 deletions(-)
+ etc/keystone.conf.sample | 17 +++++++++--------
+ 1 file changed, 9 insertions(+), 8 deletions(-)
 
 diff --git a/etc/keystone.conf.sample b/etc/keystone.conf.sample
-index c5f57bf..d48d806 100644
+index c5f57bf..3aa1314 100644
 --- a/etc/keystone.conf.sample
 +++ b/etc/keystone.conf.sample
+@@ -385,7 +385,7 @@
+ #verbose=false
+ 
+ # Log output to standard error (boolean value)
+-#use_stderr=true
++#use_stderr=false
+ 
+ # Format string to use for log messages with context (string
+ # value)
 @@ -439,10 +439,11 @@
  # %(default)s (string value)
  #log_date_format=%Y-%m-%d %H:%M:%S
