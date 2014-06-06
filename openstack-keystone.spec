@@ -1,13 +1,13 @@
 #
-# This is 2014.1 Icehouse release
+# This is 2014.1.1 Icehouse stable release
 #
 %global release_name icehouse
 
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
 
 Name:           openstack-keystone
-Version:        2014.1
-Release:        2%{?dist}
+Version:        2014.1.1
+Release:        1%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
@@ -20,11 +20,11 @@ Source20:       keystone-dist.conf
 
 
 #
-# patches_base=2014.1
+# patches_base=2014.1.1
 #
 Patch0001: 0001-remove-runtime-dep-on-python-pbr.patch
 Patch0002: 0002-sync-parameter-values-with-keystone-dist.conf.patch
-Patch0003: 0003-refactor-service-readiness-notification.patch
+Patch0003: 0003-Refactor-service-readiness-notification.patch
 
 BuildArch:      noarch
 BuildRequires:  python2-devel
@@ -222,6 +222,10 @@ fi
 %endif
 
 %changelog
+* Fri Jun 06 2014 Alan Pevec <apevec@redhat.com> 2014.1.1-1
+- updated to stable icehouse 2014.1.1 release
+- Keystone user and group id mismatch CVE-2014-0204
+
 * Thu Apr 17 2014 Alan Pevec <apevec@redhat.com> 2014.1-2
 - Icehouse release
 

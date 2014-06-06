@@ -1,11 +1,22 @@
-From ae1b18786f88558c2df1c996b577d3b0ae422fee Mon Sep 17 00:00:00 2001
+From bacd0815c3f778507090a045f0bf8188933653b2 Mon Sep 17 00:00:00 2001
 From: Alan Pevec <apevec@redhat.com>
 Date: Sun, 9 Mar 2014 23:27:46 +0100
-Subject: [PATCH] refactor service readiness notification
+Subject: [PATCH] Refactor service readiness notification
 
+import and apply Oslo systemd module
 drop old keystone.common.systemd
 drop onready configuration parameter
-import and apply new oslo systemd module
+ - systemd notification is no-op when not running inside systemd
+
+Oslo commit 53e1214c092f09e3851b1a1b55289a93a72b09ec
+
+Conflicts:
+        bin/keystone-all
+        etc/keystone.conf.sample
+        keystone/common/config.py
+
+Change-Id: I80f325c9be9c171c2dc8d5526570bf64f0f87c78
+(cherry picked from commit c045ea108d7246ccddcc8c540b6057b2105bfd07)
 ---
  bin/keystone-all                     |  12 +---
  etc/keystone.conf.sample             |   7 ---
@@ -13,24 +24,24 @@ import and apply new oslo systemd module
  keystone/common/systemd.py           |  41 --------------
  keystone/openstack/common/systemd.py | 104 +++++++++++++++++++++++++++++++++++
  openstack-common.conf                |   1 +
- 6 files changed, 108 insertions(+), 64 deletions(-)
+ 6 files changed, 107 insertions(+), 65 deletions(-)
  delete mode 100644 keystone/common/systemd.py
  create mode 100644 keystone/openstack/common/systemd.py
 
 diff --git a/bin/keystone-all b/bin/keystone-all
-index 315f3c1..c3a195d 100755
+index 315f3c1..e541f74 100755
 --- a/bin/keystone-all
 +++ b/bin/keystone-all
-@@ -34,6 +34,8 @@ if os.path.exists(os.path.join(possible_topdir,
- from paste import deploy
- 
- from keystone.openstack.common import gettextutils
+@@ -46,7 +46,7 @@ from keystone.common import sql
+ from keystone.common import utils
+ from keystone import config
+ from keystone.openstack.common.gettextutils import _
+-from keystone.openstack.common import importutils
 +from keystone.openstack.common import systemd
-+
- # NOTE(dstanek): gettextutils.enable_lazy() must be called before
- # gettextutils._() is called to ensure it has the desired lazy lookup
- # behavior. This includes cases, like keystone.exceptions, where
-@@ -82,15 +84,7 @@ def serve(*servers):
+ from keystone import service
+ 
+ 
+@@ -82,15 +82,7 @@ def serve(*servers):
              raise
  
      # notify calling process we are ready to serve

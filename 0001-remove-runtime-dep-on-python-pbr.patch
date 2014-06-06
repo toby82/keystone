@@ -1,4 +1,4 @@
-From 45dcde99375c88ce4e8231c748a3e4df377a0215 Mon Sep 17 00:00:00 2001
+From ac4d68e2aa6612cf9904baba7f2505ebddf6e82c Mon Sep 17 00:00:00 2001
 From: Alan Pevec <apevec@redhat.com>
 Date: Mon, 9 Sep 2013 00:38:42 +0200
 Subject: [PATCH] remove runtime dep on python-pbr
@@ -52,7 +52,7 @@ index a9decbd..9411219 100644
           default_config_files=config_files)
      config.setup_logging()
 diff --git a/requirements.txt b/requirements.txt
-index 041c759..e975d85 100644
+index 4b76b1b..e975d85 100644
 --- a/requirements.txt
 +++ b/requirements.txt
 @@ -1,23 +1,2 @@
@@ -65,7 +65,7 @@ index 041c759..e975d85 100644
 -PasteDeploy>=1.5.0
 -Paste
 -Routes>=1.12.3
--six>=1.5.2
+-six>=1.6.0
 -SQLAlchemy>=0.7.8,<=0.9.99
 -sqlalchemy-migrate>=0.8.2,!=0.8.4
 -passlib
