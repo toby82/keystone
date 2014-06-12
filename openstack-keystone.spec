@@ -1,18 +1,20 @@
 #
-# This is 2014.1.1 Icehouse stable release
+# This is 2014.2 Juno-1 milestone
 #
-%global release_name icehouse
+%global release_name juno
+%global milestone 1
 
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
 
 Name:           openstack-keystone
-Version:        2014.1.1
-Release:        4%{?dist}
+Version:        2014.2
+Release:        0.1.b%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
 URL:            http://keystone.openstack.org/
-Source0:        http://launchpad.net/keystone/%{release_name}/%{version}/+download/keystone-%{version}.tar.gz
+#Source0:        http://launchpad.net/keystone/%{release_name}/%{version}/+download/keystone-%{version}.tar.gz
+Source0:        http://launchpad.net/keystone/%{release_name}/%{release_name}-%{milestone}/+download/keystone-%{version}.b%{milestone}.tar.gz
 Source1:        openstack-keystone.logrotate
 Source2:        openstack-keystone.service
 Source3:        openstack-keystone.sysctl
@@ -24,13 +26,12 @@ Source23:       openstack-keystone.upstart
 
 
 #
-# patches_base=2014.1.1
+# patches_base=2014.2.b1
 #
 Patch0001: 0001-remove-runtime-dep-on-python-pbr.patch
 Patch0002: 0002-sync-parameter-values-with-keystone-dist.conf.patch
-Patch0003: 0003-Refactor-service-readiness-notification.patch
-Patch0004: 0004-Block-delegation-escalation-of-privilege.patch
-Patch0005: 0005-Ensure-that-in-v2-auth-tenant_id-matches-trust.patch
+Patch0003: 0003-Block-delegation-escalation-of-privilege.patch
+Patch0004: 0004-Ensure-that-in-v2-auth-tenant_id-matches-trust.patch
 
 BuildArch:      noarch
 BuildRequires:  python2-devel
@@ -40,7 +41,7 @@ BuildRequires:  python-pbr
 BuildRequires:  python-d2to1
 
 Requires:       python-keystone = %{version}-%{release}
-Requires:       python-keystoneclient >= 1:0.6.0
+Requires:       python-keystoneclient >= 1:0.9.0
 
 %if 0%{?rhel} == 6
 Requires(post):   chkconfig
@@ -87,10 +88,11 @@ Requires:       python-netaddr
 Requires:       python-six >= 1.4.1
 Requires:       python-babel
 Requires:       python-oauthlib
-Requires:       python-dogpile-cache >= 0.5.0
+Requires:       python-dogpile-cache >= 0.5.3
 Requires:       python-jsonschema
 Requires:       python-oslo-messaging
 Requires:       python-pycadf
+Requires:       python-posix_ipc
 
 %description -n   python-keystone
 Keystone is a Python implementation of the OpenStack
@@ -111,13 +113,12 @@ This package contains documentation for Keystone.
 %endif
 
 %prep
-%setup -q -n keystone-%{version}
+%setup -q -n keystone-%{version}.b%{milestone}
 
 %patch0001 -p1
 %patch0002 -p1
 %patch0003 -p1
 %patch0004 -p1
-%patch0005 -p1
 
 find . \( -name .gitignore -o -name .placeholder \) -delete
 find keystone -name \*.py -exec sed -i '/\/usr\/bin\/env python/d' {} \;
@@ -126,6 +127,8 @@ rm -rf keystone.egg-info
 
 # Remove dependency on pbr and set version as per rpm
 sed -i s/REDHATKEYSTONEVERSION/%{version}/ bin/keystone-all keystone/cli.py
+
+sed -i 's/%{version}.b%{milestone}/%{version}/' PKG-INFO
 
 # make doc build compatible with python-oslo-sphinx RPM
 sed -i 's/oslosphinx/oslo.sphinx/' doc/source/conf.py
@@ -269,6 +272,9 @@ fi
 %endif
 
 %changelog
+* Wed Jul 09 2014 Alan Pevec <apevec@redhat.com> 2014.2-0.1.b
+- juno-1 milestone
+
 * Wed Jul 09 2014 Alan Pevec <apevec@redhat.com> 2014.1.1-4
 - Keystone V2 trusts privilege escalation through user supplied project id
   CVE-2014-3520
