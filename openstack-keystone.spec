@@ -7,7 +7,7 @@
 
 Name:           openstack-keystone
 Version:        2014.1.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
@@ -25,6 +25,7 @@ Source20:       keystone-dist.conf
 Patch0001: 0001-remove-runtime-dep-on-python-pbr.patch
 Patch0002: 0002-sync-parameter-values-with-keystone-dist.conf.patch
 Patch0003: 0003-Refactor-service-readiness-notification.patch
+Patch0004: 0004-Block-delegation-escalation-of-privilege.patch
 
 BuildArch:      noarch
 BuildRequires:  python2-devel
@@ -100,6 +101,7 @@ This package contains documentation for Keystone.
 %patch0001 -p1
 %patch0002 -p1
 %patch0003 -p1
+%patch0004 -p1
 
 find . \( -name .gitignore -o -name .placeholder \) -delete
 find keystone -name \*.py -exec sed -i '/\/usr\/bin\/env python/d' {} \;
@@ -222,6 +224,9 @@ fi
 %endif
 
 %changelog
+* Fri Jun 13 2014 Alan Pevec <apevec@redhat.com> 2014.1.1-2
+- privilege escalation through trust chained delegation CVE-2014-3476
+
 * Fri Jun 06 2014 Alan Pevec <apevec@redhat.com> 2014.1.1-1
 - updated to stable icehouse 2014.1.1 release
 - Keystone user and group id mismatch CVE-2014-0204
