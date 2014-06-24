@@ -7,7 +7,7 @@
 
 Name:           openstack-keystone
 Version:        2014.1.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
@@ -15,6 +15,7 @@ URL:            http://keystone.openstack.org/
 Source0:        http://launchpad.net/keystone/%{release_name}/%{version}/+download/keystone-%{version}.tar.gz
 Source1:        openstack-keystone.logrotate
 Source2:        openstack-keystone.service
+Source3:        openstack-keystone.sysctl
 Source5:        openstack-keystone-sample-data
 Source20:       keystone-dist.conf
 
@@ -135,6 +136,8 @@ install -p -D -m 640 etc/default_catalog.templates %{buildroot}%{_sysconfdir}/ke
 install -p -D -m 640 etc/policy.json %{buildroot}%{_sysconfdir}/keystone/policy.json
 install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/openstack-keystone
 install -p -D -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/openstack-keystone.service
+install -d -m 755 %{buildroot}%{_prefix}/lib/sysctl.d
+install -p -D -m 644 %{SOURCE3} %{buildroot}%{_prefix}/lib/sysctl.d/openstack-keystone.conf
 # Install sample data script.
 install -p -D -m 755 tools/sample_data.sh %{buildroot}%{_datadir}/keystone/sample_data.sh
 install -p -D -m 755 %{SOURCE5} %{buildroot}%{_bindir}/openstack-keystone-sample-data
@@ -211,6 +214,7 @@ fi
 %config(noreplace) %{_sysconfdir}/logrotate.d/openstack-keystone
 %dir %attr(-, keystone, keystone) %{_sharedstatedir}/keystone
 %dir %attr(0750, keystone, keystone) %{_localstatedir}/log/keystone
+%{_prefix}/lib/sysctl.d/openstack-keystone.conf
 
 %files -n python-keystone
 %defattr(-,root,root,-)
@@ -224,6 +228,9 @@ fi
 %endif
 
 %changelog
+* Wed Jun 25 2014 Alan Pevec <apevec@redhat.com> 2014.1.1-3
+- exclude default port 35357 from the ephemeral port range
+
 * Fri Jun 13 2014 Alan Pevec <apevec@redhat.com> 2014.1.1-2
 - privilege escalation through trust chained delegation CVE-2014-3476
 
