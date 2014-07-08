@@ -7,7 +7,7 @@
 
 Name:           openstack-keystone
 Version:        2014.1.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
@@ -27,6 +27,7 @@ Patch0001: 0001-remove-runtime-dep-on-python-pbr.patch
 Patch0002: 0002-sync-parameter-values-with-keystone-dist.conf.patch
 Patch0003: 0003-Refactor-service-readiness-notification.patch
 Patch0004: 0004-Block-delegation-escalation-of-privilege.patch
+Patch0005: 0005-Ensure-that-in-v2-auth-tenant_id-matches-trust.patch
 
 BuildArch:      noarch
 BuildRequires:  python2-devel
@@ -103,6 +104,7 @@ This package contains documentation for Keystone.
 %patch0002 -p1
 %patch0003 -p1
 %patch0004 -p1
+%patch0005 -p1
 
 find . \( -name .gitignore -o -name .placeholder \) -delete
 find keystone -name \*.py -exec sed -i '/\/usr\/bin\/env python/d' {} \;
@@ -228,6 +230,10 @@ fi
 %endif
 
 %changelog
+* Wed Jul 09 2014 Alan Pevec <apevec@redhat.com> 2014.1.1-4
+- Keystone V2 trusts privilege escalation through user supplied project id
+  CVE-2014-3520
+
 * Wed Jun 25 2014 Alan Pevec <apevec@redhat.com> 2014.1.1-3
 - exclude default port 35357 from the ephemeral port range
 
