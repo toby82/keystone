@@ -18,6 +18,9 @@ Source2:        openstack-keystone.service
 Source3:        openstack-keystone.sysctl
 Source5:        openstack-keystone-sample-data
 Source20:       keystone-dist.conf
+Source21:       daemon_notify.sh
+Source22:       openstack-keystone.init
+Source23:       openstack-keystone.upstart
 
 
 #
@@ -31,18 +34,28 @@ Patch0005: 0005-Ensure-that-in-v2-auth-tenant_id-matches-trust.patch
 
 BuildArch:      noarch
 BuildRequires:  python2-devel
-BuildRequires:  python-sphinx >= 1.0
+BuildRequires:  python-sphinx >= 1.1.2
 BuildRequires:  python-oslo-sphinx
-BuildRequires:  systemd-units
 BuildRequires:  python-pbr
 BuildRequires:  python-d2to1
 
 Requires:       python-keystone = %{version}-%{release}
 Requires:       python-keystoneclient >= 1:0.6.0
 
-Requires(post):   systemd-units
-Requires(preun):  systemd-units
-Requires(postun): systemd-units
+%if 0%{?rhel} == 6
+Requires(post):   chkconfig
+Requires(postun): initscripts
+Requires(preun):  chkconfig
+Requires(preun):  initscripts
+# for daemon_notify
+Requires: /usr/bin/uuidgen
+Requires: /bin/sleep
+%else
+Requires(post): systemd
+Requires(preun): systemd
+Requires(postun): systemd
+BuildRequires: systemd
+%endif
 Requires(pre):    shadow-utils
 
 %description
@@ -60,10 +73,10 @@ Requires:       python-ldap
 Requires:       python-lxml
 Requires:       python-memcached
 Requires:       python-migrate
-Requires:       python-paste-deploy
-Requires:       python-routes
-Requires:       python-sqlalchemy
-Requires:       python-webob
+Requires:       python-paste-deploy >= 1.5.0
+Requires:       python-routes >= 1.12
+Requires:       python-sqlalchemy >= 0.7.8
+Requires:       python-webob >= 1.2.3
 Requires:       python-passlib
 Requires:       MySQL-python
 Requires:       PyPAM
@@ -137,7 +150,14 @@ install -p -D -m 640 etc/logging.conf.sample %{buildroot}%{_sysconfdir}/keystone
 install -p -D -m 640 etc/default_catalog.templates %{buildroot}%{_sysconfdir}/keystone/default_catalog.templates
 install -p -D -m 640 etc/policy.json %{buildroot}%{_sysconfdir}/keystone/policy.json
 install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/openstack-keystone
+%if 0%{?rhel} == 6
+# Install service readiness wrapper
+install -p -D -m 755 %{SOURCE21} %{buildroot}%{_datadir}/keystone/daemon_notify.sh
+install -p -D -m 755 %{SOURCE22} %{buildroot}%{_initrddir}/openstack-keystone
+install -p -D -m 644 %{SOURCE23} %{buildroot}%{_datadir}/keystone/%{name}.upstart
+%else
 install -p -D -m 644 %{SOURCE2} %{buildroot}%{_unitdir}/openstack-keystone.service
+%endif
 install -d -m 755 %{buildroot}%{_prefix}/lib/sysctl.d
 install -p -D -m 644 %{SOURCE3} %{buildroot}%{_prefix}/lib/sysctl.d/openstack-keystone.conf
 # Install sample data script.
@@ -149,17 +169,15 @@ install -p -D -m 644 httpd/wsgi-keystone.conf  %{buildroot}%{_datadir}/keystone/
 
 install -d -m 755 %{buildroot}%{_sharedstatedir}/keystone
 install -d -m 755 %{buildroot}%{_localstatedir}/log/keystone
+%if 0%{?rhel} == 6
+install -d -m 755 %{buildroot}%{_localstatedir}/run/keystone
+%endif
 
 # docs generation requires everything to be installed first
 export PYTHONPATH="$( pwd ):$PYTHONPATH"
 pushd doc
-if [ -x /usr/bin/sphinx-apidoc ]; then
-    make html
-    make man
-else
-    make html SPHINXAPIDOC=echo
-    make man SPHINXAPIDOC=echo
-fi
+make html
+make man
 mkdir -p %{buildroot}%{_mandir}/man1
 install -p -D -m 644 build/man/*.1 %{buildroot}%{_mandir}/man1/
 popd
@@ -175,24 +193,35 @@ useradd --uid 163 -r -g keystone -d %{_sharedstatedir}/keystone -s /sbin/nologin
 exit 0
 
 %post
+%if 0%{?rhel} == 6
 if [ $1 -eq 1 ] ; then
     # Initial installation
-    /bin/systemctl daemon-reload >/dev/null 2>&1 || :
+    /sbin/chkconfig --add openstack-keystone
 fi
+%else
+%systemd_post openstack-keystone.service
+%endif
 
 %preun
+%if 0%{?rhel} == 6
 if [ $1 -eq 0 ] ; then
     # Package removal, not upgrade
-    /bin/systemctl --no-reload disable openstack-keystone.service > /dev/null 2>&1 || :
-    /bin/systemctl stop openstack-keystone.service > /dev/null 2>&1 || :
+    /sbin/service openstack-keystone stop >/dev/null 2>&1
+    /sbin/chkconfig --del openstack-keystone
 fi
+%else
+%systemd_preun openstack-keystone.service
+%endif
 
 %postun
-/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+%if 0%{?rhel} == 6
 if [ $1 -ge 1 ] ; then
     # Package upgrade, not uninstall
-    /bin/systemctl try-restart openstack-keystone.service >/dev/null 2>&1 || :
+    /sbin/service openstack-keystone condrestart >/dev/null 2>&1 || :
 fi
+%else
+%systemd_postun_with_restart openstack-keystone.service
+%endif
 
 %files
 %doc LICENSE
@@ -207,7 +236,13 @@ fi
 %attr(0755, root, root) %{_datadir}/keystone/sample_data.sh
 %attr(0644, root, keystone) %{_datadir}/keystone/keystone.wsgi
 %attr(0644, root, keystone) %{_datadir}/keystone/wsgi-keystone.conf
+%if 0%{?rhel} == 6
+%attr(0755, root, root) %{_datadir}/keystone/daemon_notify.sh
+%{_datadir}/keystone/%{name}.upstart
+%{_initrddir}/openstack-keystone
+%else
 %{_unitdir}/openstack-keystone.service
+%endif
 %dir %attr(0750, root, keystone) %{_sysconfdir}/keystone
 %config(noreplace) %attr(0640, root, keystone) %{_sysconfdir}/keystone/keystone.conf
 %config(noreplace) %attr(0640, root, keystone) %{_sysconfdir}/keystone/logging.conf
@@ -216,7 +251,11 @@ fi
 %config(noreplace) %{_sysconfdir}/logrotate.d/openstack-keystone
 %dir %attr(-, keystone, keystone) %{_sharedstatedir}/keystone
 %dir %attr(0750, keystone, keystone) %{_localstatedir}/log/keystone
+%if 0%{?rhel} == 6
+%dir %attr(-, keystone, keystone) %{_localstatedir}/run/keystone
+%endif
 %{_prefix}/lib/sysctl.d/openstack-keystone.conf
+
 
 %files -n python-keystone
 %defattr(-,root,root,-)
