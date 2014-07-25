@@ -1,14 +1,14 @@
 #
-# This is 2014.2 Juno-1 milestone
+# This is 2014.2 Juno-2 milestone
 #
 %global release_name juno
-%global milestone 1
+%global milestone 2
 
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
 
 Name:           openstack-keystone
 Version:        2014.2
-Release:        0.1.b%{milestone}%{?dist}
+Release:        0.2.b%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
@@ -26,12 +26,10 @@ Source23:       openstack-keystone.upstart
 
 
 #
-# patches_base=2014.2.b1
+# patches_base=2014.2.b2
 #
 Patch0001: 0001-remove-runtime-dep-on-python-pbr.patch
 Patch0002: 0002-sync-parameter-values-with-keystone-dist.conf.patch
-Patch0003: 0003-Block-delegation-escalation-of-privilege.patch
-Patch0004: 0004-Ensure-that-in-v2-auth-tenant_id-matches-trust.patch
 
 BuildArch:      noarch
 BuildRequires:  python2-devel
@@ -93,6 +91,9 @@ Requires:       python-jsonschema
 Requires:       python-oslo-messaging
 Requires:       python-pycadf
 Requires:       python-posix_ipc
+Requires:       python-keystonemiddleware
+Requires:       python-oslo-db
+Requires:       python-oslo-i18n
 
 %description -n   python-keystone
 Keystone is a Python implementation of the OpenStack
@@ -117,8 +118,6 @@ This package contains documentation for Keystone.
 
 %patch0001 -p1
 %patch0002 -p1
-%patch0003 -p1
-%patch0004 -p1
 
 find . \( -name .gitignore -o -name .placeholder \) -delete
 find keystone -name \*.py -exec sed -i '/\/usr\/bin\/env python/d' {} \;
@@ -272,6 +271,9 @@ fi
 %endif
 
 %changelog
+* Fri Jul 25 2014 Alan Pevec <apevec@redhat.com> 2014.2-0.2.b2
+- juno-2 milestone
+
 * Wed Jul 09 2014 Alan Pevec <apevec@redhat.com> 2014.2-0.1.b
 - juno-1 milestone
 

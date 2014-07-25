@@ -1,4 +1,4 @@
-From 09b04beb1c52077b68cd25a354d11e706350c96f Mon Sep 17 00:00:00 2001
+From 65b81531dd4a3b386a07bc3e0d5972e9cf831a2c Mon Sep 17 00:00:00 2001
 From: Alan Pevec <apevec@redhat.com>
 Date: Mon, 9 Sep 2013 15:22:20 +0200
 Subject: [PATCH] sync parameter values with keystone-dist.conf
@@ -11,20 +11,20 @@ Change-Id: If36c384f86843a6506a494d79beca65639fb3480
  1 file changed, 9 insertions(+), 8 deletions(-)
 
 diff --git a/etc/keystone.conf.sample b/etc/keystone.conf.sample
-index b20139d..b8d39d5 100644
+index bddcc24..52a9179 100644
 --- a/etc/keystone.conf.sample
 +++ b/etc/keystone.conf.sample
-@@ -361,7 +361,7 @@
+@@ -395,7 +395,7 @@
  #verbose=false
  
- # Log output to standard error (boolean value)
+ # Log output to standard error. (boolean value)
 -#use_stderr=true
 +#use_stderr=false
  
- # Format string to use for log messages with context (string
+ # Format string to use for log messages with context. (string
  # value)
-@@ -415,10 +415,11 @@
- # %(default)s (string value)
+@@ -450,10 +450,11 @@
+ # %(default)s . (string value)
  #log_date_format=%Y-%m-%d %H:%M:%S
  
 -# (Optional) Name of log file to output to. If no default is
@@ -37,8 +37,8 @@ index b20139d..b8d39d5 100644
 +#log_file=/var/log/keystone/keystone.log
  
  # (Optional) The base directory used for relative --log-file
- # paths (string value)
-@@ -555,7 +556,7 @@
+ # paths. (string value)
+@@ -585,7 +586,7 @@
  
  # Catalog template file name for use with the template catalog
  # backend. (string value)
@@ -47,16 +47,16 @@ index b20139d..b8d39d5 100644
  
  # Catalog backend driver. (string value)
  #driver=keystone.catalog.backends.sql.Catalog
-@@ -596,7 +597,7 @@
+@@ -626,7 +627,7 @@
  # Deprecated group/name - [DEFAULT]/sql_connection
  # Deprecated group/name - [DATABASE]/sql_connection
  # Deprecated group/name - [sql]/connection
 -#connection=<None>
 +#connection=mysql://keystone:keystone@localhost/keystone
  
- # The SQL mode to be used for MySQL sessions. This option,
- # including the default, overrides any server-set SQL mode. To
-@@ -684,7 +685,7 @@
+ # The SQLAlchemy connection string to use to connect to the
+ # slave database. (string value)
+@@ -719,7 +720,7 @@
  #
  
  # EC2Credential backend driver. (string value)
@@ -65,7 +65,7 @@ index b20139d..b8d39d5 100644
  
  
  [endpoint_filter]
-@@ -1129,7 +1130,7 @@
+@@ -1213,7 +1214,7 @@
  
  # Name of the paste configuration file that defines the
  # available pipelines. (string value)
