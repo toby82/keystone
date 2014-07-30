@@ -2,7 +2,8 @@
 # This is 2014.2 Juno-2 milestone
 #
 %global release_name juno
-%global milestone 2
+%global upstream_version UPSTREAMVERSION
+#%global milestone 2
 
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
 
@@ -114,7 +115,7 @@ This package contains documentation for Keystone.
 %endif
 
 %prep
-%setup -q -n keystone-%{version}.b%{milestone}
+%setup -q -n keystone-%{upstream_version}
 
 %patch0001 -p1
 %patch0002 -p1
@@ -127,10 +128,7 @@ rm -rf keystone.egg-info
 # Remove dependency on pbr and set version as per rpm
 sed -i s/REDHATKEYSTONEVERSION/%{version}/ bin/keystone-all keystone/cli.py
 
-sed -i 's/%{version}.b%{milestone}/%{version}/' PKG-INFO
-
-# make doc build compatible with python-oslo-sphinx RPM
-sed -i 's/oslosphinx/oslo.sphinx/' doc/source/conf.py
+sed -i 's/%{version}.%{release}/%{version}/' PKG-INFO
 
 %build
 cp etc/keystone.conf.sample etc/keystone.conf
@@ -263,7 +261,7 @@ fi
 %defattr(-,root,root,-)
 %doc LICENSE
 %{python_sitelib}/keystone
-%{python_sitelib}/keystone-%{version}-*.egg-info
+%{python_sitelib}/keystone-%{version}*.egg-info
 
 %if 0%{?with_doc}
 %files doc
