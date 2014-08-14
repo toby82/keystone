@@ -95,6 +95,7 @@ Requires:       python-posix_ipc
 Requires:       python-keystonemiddleware
 Requires:       python-oslo-db
 Requires:       python-oslo-i18n
+Requires:       python-oslo-utils
 
 %description -n   python-keystone
 Keystone is a Python implementation of the OpenStack
@@ -269,6 +270,9 @@ fi
 %endif
 
 %changelog
+* Thu Aug 14 2014 Derek Higgins <derekh@redhat.com> - XXX
+- Add dependency on python-oslo-utils
+
 * Fri Jul 25 2014 Alan Pevec <apevec@redhat.com> 2014.2-0.2.b2
 - juno-2 milestone
 
