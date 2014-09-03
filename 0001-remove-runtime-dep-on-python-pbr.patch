@@ -1,4 +1,4 @@
-From 26fdb294dc499c0bf3fe25fc24c66f74ad055403 Mon Sep 17 00:00:00 2001
+From 65a36bfd0408da71032291d4930df8f56e3f5650 Mon Sep 17 00:00:00 2001
 From: Alan Pevec <apevec@redhat.com>
 Date: Mon, 9 Sep 2013 00:38:42 +0200
 Subject: [PATCH] remove runtime dep on python-pbr
@@ -31,7 +31,7 @@ index 732ee8e..e548763 100755
  
      config.setup_logging()
 diff --git a/keystone/cli.py b/keystone/cli.py
-index d8fc8ce..928a731 100644
+index e8c84af..140832d 100644
 --- a/keystone/cli.py
 +++ b/keystone/cli.py
 @@ -17,7 +17,6 @@ from __future__ import absolute_import
@@ -52,7 +52,7 @@ index d8fc8ce..928a731 100644
           default_config_files=config_files)
      config.setup_logging()
 diff --git a/requirements.txt b/requirements.txt
-index e15a0c2..e975d85 100644
+index 4d3ea05..e975d85 100644
 --- a/requirements.txt
 +++ b/requirements.txt
 @@ -1,27 +1,2 @@
@@ -81,7 +81,7 @@ index e15a0c2..e975d85 100644
 -oauthlib>=0.6
 -dogpile.cache>=0.5.3
 -jsonschema>=2.0.0,<3.0.0
--pycadf>=0.5.1
+-pycadf>=0.6.0
 -posix_ipc
 +# let RPM handle deps
 -- 

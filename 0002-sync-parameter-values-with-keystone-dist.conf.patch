@@ -1,4 +1,4 @@
-From 65b81531dd4a3b386a07bc3e0d5972e9cf831a2c Mon Sep 17 00:00:00 2001
+From 755d734764d5146de9f50ec84609ed548b3ad25f Mon Sep 17 00:00:00 2001
 From: Alan Pevec <apevec@redhat.com>
 Date: Mon, 9 Sep 2013 15:22:20 +0200
 Subject: [PATCH] sync parameter values with keystone-dist.conf
@@ -11,10 +11,10 @@ Change-Id: If36c384f86843a6506a494d79beca65639fb3480
  1 file changed, 9 insertions(+), 8 deletions(-)
 
 diff --git a/etc/keystone.conf.sample b/etc/keystone.conf.sample
-index bddcc24..52a9179 100644
+index 9f6051b..f7f6a0e 100644
 --- a/etc/keystone.conf.sample
 +++ b/etc/keystone.conf.sample
-@@ -395,7 +395,7 @@
+@@ -347,7 +347,7 @@
  #verbose=false
  
  # Log output to standard error. (boolean value)
@@ -23,7 +23,7 @@ index bddcc24..52a9179 100644
  
  # Format string to use for log messages with context. (string
  # value)
-@@ -450,10 +450,11 @@
+@@ -402,10 +402,11 @@
  # %(default)s . (string value)
  #log_date_format=%Y-%m-%d %H:%M:%S
  
@@ -38,7 +38,7 @@ index bddcc24..52a9179 100644
  
  # (Optional) The base directory used for relative --log-file
  # paths. (string value)
-@@ -585,7 +586,7 @@
+@@ -537,7 +538,7 @@
  
  # Catalog template file name for use with the template catalog
  # backend. (string value)
@@ -47,7 +47,7 @@ index bddcc24..52a9179 100644
  
  # Catalog backend driver. (string value)
  #driver=keystone.catalog.backends.sql.Catalog
-@@ -626,7 +627,7 @@
+@@ -587,7 +588,7 @@
  # Deprecated group/name - [DEFAULT]/sql_connection
  # Deprecated group/name - [DATABASE]/sql_connection
  # Deprecated group/name - [sql]/connection
@@ -56,7 +56,7 @@ index bddcc24..52a9179 100644
  
  # The SQLAlchemy connection string to use to connect to the
  # slave database. (string value)
-@@ -719,7 +720,7 @@
+@@ -680,7 +681,7 @@
  #
  
  # EC2Credential backend driver. (string value)
@@ -65,7 +65,7 @@ index bddcc24..52a9179 100644
  
  
  [endpoint_filter]
-@@ -1213,7 +1214,7 @@
+@@ -1241,7 +1242,7 @@
  
  # Name of the paste configuration file that defines the
  # available pipelines. (string value)
@@ -74,3 +74,6 @@ index bddcc24..52a9179 100644
  
  
  [policy]
+-- 
+1.9.3
+
