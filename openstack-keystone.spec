@@ -1,14 +1,14 @@
 #
-# This is 2014.2 Juno-2 milestone
+# This is 2014.2 Juno-3 milestone
 #
 %global release_name juno
-%global milestone 2
+%global milestone 3
 
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
 
 Name:           openstack-keystone
 Version:        2014.2
-Release:        0.2.b%{milestone}%{?dist}
+Release:        0.3.b%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
@@ -26,7 +26,7 @@ Source23:       openstack-keystone.upstart
 
 
 #
-# patches_base=2014.2.b2
+# patches_base=2014.2.b3
 #
 Patch0001: 0001-remove-runtime-dep-on-python-pbr.patch
 Patch0002: 0002-sync-parameter-values-with-keystone-dist.conf.patch
@@ -69,12 +69,11 @@ Group:            Applications/System
 
 Requires:       python-eventlet
 Requires:       python-ldap
-Requires:       python-lxml
 Requires:       python-memcached
 Requires:       python-migrate
 Requires:       python-paste-deploy >= 1.5.0
 Requires:       python-routes >= 1.12
-Requires:       python-sqlalchemy >= 0.7.8
+Requires:       python-sqlalchemy >= 0.8.4
 Requires:       python-webob >= 1.2.3
 Requires:       python-passlib
 Requires:       MySQL-python
@@ -89,7 +88,7 @@ Requires:       python-oauthlib
 Requires:       python-dogpile-cache >= 0.5.3
 Requires:       python-jsonschema
 Requires:       python-oslo-messaging
-Requires:       python-pycadf
+Requires:       python-pycadf >= 0.6.0
 Requires:       python-posix_ipc
 Requires:       python-keystonemiddleware
 Requires:       python-oslo-db
@@ -271,6 +270,9 @@ fi
 %endif
 
 %changelog
+* Fri Sep 05 2014 Alan Pevec <apevec@redhat.com> 2014.2-0.3.b3
+- juno-3 milestone
+
 * Fri Jul 25 2014 Alan Pevec <apevec@redhat.com> 2014.2-0.2.b2
 - juno-2 milestone
 
