@@ -122,7 +122,8 @@ find . \( -name .gitignore -o -name .placeholder \) -delete
 find keystone -name \*.py -exec sed -i '/\/usr\/bin\/env python/d' {} \;
 # Remove bundled egg-info
 rm -rf keystone.egg-info
-
+# Let RPM handle the dependencies
+rm -f test-requirements.txt requirements.txt
 # Remove dependency on pbr and set version as per rpm
 sed -i s/REDHATKEYSTONEVERSION/%{version}/ bin/keystone-all keystone/cli.py
 
