@@ -8,7 +8,7 @@
 
 Name:           openstack-keystone
 Version:        2014.2
-Release:        0.3.b%{milestone}%{?dist}
+Release:        0.4.b%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
@@ -69,8 +69,9 @@ Group:            Applications/System
 
 Requires:       python-eventlet
 Requires:       python-ldap
+Requires:       python-ldappool
 Requires:       python-memcached
-Requires:       python-migrate
+Requires:       python-migrate >= 0.9.1
 Requires:       python-paste-deploy >= 1.5.0
 Requires:       python-routes >= 1.12
 Requires:       python-sqlalchemy >= 0.8.4
@@ -79,7 +80,7 @@ Requires:       python-passlib
 Requires:       MySQL-python
 Requires:       PyPAM
 Requires:       python-iso8601
-Requires:       python-oslo-config >= 1:1.2.0
+Requires:       python-oslo-config >= 1:1.4.0.0
 Requires:       openssl
 Requires:       python-netaddr
 Requires:       python-six >= 1.4.1
@@ -87,12 +88,13 @@ Requires:       python-babel
 Requires:       python-oauthlib
 Requires:       python-dogpile-cache >= 0.5.3
 Requires:       python-jsonschema
-Requires:       python-oslo-messaging
+Requires:       python-oslo-messaging >= 1.4.0.0
 Requires:       python-pycadf >= 0.6.0
 Requires:       python-posix_ipc
 Requires:       python-keystonemiddleware
 Requires:       python-oslo-db
 Requires:       python-oslo-i18n
+Requires:       python-oslo-utils
 
 %description -n   python-keystone
 Keystone is a Python implementation of the OpenStack
@@ -271,6 +273,9 @@ fi
 %endif
 
 %changelog
+* Thu Sep 11 2014 Alan Pevec <apevec@redhat.com> 2014.2-0.4.b3
+- update dependencies
+
 * Fri Sep 05 2014 Alan Pevec <apevec@redhat.com> 2014.2-0.3.b3
 - juno-3 milestone
 
