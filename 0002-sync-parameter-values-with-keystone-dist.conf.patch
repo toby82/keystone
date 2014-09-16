@@ -1,4 +1,4 @@
-From 755d734764d5146de9f50ec84609ed548b3ad25f Mon Sep 17 00:00:00 2001
+From 0e72c067a11324eb9fb2a8f4c854a4b6414d30e6 Mon Sep 17 00:00:00 2001
 From: Alan Pevec <apevec@redhat.com>
 Date: Mon, 9 Sep 2013 15:22:20 +0200
 Subject: [PATCH] sync parameter values with keystone-dist.conf
@@ -11,7 +11,7 @@ Change-Id: If36c384f86843a6506a494d79beca65639fb3480
  1 file changed, 9 insertions(+), 8 deletions(-)
 
 diff --git a/etc/keystone.conf.sample b/etc/keystone.conf.sample
-index 9f6051b..f7f6a0e 100644
+index e8635f4..112a617 100644
 --- a/etc/keystone.conf.sample
 +++ b/etc/keystone.conf.sample
 @@ -347,7 +347,7 @@
