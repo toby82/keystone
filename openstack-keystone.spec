@@ -1,20 +1,17 @@
-#
-# This is 2014.2 Juno-3 milestone
-#
 %global release_name juno
-%global milestone 3
+%global milestone rc1
 
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
 
 Name:           openstack-keystone
 Version:        2014.2
-Release:        0.4.b%{milestone}%{?dist}
+Release:        0.5.%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
 URL:            http://keystone.openstack.org/
 #Source0:        http://launchpad.net/keystone/%{release_name}/%{version}/+download/keystone-%{version}.tar.gz
-Source0:        http://launchpad.net/keystone/%{release_name}/%{release_name}-%{milestone}/+download/keystone-%{version}.b%{milestone}.tar.gz
+Source0:        http://launchpad.net/keystone/%{release_name}/%{release_name}-%{milestone}/+download/keystone-%{version}.%{milestone}.tar.gz
 Source1:        openstack-keystone.logrotate
 Source2:        openstack-keystone.service
 Source3:        openstack-keystone.sysctl
@@ -26,20 +23,18 @@ Source23:       openstack-keystone.upstart
 
 
 #
-# patches_base=2014.2.b3
+# patches_base=2014.2.rc1
 #
 Patch0001: 0001-remove-runtime-dep-on-python-pbr.patch
 Patch0002: 0002-sync-parameter-values-with-keystone-dist.conf.patch
 
 BuildArch:      noarch
 BuildRequires:  python2-devel
-BuildRequires:  python-sphinx >= 1.1.2
-BuildRequires:  python-oslo-sphinx
 BuildRequires:  python-pbr
 BuildRequires:  python-d2to1
 
 Requires:       python-keystone = %{version}-%{release}
-Requires:       python-keystoneclient >= 1:0.9.0
+Requires:       python-keystoneclient >= 1:0.10.0
 
 %if 0%{?rhel} == 6
 Requires(post):   chkconfig
@@ -107,6 +102,13 @@ This package contains the Keystone Python library.
 Summary:        Documentation for OpenStack Identity Service
 Group:          Documentation
 
+BuildRequires:  python-sphinx >= 1.1.2
+BuildRequires:  python-oslo-sphinx
+# for API autodoc
+BuildRequires:  python-keystonemiddleware
+BuildRequires:  python-ldappool
+
+
 %description doc
 Keystone is a Python implementation of the OpenStack
 (http://www.openstack.org) identity service API.
@@ -115,7 +117,7 @@ This package contains documentation for Keystone.
 %endif
 
 %prep
-%setup -q -n keystone-%{version}.b%{milestone}
+%setup -q -n keystone-%{version}.%{milestone}
 
 %patch0001 -p1
 %patch0002 -p1
@@ -129,7 +131,7 @@ rm -f test-requirements.txt requirements.txt
 # Remove dependency on pbr and set version as per rpm
 sed -i s/REDHATKEYSTONEVERSION/%{version}/ bin/keystone-all keystone/cli.py
 
-sed -i 's/%{version}.b%{milestone}/%{version}/' PKG-INFO
+sed -i 's/%{version}.%{milestone}/%{version}/' PKG-INFO
 
 # make doc build compatible with python-oslo-sphinx RPM
 sed -i 's/oslosphinx/oslo.sphinx/' doc/source/conf.py
@@ -273,6 +275,9 @@ fi
 %endif
 
 %changelog
+* Wed Oct 01 2014 Alan Pevec <alan.pevec@redhat.com> 2014.2-0.5.rc1
+- Update to upstream 2014.2.rc1
+
 * Thu Sep 11 2014 Alan Pevec <apevec@redhat.com> 2014.2-0.4.b3
 - update dependencies
 
