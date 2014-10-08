@@ -1,21 +1,16 @@
-#
-# This is 2014.2 Juno-2 milestone
-#
 %global release_name juno
 %global upstream_version UPSTREAMVERSION
-#%global milestone 2
 
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
 
 Name:           openstack-keystone
 Version:        2014.2
-Release:        0.2.b%{milestone}%{?dist}
+Release:        0.999%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
 URL:            http://keystone.openstack.org/
-#Source0:        http://launchpad.net/keystone/%{release_name}/%{version}/+download/keystone-%{version}.tar.gz
-Source0:        http://launchpad.net/keystone/%{release_name}/%{release_name}-%{milestone}/+download/keystone-%{version}.b%{milestone}.tar.gz
+Source0:        http://launchpad.net/keystone/%{release_name}/%{version}/+download/keystone-%{version}.tar.gz
 Source1:        openstack-keystone.logrotate
 Source2:        openstack-keystone.service
 Source3:        openstack-keystone.sysctl
@@ -27,7 +22,7 @@ Source23:       openstack-keystone.upstart
 
 
 #
-# patches_base=2014.2.b2
+# patches_base=33bdc7bef1a53f341b543f407e70a07dfc26d485
 #
 Patch0001: 0001-remove-runtime-dep-on-python-pbr.patch
 Patch0002: 0002-sync-parameter-values-with-keystone-dist.conf.patch
@@ -125,7 +120,8 @@ find . \( -name .gitignore -o -name .placeholder \) -delete
 find keystone -name \*.py -exec sed -i '/\/usr\/bin\/env python/d' {} \;
 # Remove bundled egg-info
 rm -rf keystone.egg-info
-
+# Let RPM handle the dependencies
+rm -f test-requirements.txt requirements.txt
 # Remove dependency on pbr and set version as per rpm
 sed -i s/REDHATKEYSTONEVERSION/%{version}/ bin/keystone-all keystone/cli.py
 
