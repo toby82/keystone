@@ -1,11 +1,11 @@
 %global release_name juno
-%global milestone rc1
+%global milestone rc2
 
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
 
 Name:           openstack-keystone
 Version:        2014.2
-Release:        0.5.%{milestone}%{?dist}
+Release:        0.6%{milestone}%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
@@ -23,7 +23,7 @@ Source23:       openstack-keystone.upstart
 
 
 #
-# patches_base=2014.2.rc1
+# patches_base=2014.2.rc2
 #
 Patch0001: 0001-remove-runtime-dep-on-python-pbr.patch
 Patch0002: 0002-sync-parameter-values-with-keystone-dist.conf.patch
@@ -277,6 +277,9 @@ fi
 %endif
 
 %changelog
+* Fri Oct 10 2014 Alan Pevec <alan.pevec@redhat.com> 2014.2-0.6rc2
+- Update to upstream 2014.2.rc2
+
 * Wed Oct 01 2014 Alan Pevec <alan.pevec@redhat.com> 2014.2-0.5.rc1
 - Update to upstream 2014.2.rc1
 
