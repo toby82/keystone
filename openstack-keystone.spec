@@ -5,13 +5,12 @@
 
 Name:           openstack-keystone
 Version:        2014.2
-Release:        0.6%{milestone}%{?dist}
+Release:        1%{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
 URL:            http://keystone.openstack.org/
-#Source0:        http://launchpad.net/keystone/%{release_name}/%{version}/+download/keystone-%{version}.tar.gz
-Source0:        http://launchpad.net/keystone/%{release_name}/%{release_name}-%{milestone}/+download/keystone-%{version}.%{milestone}.tar.gz
+Source0:        http://launchpad.net/keystone/%{release_name}/%{version}/+download/keystone-%{version}.tar.gz
 Source1:        openstack-keystone.logrotate
 Source2:        openstack-keystone.service
 Source3:        openstack-keystone.sysctl
@@ -22,9 +21,6 @@ Source22:       openstack-keystone.init
 Source23:       openstack-keystone.upstart
 
 
-#
-# patches_base=2014.2.rc2
-#
 Patch0001: 0001-remove-runtime-dep-on-python-pbr.patch
 Patch0002: 0002-sync-parameter-values-with-keystone-dist.conf.patch
 
@@ -117,7 +113,7 @@ This package contains documentation for Keystone.
 %endif
 
 %prep
-%setup -q -n keystone-%{version}.%{milestone}
+%setup -q -n keystone-%{version}
 
 %patch0001 -p1
 %patch0002 -p1
@@ -130,8 +126,6 @@ rm -rf keystone.egg-info
 rm -f test-requirements.txt requirements.txt
 # Remove dependency on pbr and set version as per rpm
 sed -i s/REDHATKEYSTONEVERSION/%{version}/ bin/keystone-all keystone/cli.py
-
-sed -i 's/%{version}.%{milestone}/%{version}/' PKG-INFO
 
 # make doc build compatible with python-oslo-sphinx RPM
 sed -i 's/oslosphinx/oslo.sphinx/' doc/source/conf.py
@@ -277,23 +271,8 @@ fi
 %endif
 
 %changelog
-* Fri Oct 10 2014 Alan Pevec <alan.pevec@redhat.com> 2014.2-0.6rc2
-- Update to upstream 2014.2.rc2
-
-* Wed Oct 01 2014 Alan Pevec <alan.pevec@redhat.com> 2014.2-0.5.rc1
-- Update to upstream 2014.2.rc1
-
-* Thu Sep 11 2014 Alan Pevec <apevec@redhat.com> 2014.2-0.4.b3
-- update dependencies
-
-* Fri Sep 05 2014 Alan Pevec <apevec@redhat.com> 2014.2-0.3.b3
-- juno-3 milestone
-
-* Fri Jul 25 2014 Alan Pevec <apevec@redhat.com> 2014.2-0.2.b2
-- juno-2 milestone
-
-* Wed Jul 09 2014 Alan Pevec <apevec@redhat.com> 2014.2-0.1.b
-- juno-1 milestone
+* Thu Oct 16 2014 Alan Pevec <apevec@redhat.com> 2014.2-1
+- Juno release
 
 * Wed Jul 09 2014 Alan Pevec <apevec@redhat.com> 2014.1.1-4
 - Keystone V2 trusts privilege escalation through user supplied project id
