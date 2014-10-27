@@ -1,7 +1,7 @@
-From 886faf05de81ece01ea242a1ac7d33a30d7ebe19 Mon Sep 17 00:00:00 2001
+From ab13c5b79e8f6db61fb18d1de02ff2ca35cb0c4e Mon Sep 17 00:00:00 2001
 From: Alan Pevec <apevec@redhat.com>
 Date: Mon, 9 Sep 2013 00:38:42 +0200
-Subject: [PATCH] remove runtime dep on python-pbr
+Subject: [PATCH 1/2] remove runtime dep on python-pbr
 
 ---
  bin/keystone-all | 3 +--
@@ -50,3 +50,6 @@ index 38ba428..337a583 100644
           usage='%(prog)s [' + '|'.join([cmd.name for cmd in CMDS]) + ']',
           default_config_files=config_files)
      config.setup_logging()
+-- 
+1.9.3
+
