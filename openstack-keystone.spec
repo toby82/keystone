@@ -20,9 +20,9 @@ Source21:       daemon_notify.sh
 Source22:       openstack-keystone.init
 Source23:       openstack-keystone.upstart
 
-
 Patch0001: 0001-remove-runtime-dep-on-python-pbr.patch
 Patch0002: 0002-sync-parameter-values-with-keystone-dist.conf.patch
+Patch0003: 0003-Use-newer-python-ldap-paging-control-API.patch
 
 BuildArch:      noarch
 BuildRequires:  python2-devel
@@ -117,6 +117,7 @@ This package contains documentation for Keystone.
 
 %patch0001 -p1
 %patch0002 -p1
+%patch0003 -p1
 
 find . \( -name .gitignore -o -name .placeholder \) -delete
 find keystone -name \*.py -exec sed -i '/\/usr\/bin\/env python/d' {} \;

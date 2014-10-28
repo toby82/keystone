@@ -1,0 +1,128 @@
+From 6133f388f73b21b931462b917c49a8e175b35aa4 Mon Sep 17 00:00:00 2001
+From: Nathan Kinder <nkinder@redhat.com>
+Date: Wed, 15 Oct 2014 15:39:55 -0700
+Subject: [PATCH] Use newer python-ldap paging control API
+
+The API for using the LDAP simple paged results control changed
+between python-ldap version 2.3 and 2.4. Our current implementation
+fails with an AttributeError when trying to use paging with version
+2.4 of python-ldap.
+
+This patch detects the capabilities of the underlying python-ldap
+version and uses the newer API in versions of python-ldap that have
+removed the older API.
+
+Change-Id: I2986e12daea3edf50f299af5927d2a05278e82f7
+Closes-bug: #1381768
+(cherry picked from commit 1be4a15454e6917571bc937e3bb3589e8f79bc55)
+(cherry picked from commit db291b340e63b74d8d240abfc37d03fb163f33f1)
+---
+ keystone/common/ldap/core.py            | 32 +++++++++++++++++++------
+ keystone/tests/unit/common/test_ldap.py | 42 +++++++++++++++++++++++++++++++++
+ 2 files changed, 67 insertions(+), 7 deletions(-)
+
+diff --git a/keystone/common/ldap/core.py b/keystone/common/ldap/core.py
+index 3267502..2da70e3 100644
+--- a/keystone/common/ldap/core.py
++++ b/keystone/common/ldap/core.py
+@@ -960,10 +960,24 @@ class KeystoneLDAPHandler(LDAPHandler):
+ 
+     def _paged_search_s(self, base, scope, filterstr, attrlist=None):
+         res = []
+-        lc = ldap.controls.SimplePagedResultsControl(
+-            controlType=ldap.LDAP_CONTROL_PAGE_OID,
+-            criticality=True,
+-            controlValue=(self.page_size, ''))
++        use_old_paging_api = False
++        # The API for the simple paged results control changed between
++        # python-ldap 2.3 and 2.4.  We need to detect the capabilities
++        # of the python-ldap version we are using.
++        if hasattr(ldap, 'LDAP_CONTROL_PAGE_OID'):
++            use_old_paging_api = True
++            lc = ldap.controls.SimplePagedResultsControl(
++                controlType=ldap.LDAP_CONTROL_PAGE_OID,
++                criticality=True,
++                controlValue=(self.page_size, ''))
++            page_ctrl_oid = ldap.LDAP_CONTROL_PAGE_OID
++        else:
++            lc = ldap.controls.libldap.SimplePagedResultsControl(
++                criticality=True,
++                size=self.page_size,
++                cookie='')
++            page_ctrl_oid = ldap.controls.SimplePagedResultsControl.controlType
++
+         base_utf8 = utf8_encode(base)
+         filterstr_utf8 = utf8_encode(filterstr)
+         if attrlist is None:
+@@ -983,14 +997,18 @@ class KeystoneLDAPHandler(LDAPHandler):
+             # Receive the data
+             res.extend(rdata)
+             pctrls = [c for c in serverctrls
+-                      if c.controlType == ldap.LDAP_CONTROL_PAGE_OID]
++                      if c.controlType == page_ctrl_oid]
+             if pctrls:
+                 # LDAP server supports pagination
+-                est, cookie = pctrls[0].controlValue
++                if use_old_paging_api:
++                    est, cookie = pctrls[0].controlValue
++                    lc.controlValue = (self.page_size, cookie)
++                else:
++                    cookie = lc.cookie = pctrls[0].cookie
++
+                 if cookie:
+                     # There is more data still on the server
+                     # so we request another page
+-                    lc.controlValue = (self.page_size, cookie)
+                     msgid = self.conn.search_ext(base_utf8,
+                                                  scope,
+                                                  filterstr_utf8,
+diff --git a/keystone/tests/unit/common/test_ldap.py b/keystone/tests/unit/common/test_ldap.py
+index 61f2fd1..b3e70c9 100644
+--- a/keystone/tests/unit/common/test_ldap.py
++++ b/keystone/tests/unit/common/test_ldap.py
+@@ -349,3 +349,45 @@ class SslTlsTest(tests.TestCase):
+ 
+         # Ensure the cert trust option is set.
+         self.assertEqual(certdir, ldap.get_option(ldap.OPT_X_TLS_CACERTDIR))
++
++
++class LDAPPagedResultsTest(tests.TestCase):
++    """Tests the paged results functionality in keystone.common.ldap.core."""
++
++    def setUp(self):
++        super(LDAPPagedResultsTest, self).setUp()
++        self.clear_database()
++
++        ks_ldap.register_handler('fake://', fakeldap.FakeLdap)
++        self.addCleanup(common_ldap_core._HANDLERS.clear)
++
++        self.load_backends()
++        self.load_fixtures(default_fixtures)
++
++    def clear_database(self):
++        for shelf in fakeldap.FakeShelves:
++            fakeldap.FakeShelves[shelf].clear()
++
++    def config_overrides(self):
++        super(LDAPPagedResultsTest, self).config_overrides()
++        self.config_fixture.config(
++            group='identity',
++            driver='keystone.identity.backends.ldap.Identity')
++
++    def config_files(self):
++        config_files = super(LDAPPagedResultsTest, self).config_files()
++        config_files.append(tests.dirs.tests_conf('backend_ldap.conf'))
++        return config_files
++
++    @mock.patch.object(fakeldap.FakeLdap, 'search_ext')
++    @mock.patch.object(fakeldap.FakeLdap, 'result3')
++    def test_paged_results_control_api(self, mock_result3, mock_search_ext):
++        mock_result3.return_value = ('', [], 1, [])
++
++        self.config_fixture.config(group='ldap',
++                                   page_size=1)
++
++        conn = self.identity_api.user.get_connection()
++        conn._paged_search_s('dc=example,dc=test',
++                             ldap.SCOPE_SUBTREE,
++                             'objectclass=*')
