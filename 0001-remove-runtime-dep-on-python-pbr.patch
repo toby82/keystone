@@ -1,7 +1,7 @@
-From c288e4e1e020bb6f3143d28c762ad0805898411e Mon Sep 17 00:00:00 2001
+From 0991c0c176c3ce36a1823094506e551ebb441e3a Mon Sep 17 00:00:00 2001
 From: Alan Pevec <apevec@redhat.com>
 Date: Mon, 9 Sep 2013 00:38:42 +0200
-Subject: [PATCH 1/2] remove runtime dep on python-pbr
+Subject: [PATCH] remove runtime dep on python-pbr
 
 ---
  bin/keystone-all | 3 +--

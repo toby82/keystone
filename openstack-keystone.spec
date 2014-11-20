@@ -1,11 +1,11 @@
 %global release_name juno
-%global upstream_version UPSTREAMVERSION
+%global milestone rc2
 
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
 
 Name:           openstack-keystone
-Version:        2014.2
-Release:        0.999%{?dist}
+Version:        XXX
+Release:        XXX{?dist}
 Summary:        OpenStack Identity Service
 
 License:        ASL 2.0
@@ -20,22 +20,15 @@ Source21:       daemon_notify.sh
 Source22:       openstack-keystone.init
 Source23:       openstack-keystone.upstart
 
-
-#
-# patches_base=33bdc7bef1a53f341b543f407e70a07dfc26d485
-#
 Patch0001: 0001-remove-runtime-dep-on-python-pbr.patch
-Patch0002: 0002-sync-parameter-values-with-keystone-dist.conf.patch
 
 BuildArch:      noarch
 BuildRequires:  python2-devel
-BuildRequires:  python-sphinx >= 1.1.2
-BuildRequires:  python-oslo-sphinx
 BuildRequires:  python-pbr
 BuildRequires:  python-d2to1
 
 Requires:       python-keystone = %{version}-%{release}
-Requires:       python-keystoneclient >= 1:0.9.0
+Requires:       python-keystoneclient >= 1:0.10.0
 
 %if 0%{?rhel} == 6
 Requires(post):   chkconfig
@@ -65,18 +58,18 @@ Group:            Applications/System
 
 Requires:       python-eventlet
 Requires:       python-ldap
-Requires:       python-lxml
+Requires:       python-ldappool
 Requires:       python-memcached
-Requires:       python-migrate
+Requires:       python-migrate >= 0.9.1
 Requires:       python-paste-deploy >= 1.5.0
 Requires:       python-routes >= 1.12
-Requires:       python-sqlalchemy >= 0.7.8
+Requires:       python-sqlalchemy >= 0.8.4
 Requires:       python-webob >= 1.2.3
 Requires:       python-passlib
 Requires:       MySQL-python
 Requires:       PyPAM
 Requires:       python-iso8601
-Requires:       python-oslo-config >= 1:1.2.0
+Requires:       python-oslo-config >= 1:1.4.0.0
 Requires:       openssl
 Requires:       python-netaddr
 Requires:       python-six >= 1.4.1
@@ -84,8 +77,8 @@ Requires:       python-babel
 Requires:       python-oauthlib
 Requires:       python-dogpile-cache >= 0.5.3
 Requires:       python-jsonschema
-Requires:       python-oslo-messaging
-Requires:       python-pycadf
+Requires:       python-oslo-messaging >= 1.4.0.0
+Requires:       python-pycadf >= 0.6.0
 Requires:       python-posix_ipc
 Requires:       python-keystonemiddleware
 Requires:       python-oslo-db
@@ -103,6 +96,13 @@ This package contains the Keystone Python library.
 Summary:        Documentation for OpenStack Identity Service
 Group:          Documentation
 
+BuildRequires:  python-sphinx >= 1.1.2
+BuildRequires:  python-oslo-sphinx
+# for API autodoc
+BuildRequires:  python-keystonemiddleware
+BuildRequires:  python-ldappool
+
+
 %description doc
 Keystone is a Python implementation of the OpenStack
 (http://www.openstack.org) identity service API.
@@ -114,7 +114,6 @@ This package contains documentation for Keystone.
 %setup -q -n keystone-%{upstream_version}
 
 %patch0001 -p1
-%patch0002 -p1
 
 find . \( -name .gitignore -o -name .placeholder \) -delete
 find keystone -name \*.py -exec sed -i '/\/usr\/bin\/env python/d' {} \;
@@ -124,8 +123,6 @@ rm -rf keystone.egg-info
 rm -f test-requirements.txt requirements.txt
 # Remove dependency on pbr and set version as per rpm
 sed -i s/REDHATKEYSTONEVERSION/%{version}/ bin/keystone-all keystone/cli.py
-
-sed -i 's/%{version}.%{release}/%{version}/' PKG-INFO
 
 %build
 cp etc/keystone.conf.sample etc/keystone.conf
@@ -143,6 +140,7 @@ install -d -m 755 %{buildroot}%{_sysconfdir}/keystone
 install -p -D -m 640 etc/keystone.conf %{buildroot}%{_sysconfdir}/keystone/keystone.conf
 install -p -D -m 644 etc/keystone-paste.ini %{buildroot}%{_datadir}/keystone/keystone-dist-paste.ini
 install -p -D -m 644 %{SOURCE20} %{buildroot}%{_datadir}/keystone/keystone-dist.conf
+install -p -D -m 644 etc/policy.v3cloudsample.json %{buildroot}%{_datadir}/keystone/policy.v3cloudsample.json
 install -p -D -m 640 etc/logging.conf.sample %{buildroot}%{_sysconfdir}/keystone/logging.conf
 install -p -D -m 640 etc/default_catalog.templates %{buildroot}%{_sysconfdir}/keystone/default_catalog.templates
 install -p -D -m 640 etc/policy.json %{buildroot}%{_sysconfdir}/keystone/policy.json
@@ -230,6 +228,7 @@ fi
 %dir %{_datadir}/keystone
 %attr(0644, root, keystone) %{_datadir}/keystone/keystone-dist.conf
 %attr(0644, root, keystone) %{_datadir}/keystone/keystone-dist-paste.ini
+%attr(0644, root, keystone) %{_datadir}/keystone/policy.v3cloudsample.json
 %attr(0755, root, root) %{_datadir}/keystone/sample_data.sh
 %attr(0644, root, keystone) %{_datadir}/keystone/keystone.wsgi
 %attr(0644, root, keystone) %{_datadir}/keystone/wsgi-keystone.conf
@@ -258,7 +257,7 @@ fi
 %defattr(-,root,root,-)
 %doc LICENSE
 %{python_sitelib}/keystone
-%{python_sitelib}/keystone-%{version}*.egg-info
+%{python_sitelib}/keystone-*.egg-info
 
 %if 0%{?with_doc}
 %files doc
@@ -266,14 +265,8 @@ fi
 %endif
 
 %changelog
-* Thu Aug 14 2014 Derek Higgins <derekh@redhat.com> - XXX
-- Add dependency on python-oslo-utils
-
-* Fri Jul 25 2014 Alan Pevec <apevec@redhat.com> 2014.2-0.2.b2
-- juno-2 milestone
-
-* Wed Jul 09 2014 Alan Pevec <apevec@redhat.com> 2014.2-0.1.b
-- juno-1 milestone
+* Thu Oct 16 2014 Alan Pevec <apevec@redhat.com> 2014.2-1
+- Juno release
 
 * Wed Jul 09 2014 Alan Pevec <apevec@redhat.com> 2014.1.1-4
 - Keystone V2 trusts privilege escalation through user supplied project id
