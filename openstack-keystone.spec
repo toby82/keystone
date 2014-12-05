@@ -4,7 +4,7 @@
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
 
 Name:           openstack-keystone
-Version:        2014.2
+Version:        2014.2.1
 Release:        1%{?dist}
 Summary:        OpenStack Identity Service
 
@@ -22,7 +22,6 @@ Source23:       openstack-keystone.upstart
 
 Patch0001: 0001-remove-runtime-dep-on-python-pbr.patch
 Patch0002: 0002-sync-parameter-values-with-keystone-dist.conf.patch
-Patch0003: 0003-Use-newer-python-ldap-paging-control-API.patch
 
 BuildArch:      noarch
 BuildRequires:  python2-devel
@@ -117,7 +116,6 @@ This package contains documentation for Keystone.
 
 %patch0001 -p1
 %patch0002 -p1
-%patch0003 -p1
 
 find . \( -name .gitignore -o -name .placeholder \) -delete
 find keystone -name \*.py -exec sed -i '/\/usr\/bin\/env python/d' {} \;
@@ -272,6 +270,9 @@ fi
 %endif
 
 %changelog
+* Fri Dec 05 2014 Alan Pevec <alan.pevec@redhat.com> 2014.2.1-1
+- Update to upstream 2014.2.1
+
 * Thu Oct 16 2014 Alan Pevec <apevec@redhat.com> 2014.2-1
 - Juno release
 
