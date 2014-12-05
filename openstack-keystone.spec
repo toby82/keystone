@@ -84,6 +84,8 @@ Requires:       python-keystonemiddleware
 Requires:       python-oslo-db
 Requires:       python-oslo-i18n
 Requires:       python-oslo-utils
+Requires:       python-oslo-concurrency
+Requires:       python-oslo-serialization
 
 %description -n   python-keystone
 Keystone is a Python implementation of the OpenStack
