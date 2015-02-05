@@ -4,7 +4,7 @@
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
 
 Name:           openstack-keystone
-Version:        2014.2.1
+Version:        2014.2.2
 Release:        1%{?dist}
 Summary:        OpenStack Identity Service
 
@@ -270,6 +270,9 @@ fi
 %endif
 
 %changelog
+* Fri Feb 06 2015 Alan Pevec <alan.pevec@redhat.com> 2014.2.2-1
+- Update to upstream 2014.2.2
+
 * Fri Dec 05 2014 Alan Pevec <alan.pevec@redhat.com> 2014.2.1-1
 - Update to upstream 2014.2.1
 
