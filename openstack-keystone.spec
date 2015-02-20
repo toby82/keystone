@@ -220,7 +220,7 @@ fi
 %endif
 
 %files
-%doc LICENSE
+%license LICENSE
 %doc README.rst
 %{_mandir}/man1/keystone*.1.gz
 %{_bindir}/keystone-all
@@ -256,13 +256,14 @@ fi
 
 %files -n python-keystone
 %defattr(-,root,root,-)
-%doc LICENSE
+%license LICENSE
 %{python_sitelib}/keystone
 %{python_sitelib}/keystone-*.egg-info
 
 %if 0%{?with_doc}
 %files doc
-%doc LICENSE doc/build/html
+%license LICENSE
+%doc doc/build/html
 %endif
 
 %changelog
