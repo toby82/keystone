@@ -77,7 +77,7 @@ Requires:       python-oauthlib
 Requires:       python-dogpile-cache >= 0.5.3
 Requires:       python-jsonschema
 Requires:       python-oslo-messaging >= 1.4.0.0
-Requires:       python-pycadf >= 0.6.0
+Requires:       python-pycadf >= 0.8.0
 Requires:       python-posix_ipc
 Requires:       python-keystonemiddleware
 Requires:       python-oslo-db
