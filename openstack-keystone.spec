@@ -85,6 +85,7 @@ Requires:       python-oslo-i18n
 Requires:       python-oslo-utils
 Requires:       python-oslo-concurrency
 Requires:       python-oslo-serialization
+Requires:       python-oslo-middleware
 Requires:       python-oslo-log
 Requires:       python-pysaml2
 
