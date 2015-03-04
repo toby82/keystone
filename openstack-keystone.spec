@@ -53,7 +53,6 @@ This package contains the Keystone daemon.
 %package -n       python-keystone
 Summary:          Keystone Python libraries
 Group:            Applications/System
-
 Requires:       python-pbr
 Requires:       python-eventlet
 Requires:       python-ldap
@@ -88,6 +87,9 @@ Requires:       python-oslo-serialization
 Requires:       python-oslo-middleware
 Requires:       python-oslo-log
 Requires:       python-pysaml2
+# for Keystone Lightweight Tokens (KLWT)
+Requires:       python-cryptography
+Requires:       python-msgpack
 
 %description -n   python-keystone
 Keystone is a Python implementation of the OpenStack
