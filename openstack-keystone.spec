@@ -86,6 +86,7 @@ Requires:       python-oslo-concurrency
 Requires:       python-oslo-serialization
 Requires:       python-oslo-middleware
 Requires:       python-oslo-log
+Requires:       python-oslo-policy
 Requires:       python-pysaml2
 # for Keystone Lightweight Tokens (KLWT)
 Requires:       python-cryptography
