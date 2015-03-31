@@ -1,16 +1,14 @@
-%global release_name juno
-%global milestone rc2
-
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
 
 Name:           openstack-keystone
-Version:        2014.2.2
-Release:        1%{?dist}
+Version:        2015.1
+%global         milestone .0b3
+%global         upstream_version %{version}%{?milestone}
+Release:        0.1%{?milestone}%{?dist}
 Summary:        OpenStack Identity Service
-
 License:        ASL 2.0
 URL:            http://keystone.openstack.org/
-Source0:        http://launchpad.net/keystone/%{release_name}/%{version}/+download/keystone-%{version}.tar.gz
+Source0:        http://launchpad.net/keystone/kilo/kilo-3/+download/keystone-%{upstream_version}.tar.gz
 Source1:        openstack-keystone.logrotate
 Source2:        openstack-keystone.service
 Source3:        openstack-keystone.sysctl
@@ -20,16 +18,12 @@ Source21:       daemon_notify.sh
 Source22:       openstack-keystone.init
 Source23:       openstack-keystone.upstart
 
-Patch0001: 0001-remove-runtime-dep-on-python-pbr.patch
-Patch0002: 0002-sync-parameter-values-with-keystone-dist.conf.patch
-
 BuildArch:      noarch
 BuildRequires:  python2-devel
 BuildRequires:  python-pbr
-BuildRequires:  python-d2to1
 
 Requires:       python-keystone = %{version}-%{release}
-Requires:       python-keystoneclient >= 1:0.10.0
+Requires:       python-keystoneclient >= 1:1.1.0
 
 %if 0%{?rhel} == 6
 Requires(post):   chkconfig
@@ -55,36 +49,48 @@ This package contains the Keystone daemon.
 
 %package -n       python-keystone
 Summary:          Keystone Python libraries
-Group:            Applications/System
 
+Requires:       python-pbr
 Requires:       python-eventlet
 Requires:       python-ldap
 Requires:       python-ldappool
 Requires:       python-memcached
-Requires:       python-migrate >= 0.9.1
+Requires:       python-migrate >= 0.9.5
 Requires:       python-paste-deploy >= 1.5.0
 Requires:       python-routes >= 1.12
-Requires:       python-sqlalchemy >= 0.8.4
+Requires:       python-sqlalchemy >= 0.9.7
 Requires:       python-webob >= 1.2.3
 Requires:       python-passlib
 Requires:       MySQL-python
 Requires:       PyPAM
 Requires:       python-iso8601
-Requires:       python-oslo-config >= 1:1.4.0.0
+Requires:       python-oslo-config >= 1:1.9.0
 Requires:       openssl
 Requires:       python-netaddr
-Requires:       python-six >= 1.4.1
+Requires:       python-six >= 1.9.0
 Requires:       python-babel
 Requires:       python-oauthlib
 Requires:       python-dogpile-cache >= 0.5.3
 Requires:       python-jsonschema
 Requires:       python-oslo-messaging >= 1.4.0.0
-Requires:       python-pycadf >= 0.6.0
+Requires:       python-pycadf >= 0.8.0
 Requires:       python-posix_ipc
 Requires:       python-keystonemiddleware
 Requires:       python-oslo-db
 Requires:       python-oslo-i18n
 Requires:       python-oslo-utils
+Requires:       python-oslo-concurrency
+Requires:       python-oslo-serialization
+Requires:       python-oslo-middleware
+Requires:       python-oslo-log
+Requires:       python-oslo-policy
+#Blocked on potential vendorized library issue:
+# https://bugzilla.redhat.com/show_bug.cgi?id=1168314#c2
+# kilo-3 workaround: remove federation from default pipeline
+#Requires:       python-pysaml2
+# for Keystone Lightweight Tokens (KLWT)
+Requires:       python-cryptography
+Requires:       python-msgpack
 
 %description -n   python-keystone
 Keystone is a Python implementation of the OpenStack
@@ -95,14 +101,18 @@ This package contains the Keystone Python library.
 %if 0%{?with_doc}
 %package doc
 Summary:        Documentation for OpenStack Identity Service
-Group:          Documentation
 
 BuildRequires:  python-sphinx >= 1.1.2
-BuildRequires:  python-oslo-sphinx
+BuildRequires:  python-oslo-sphinx >= 2.5.0
 # for API autodoc
 BuildRequires:  python-keystonemiddleware
 BuildRequires:  python-ldappool
-
+BuildRequires:  python-oslo-concurrency
+BuildRequires:  python-oslo-db
+BuildRequires:  python-oslo-log
+BuildRequires:  python-oslo-messaging
+BuildRequires:  python-oslo-middleware
+BuildRequires:  python-oslo-policy
 
 %description doc
 Keystone is a Python implementation of the OpenStack
@@ -112,22 +122,12 @@ This package contains documentation for Keystone.
 %endif
 
 %prep
-%setup -q -n keystone-%{version}
-
-%patch0001 -p1
-%patch0002 -p1
+%setup -q -n keystone-%{upstream_version}
 
 find . \( -name .gitignore -o -name .placeholder \) -delete
 find keystone -name \*.py -exec sed -i '/\/usr\/bin\/env python/d' {} \;
-# Remove bundled egg-info
-rm -rf keystone.egg-info
 # Let RPM handle the dependencies
 rm -f test-requirements.txt requirements.txt
-# Remove dependency on pbr and set version as per rpm
-sed -i s/REDHATKEYSTONEVERSION/%{version}/ bin/keystone-all keystone/cli.py
-
-# make doc build compatible with python-oslo-sphinx RPM
-sed -i 's/oslosphinx/oslo.sphinx/' doc/source/conf.py
 
 %build
 cp etc/keystone.conf.sample etc/keystone.conf
@@ -144,6 +144,8 @@ rm -fr %{buildroot}%{python_sitelib}/keystone/tests
 install -d -m 755 %{buildroot}%{_sysconfdir}/keystone
 install -p -D -m 640 etc/keystone.conf %{buildroot}%{_sysconfdir}/keystone/keystone.conf
 install -p -D -m 644 etc/keystone-paste.ini %{buildroot}%{_datadir}/keystone/keystone-dist-paste.ini
+# kilo-3 workaround: remove federation from default pipeline
+sed -i '/^pipeline/s/federation_extension//' %{buildroot}%{_datadir}/keystone/keystone-dist-paste.ini
 install -p -D -m 644 %{SOURCE20} %{buildroot}%{_datadir}/keystone/keystone-dist.conf
 install -p -D -m 644 etc/policy.v3cloudsample.json %{buildroot}%{_datadir}/keystone/policy.v3cloudsample.json
 install -p -D -m 640 etc/logging.conf.sample %{buildroot}%{_sysconfdir}/keystone/logging.conf
@@ -224,7 +226,7 @@ fi
 %endif
 
 %files
-%doc LICENSE
+%license LICENSE
 %doc README.rst
 %{_mandir}/man1/keystone*.1.gz
 %{_bindir}/keystone-all
@@ -260,13 +262,14 @@ fi
 
 %files -n python-keystone
 %defattr(-,root,root,-)
-%doc LICENSE
+%license LICENSE
 %{python_sitelib}/keystone
-%{python_sitelib}/keystone-%{version}-*.egg-info
+%{python_sitelib}/keystone-*.egg-info
 
 %if 0%{?with_doc}
 %files doc
-%doc LICENSE doc/build/html
+%license LICENSE
+%doc doc/build/html
 %endif
 
 %changelog
