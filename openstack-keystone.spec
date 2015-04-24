@@ -4,7 +4,7 @@
 
 Name:           openstack-keystone
 Version:        2015.1
-Release:        0.2%{?milestone}%{?dist}
+Release:        0.3%{?milestone}%{?dist}
 Summary:        OpenStack Identity Service
 License:        ASL 2.0
 URL:            http://keystone.openstack.org/
