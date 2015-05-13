@@ -17,6 +17,9 @@ Source20:       keystone-dist.conf
 BuildArch:      noarch
 BuildRequires:  python2-devel
 BuildRequires:  python-pbr
+# Required to build keystone.conf
+BuildRequires:  python-oslo-config
+BuildRequires:  python-pycadf >= 0.8.0
 
 Requires:       python-keystone = %{version}-%{release}
 Requires:       python-keystoneclient >= 1:1.1.0
@@ -113,7 +116,7 @@ find keystone -name \*.py -exec sed -i '/\/usr\/bin\/env python/d' {} \;
 rm -f test-requirements.txt requirements.txt
 
 %build
-cp etc/keystone.conf.sample etc/keystone.conf
+PYTHONPATH=. oslo-config-generator --config-file=config-generator/keystone.conf
 # distribution defaults are located in keystone-dist.conf
 
 %{__python} setup.py build
@@ -125,7 +128,7 @@ cp etc/keystone.conf.sample etc/keystone.conf
 rm -fr %{buildroot}%{python_sitelib}/keystone/tests
 
 install -d -m 755 %{buildroot}%{_sysconfdir}/keystone
-install -p -D -m 640 etc/keystone.conf %{buildroot}%{_sysconfdir}/keystone/keystone.conf
+install -p -D -m 640 etc/keystone.conf.sample %{buildroot}%{_sysconfdir}/keystone/keystone.conf
 install -p -D -m 644 etc/keystone-paste.ini %{buildroot}%{_datadir}/keystone/keystone-dist-paste.ini
 install -p -D -m 644 %{SOURCE20} %{buildroot}%{_datadir}/keystone/keystone-dist.conf
 install -p -D -m 644 etc/policy.v3cloudsample.json %{buildroot}%{_datadir}/keystone/policy.v3cloudsample.json
