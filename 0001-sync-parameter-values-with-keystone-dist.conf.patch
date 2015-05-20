@@ -1,0 +1,67 @@
+From 8b395bebd81cbfe8bee1bdb2ae9e03b7ba8133a7 Mon Sep 17 00:00:00 2001
+From: Alan Pevec <apevec@redhat.com>
+Date: Mon, 9 Sep 2013 15:22:20 +0200
+Subject: [PATCH] sync parameter values with keystone-dist.conf
+
+and adjust descriptions to take dist.conf defaults into account (rhbz#923912)
+
+Change-Id: If36c384f86843a6506a494d79beca65639fb3480
+---
+ etc/keystone.conf.sample | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
+
+diff --git a/etc/keystone.conf.sample b/etc/keystone.conf.sample
+index 1c2298b..3cf3b06 100644
+--- a/etc/keystone.conf.sample
++++ b/etc/keystone.conf.sample
+@@ -136,10 +136,11 @@
+ # value)
+ #log_date_format = %Y-%m-%d %H:%M:%S
+ 
+-# (Optional) Name of log file to output to. If no default is set, logging will
+-# go to stdout. (string value)
++# (Optional) Name of log file to output to. (string value)
++# If not set here, logging will go to /var/log/keystone/keystone.log,
++# default from keystone-dist.conf.
+ # Deprecated group/name - [DEFAULT]/logfile
+-#log_file = <None>
++#log_file = /var/log/keystone/keystone.log
+ 
+ # (Optional) The base directory used for relative --log-file paths. (string
+ # value)
+@@ -160,7 +161,7 @@
+ #syslog_log_facility = LOG_USER
+ 
+ # Log output to standard error. (boolean value)
+-#use_stderr = true
++#use_stderr = false
+ 
+ # Format string to use for log messages with context. (string value)
+ #logging_context_format_string = %(asctime)s.%(msecs)03d %(process)d %(levelname)s %(name)s [%(request_id)s %(user_identity)s] %(instance)s%(message)s
+@@ -364,7 +365,7 @@
+ 
+ # Catalog template file name for use with the template catalog backend. (string
+ # value)
+-#template_file = default_catalog.templates
++#template_file = /etc/keystone/default_catalog.templates
+ 
+ # Catalog backend driver. (string value)
+ #driver = keystone.catalog.backends.sql.Catalog
+@@ -415,7 +416,7 @@
+ # Deprecated group/name - [DEFAULT]/sql_connection
+ # Deprecated group/name - [DATABASE]/sql_connection
+ # Deprecated group/name - [sql]/connection
+-#connection = <None>
++#connection = mysql://keystone:keystone@localhost/keystone
+ 
+ # The SQLAlchemy connection string to use to connect to the slave database.
+ # (string value)
+@@ -1441,7 +1442,7 @@
+ 
+ # Name of the paste configuration file that defines the available pipelines.
+ # (string value)
+-#config_file = keystone-paste.ini
++#config_file=/usr/share/keystone/keystone-dist-paste.ini
+ 
+ 
+ [policy]

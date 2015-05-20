@@ -17,6 +17,9 @@ Source3:        openstack-keystone.sysctl
 Source5:        openstack-keystone-sample-data
 Source20:       keystone-dist.conf
 
+Patch0001: 0001-sync-parameter-values-with-keystone-dist.conf.patch
+Patch0002: 0002-Fix-xmldsig-import.patch
+
 BuildArch:      noarch
 BuildRequires:  python2-devel
 BuildRequires:  python-pbr
@@ -112,6 +115,9 @@ This package contains documentation for Keystone.
 
 %prep
 %setup -q -n keystone-%{upstream_version}
+
+%patch0001 -p1
+%patch0002 -p1
 
 find . \( -name .gitignore -o -name .placeholder \) -delete
 find keystone -name \*.py -exec sed -i '/\/usr\/bin\/env python/d' {} \;
