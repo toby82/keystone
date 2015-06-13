@@ -91,14 +91,23 @@ Summary:        Documentation for OpenStack Identity Service
 BuildRequires:  python-sphinx >= 1.1.2
 BuildRequires:  python-oslo-sphinx >= 2.5.0
 # for API autodoc
+BuildRequires:  python-cryptography
+BuildRequires:  python-dogpile-cache
+BuildRequires:  python-jsonschema
 BuildRequires:  python-keystonemiddleware
 BuildRequires:  python-ldappool
+BuildRequires:  python-memcached
+BuildRequires:  python-oauthlib
 BuildRequires:  python-oslo-concurrency
 BuildRequires:  python-oslo-db
 BuildRequires:  python-oslo-log
 BuildRequires:  python-oslo-messaging
 BuildRequires:  python-oslo-middleware
 BuildRequires:  python-oslo-policy
+BuildRequires:  python-passlib
+BuildRequires:  python-paste-deploy
+BuildRequires:  python-pysaml2
+BuildRequires:  python-routes
 
 %description doc
 Keystone is a Python implementation of the OpenStack
@@ -119,13 +128,13 @@ rm -f test-requirements.txt requirements.txt
 PYTHONPATH=. oslo-config-generator --config-file=config-generator/keystone.conf
 # distribution defaults are located in keystone-dist.conf
 
-%{__python} setup.py build
+%{__python2} setup.py build
 
 %install
-%{__python} setup.py install --skip-build --root %{buildroot}
+%{__python2} setup.py install --skip-build --root %{buildroot}
 
 # Delete tests
-rm -fr %{buildroot}%{python_sitelib}/keystone/tests
+rm -fr %{buildroot}%{python2_sitelib}/keystone/tests
 
 install -d -m 755 %{buildroot}%{_sysconfdir}/keystone
 install -p -D -m 640 etc/keystone.conf.sample %{buildroot}%{_sysconfdir}/keystone/keystone.conf
@@ -208,8 +217,8 @@ exit 0
 %files -n python-keystone
 %defattr(-,root,root,-)
 %license LICENSE
-%{python_sitelib}/keystone
-%{python_sitelib}/keystone-*.egg-info
+%{python2_sitelib}/keystone
+%{python2_sitelib}/keystone-*.egg-info
 
 %if 0%{?with_doc}
 %files doc
