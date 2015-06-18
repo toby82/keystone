@@ -6,7 +6,7 @@
 
 Name:           openstack-keystone
 Version:        2015.1.0
-Release:        1%{?milestone}%{?dist}
+Release:        2%{?milestone}%{?dist}
 Summary:        OpenStack Identity Service
 License:        ASL 2.0
 URL:            http://keystone.openstack.org/
@@ -229,5 +229,8 @@ exit 0
 %endif
 
 %changelog
+* Thu Jun 18 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2015.1.0-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
+
 * Thu Apr 30 2015 Alan Pevec <alan.pevec@redhat.com> 2015.1.0-1
 - OpenStack Kilo release
