@@ -6,7 +6,7 @@
 
 Name:           openstack-keystone
 Version:        2015.1.0
-Release:        2%{?milestone}%{?dist}
+Release:        3%{?milestone}%{?dist}
 Summary:        OpenStack Identity Service
 License:        ASL 2.0
 URL:            http://keystone.openstack.org/
@@ -76,10 +76,7 @@ Requires:       python-oslo-serialization
 Requires:       python-oslo-middleware
 Requires:       python-oslo-log
 Requires:       python-oslo-policy
-#Blocked on potential vendorized library issue:
-# https://bugzilla.redhat.com/show_bug.cgi?id=1168314#c2
-# kilo-3 workaround: remove federation from default pipeline
-#Requires:       python-pysaml2
+Requires:       python-pysaml2
 # for Keystone Lightweight Tokens (KLWT)
 Requires:       python-cryptography
 Requires:       python-msgpack
@@ -139,8 +136,6 @@ rm -fr %{buildroot}%{python_sitelib}/keystone/tests
 install -d -m 755 %{buildroot}%{_sysconfdir}/keystone
 install -p -D -m 640 etc/keystone.conf %{buildroot}%{_sysconfdir}/keystone/keystone.conf
 install -p -D -m 644 etc/keystone-paste.ini %{buildroot}%{_datadir}/keystone/keystone-dist-paste.ini
-# kilo-3 workaround: remove federation from default pipeline
-sed -i '/^pipeline/s/federation_extension//' %{buildroot}%{_datadir}/keystone/keystone-dist-paste.ini
 install -p -D -m 644 %{SOURCE20} %{buildroot}%{_datadir}/keystone/keystone-dist.conf
 install -p -D -m 644 etc/policy.v3cloudsample.json %{buildroot}%{_datadir}/keystone/policy.v3cloudsample.json
 install -p -D -m 640 etc/logging.conf.sample %{buildroot}%{_sysconfdir}/keystone/logging.conf
@@ -229,6 +224,9 @@ exit 0
 %endif
 
 %changelog
+* Fri Jun 19 2015 Alan Pevec <alan.pevec@redhat.com> 2015.1.0-3
+- enable federation, pysaml2 is now packaged
+
 * Thu Jun 18 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2015.1.0-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
 
