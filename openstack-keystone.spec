@@ -2,6 +2,9 @@
 %global pypi_name keystone
 
 Name:           openstack-keystone
+# Liberty semver reset
+# https://review.openstack.org/#/q/I6a35fa0dda798fad93b804d00a46af80f08d475c,n,z
+Epoch:          1
 Version:        XXX
 Release:        XXX
 Summary:        OpenStack Identity Service
@@ -21,7 +24,7 @@ BuildRequires:  python-pbr
 BuildRequires:  python-oslo-config
 BuildRequires:  python-pycadf >= 0.8.0
 
-Requires:       python-keystone = %{version}-%{release}
+Requires:       python-keystone = %{epoch}:%{version}-%{release}
 Requires:       python-keystoneclient >= 1:1.1.0
 
 Requires(post): systemd
