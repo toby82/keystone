@@ -1,30 +1,38 @@
 %global with_doc %{!?_without_doc:1}%{?_without_doc:0}
-%global release_name kilo
-%global service keystone
+%global release_name liberty
+%global pypi_name keystone
+%global milestone .0b1
  
 %{!?upstream_version: %global upstream_version %{version}%{?milestone}}
 
 Name:           openstack-keystone
-Version:        2015.1.0
-Release:        3%{?milestone}%{?dist}
+# Liberty semver reset
+# https://review.openstack.org/#/q/I6a35fa0dda798fad93b804d00a46af80f08d475c,n,z
+Epoch:          1
+Version:        8.0.0
+Release:        0.1%{?milestone}%{?dist}
 Summary:        OpenStack Identity Service
 License:        ASL 2.0
 URL:            http://keystone.openstack.org/
-Source0:        http://launchpad.net/%{service}/%{release_name}/%{version}/+download/%{service}-%{upstream_version}.tar.gz
+Source0:        http://launchpad.net/%{pypi_name}/%{release_name}/%{release_name}-1/+download/%{pypi_name}-%{upstream_version}.tar.gz
+
 Source1:        openstack-keystone.logrotate
 Source2:        openstack-keystone.service
 Source3:        openstack-keystone.sysctl
 Source5:        openstack-keystone-sample-data
 Source20:       keystone-dist.conf
 
+# patches_base=8.0.0.0b1
 Patch0001: 0001-sync-parameter-values-with-keystone-dist.conf.patch
-Patch0002: 0002-Fix-xmldsig-import.patch
 
 BuildArch:      noarch
 BuildRequires:  python2-devel
 BuildRequires:  python-pbr
+# Required to build keystone.conf
+BuildRequires:  python-oslo-config
+BuildRequires:  python-pycadf >= 0.8.0
 
-Requires:       python-keystone = %{version}-%{release}
+Requires:       python-keystone = %{epoch}:%{version}-%{release}
 Requires:       python-keystoneclient >= 1:1.1.0
 
 Requires(post): systemd
@@ -94,14 +102,23 @@ Summary:        Documentation for OpenStack Identity Service
 BuildRequires:  python-sphinx >= 1.1.2
 BuildRequires:  python-oslo-sphinx >= 2.5.0
 # for API autodoc
+BuildRequires:  python-cryptography
+BuildRequires:  python-dogpile-cache
+BuildRequires:  python-jsonschema
 BuildRequires:  python-keystonemiddleware
 BuildRequires:  python-ldappool
+BuildRequires:  python-memcached
+BuildRequires:  python-oauthlib
 BuildRequires:  python-oslo-concurrency
 BuildRequires:  python-oslo-db
 BuildRequires:  python-oslo-log
 BuildRequires:  python-oslo-messaging
 BuildRequires:  python-oslo-middleware
 BuildRequires:  python-oslo-policy
+BuildRequires:  python-passlib
+BuildRequires:  python-paste-deploy
+BuildRequires:  python-pysaml2
+BuildRequires:  python-routes
 
 %description doc
 Keystone is a Python implementation of the OpenStack
@@ -114,7 +131,6 @@ This package contains documentation for Keystone.
 %setup -q -n keystone-%{upstream_version}
 
 %patch0001 -p1
-%patch0002 -p1
 
 find . \( -name .gitignore -o -name .placeholder \) -delete
 find keystone -name \*.py -exec sed -i '/\/usr\/bin\/env python/d' {} \;
@@ -122,19 +138,19 @@ find keystone -name \*.py -exec sed -i '/\/usr\/bin\/env python/d' {} \;
 rm -f test-requirements.txt requirements.txt
 
 %build
-cp etc/keystone.conf.sample etc/keystone.conf
+PYTHONPATH=. oslo-config-generator --config-file=config-generator/keystone.conf
 # distribution defaults are located in keystone-dist.conf
 
-%{__python} setup.py build
+%{__python2} setup.py build
 
 %install
-%{__python} setup.py install --skip-build --root %{buildroot}
+%{__python2} setup.py install --skip-build --root %{buildroot}
 
 # Delete tests
-rm -fr %{buildroot}%{python_sitelib}/keystone/tests
+rm -fr %{buildroot}%{python2_sitelib}/keystone/tests
 
 install -d -m 755 %{buildroot}%{_sysconfdir}/keystone
-install -p -D -m 640 etc/keystone.conf %{buildroot}%{_sysconfdir}/keystone/keystone.conf
+install -p -D -m 640 etc/keystone.conf.sample %{buildroot}%{_sysconfdir}/keystone/keystone.conf
 install -p -D -m 644 etc/keystone-paste.ini %{buildroot}%{_datadir}/keystone/keystone-dist-paste.ini
 install -p -D -m 644 %{SOURCE20} %{buildroot}%{_datadir}/keystone/keystone-dist.conf
 install -p -D -m 644 etc/policy.v3cloudsample.json %{buildroot}%{_datadir}/keystone/policy.v3cloudsample.json
@@ -214,8 +230,8 @@ exit 0
 %files -n python-keystone
 %defattr(-,root,root,-)
 %license LICENSE
-%{python_sitelib}/keystone
-%{python_sitelib}/keystone-*.egg-info
+%{python2_sitelib}/keystone
+%{python2_sitelib}/keystone-*.egg-info
 
 %if 0%{?with_doc}
 %files doc
